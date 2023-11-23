@@ -22,7 +22,6 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -56,7 +55,6 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private String getTokenFromRequest(HttpServletRequest request){
-
         String bearerToken = request.getHeader("Authorization");
         log.info("Bearer Token: {}", bearerToken);
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){

@@ -23,7 +23,7 @@ public class Comment {
     private String commentName;
     @Column(name = "COMMENT_EMAIL")
     private String commentEmail;
-    @Column(name = "COMMENT_CONTENT")
+    @Column(name = "CONTENT")
     private String commentContent;
 
     @Builder.Default

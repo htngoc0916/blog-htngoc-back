@@ -21,15 +21,16 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
-
     @Column(name = "TITLE", nullable = false)
     private String title;
-
-    @Column(name = "DESCRIPTION", nullable = false)
+    @Column(name = "DESCRIPTION")
     private String description;
-
-    @Column(name = "CONTENT", nullable = false)
+    @Column(name = "CONTENT")
     private String content;
+    @Column(name = "SLUG")
+    private String slug;
+    @Column(name = "VIEW_CNT")
+    private Long viewCnt;
 
     @Builder.Default
     @Column(name = "USED_YN", length = 1)

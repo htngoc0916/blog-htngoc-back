@@ -26,39 +26,35 @@ public class JwtTokenProvider {
         Date curentDate = new Date();
         Date expireDate = new Date(curentDate.getTime() + jwtExpirationDate);
 
-        String token = Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(expireDate)
-                .signWith(key())
-                .compact();
-
-        return token;
+        //tao ra token
+        return Jwts.builder()
+                    .setSubject(username)
+                    .setIssuedAt(new Date())
+                    .setExpiration(expireDate)
+                    .signWith(key())
+                    .compact();
     }
 
     // token key
-    private Key key(){
-        return Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private Key key() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
     //get username from jwt token
     public String getUsername(String token){
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        String username = claims.getSubject();
-        return username;
+                            .setSigningKey(key())
+                            .build()
+                            .parseClaimsJws(token)
+                            .getBody();
+
+        return claims.getSubject();
     }
 
     //validate Jwt token
     public boolean validateToken(String token){
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(key())
-                    .build()
-                    .parse(token);
+            Jwts.parserBuilder().setSigningKey(key()).build().parse(token);
             return true;
         }catch (MalformedJwtException ex){
             throw new BlogApiException(HttpStatus.BAD_REQUEST, "Invalid JWT token");

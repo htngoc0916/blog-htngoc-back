@@ -20,10 +20,10 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
-    @Column(name = "CATEGORY_NAME")
+    @Column(name = "CATEGORY_NAME", nullable = false)
     private String categoryName;
-    @Column(name = "CATEGORY_DES")
-    private String categoryDes;
+    @Column(name = "DESCRIPTION")
+    private String description;
 
     @Builder.Default
     @Column(name = "USED_YN", length = 1)
