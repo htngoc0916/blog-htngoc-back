@@ -38,9 +38,7 @@ public class JwtTokenProvider {
 
     // token key
     private Key key(){
-        return Keys.hmacShaKeyFor(
-                Decoders.BASE64.decode(jwtSecret)
-        );
+        return Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
     //get username from jwt token

@@ -1,5 +1,6 @@
 package com.htn.blog.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuthResponseDTO {
-    private String accessToken;
-    @Builder.Default
-    private String tokenType = "Bearer";
+public class CommentDTO {
+    private Long id;
+    @NotEmpty(message = "Name should not be null or empty")
+    private String name;
 }

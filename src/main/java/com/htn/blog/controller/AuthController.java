@@ -1,8 +1,10 @@
 package com.htn.blog.controller;
 
+import com.htn.blog.common.BlogCode;
 import com.htn.blog.dto.AuthResponseDTO;
 import com.htn.blog.dto.LoginDTO;
 import com.htn.blog.dto.RegisterDTO;
+import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,15 +22,28 @@ public class AuthController {
 
     // Build Login REST API
     @PostMapping(value = "/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO loginDTO){
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO){
         String token = authService.login(loginDTO);
-        return new ResponseEntity<>(AuthResponseDTO.builder().accessToken(token).build()
-                                    , HttpStatus.OK);
+        AuthResponseDTO authResponseDTO = AuthResponseDTO.builder()
+                                                        .accessToken(token)
+                                                        .build();
+
+        ResponseDTO responseDTO = ResponseDTO.builder()
+                                            .status(BlogCode.SUCCESS)
+                                            .message("login successfully")
+                                            .data(authResponseDTO)
+                                            .build();
+
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
     // Build Register REST API
     @PostMapping(value = "/register")
-    public ResponseEntity<String> register(@RequestBody RegisterDTO registerDTO){
-        String respone = authService.register(registerDTO);
-        return new ResponseEntity<>(respone, HttpStatus.CREATED);
+    public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO){
+        ResponseDTO responseDTO = ResponseDTO.builder()
+                .status(BlogCode.SUCCESS)
+                .message("login successfully")
+                .data(authService.register(registerDTO))
+                .build();
+        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 }
