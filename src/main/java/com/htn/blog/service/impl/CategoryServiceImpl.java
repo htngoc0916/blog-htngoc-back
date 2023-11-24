@@ -2,6 +2,7 @@ package com.htn.blog.service.impl;
 
 import com.htn.blog.dto.CategoryDTO;
 import com.htn.blog.entity.Category;
+import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.CategoryRepository;
 import com.htn.blog.service.CategoryService;
 import lombok.AllArgsConstructor;
@@ -27,12 +28,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category getCategory(Long categoryId) {
-        return null;
+        return categoryRepository.findById(categoryId).orElseThrow(
+                () -> new NotFoundException("Category not found with id = " + categoryId)
+        );
     }
 
     @Override
     public List<Category> getAllCategories() {
-        return null;
+        return categoryRepository.findAll();
     }
 
     @Override

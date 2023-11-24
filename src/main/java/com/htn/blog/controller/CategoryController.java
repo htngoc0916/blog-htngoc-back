@@ -9,16 +9,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/category")
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
+    @GetMapping("{id}")
+    public ResponseEntity<?> getCategory(@PathVariable("id") Long categoryId){
+        Category category = categoryService.getCategory(categoryId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDTO.builder()
+                        .status(BlogCode.SUCCESS)
+                        .message("Search category successfully!")
+                        .data(category)
+                        .build()
+        );
+    }
+
+    @GetMapping()
+    public ResponseEntity<?> getAllCategory(){
+        List<Category> categoryList = categoryService.getAllCategories();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDTO.builder()
+                        .status(BlogCode.SUCCESS)
+                        .message("Search all category successfully!")
+                        .data(categoryList)
+                        .build()
+        );
+    }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -27,7 +50,7 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseDTO.builder()
                             .status(BlogCode.SUCCESS)
-                            .message("Created new a category")
+                            .message("Created new a category.")
                             .data(category)
                             .build()
         );
