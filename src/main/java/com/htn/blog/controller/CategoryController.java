@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/category")
+@RequestMapping("/api/v1/categories")
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
@@ -53,6 +53,32 @@ public class CategoryController {
                             .message("Created new a category.")
                             .data(category)
                             .build()
+        );
+    }
+
+    @PutMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateCategory(@RequestBody CategoryDTO categoryDTO, @PathVariable("id") Long categoryId){
+        Category category = categoryService.updateCategory(categoryDTO, categoryId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ResponseDTO.builder()
+                        .status(BlogCode.SUCCESS)
+                        .message("Updated category successfully!")
+                        .data(category)
+                        .build()
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping
+    public ResponseEntity<?> deleteCategory(Long categoryId){
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ResponseDTO.builder()
+                        .status(BlogCode.SUCCESS)
+                        .message("deleted category successfully!")
+                        .data("")
+                        .build()
         );
     }
 }

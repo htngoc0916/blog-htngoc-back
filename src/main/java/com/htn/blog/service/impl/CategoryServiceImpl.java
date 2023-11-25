@@ -5,7 +5,6 @@ import com.htn.blog.entity.Category;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.CategoryRepository;
 import com.htn.blog.service.CategoryService;
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,12 +38,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category updateCategory(Long id) {
-        return null;
+    public Category updateCategory(CategoryDTO categoryDTO, Long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new NotFoundException("Category not found with id = " + categoryId)
+        );
+        return categoryRepository.save(category);
     }
 
     @Override
     public void deleteCategory(Long categoryId) {
-
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new NotFoundException("Category not found with id = " + categoryId)
+        );
+        categoryRepository.delete(category);
     }
 }

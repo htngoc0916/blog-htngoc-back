@@ -1,15 +1,14 @@
 package com.htn.blog.entity;
 
+import com.htn.blog.dto.CategoryDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -40,4 +39,13 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts;
+
+    public Category update(CategoryDTO categoryDTO){
+        this.setCategoryName(categoryDTO.getCategoryName());
+        this.setDescription(categoryDTO.getDescription());
+        this.setUsedYn(categoryDTO.getUsedYn());
+        this.setModId(categoryDTO.getModId());
+        this.setModDt(new Date());
+        return this;
+    }
 }
