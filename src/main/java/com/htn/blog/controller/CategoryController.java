@@ -19,7 +19,7 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getCategory(@PathVariable("id") Long categoryId){
         Category category = categoryService.getCategory(categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -56,7 +56,7 @@ public class CategoryController {
         );
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateCategory(@RequestBody CategoryDTO categoryDTO, @PathVariable("id") Long categoryId){
         Category category = categoryService.updateCategory(categoryDTO, categoryId);
@@ -70,8 +70,8 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping
-    public ResponseEntity<?> deleteCategory(Long categoryId){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable("id") Long categoryId){
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseDTO.builder()

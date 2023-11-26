@@ -1,7 +1,7 @@
 package com.htn.blog.vo;
 
-import com.htn.blog.entity.Post;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,8 +10,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PostResponseVO {
-    private List<Post> data;
+    private List<PostVO> data;
     private Integer pageNo;
     private Integer pageSize;
     private Long totalElements;

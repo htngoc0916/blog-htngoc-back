@@ -24,7 +24,7 @@ public class Comment {
     @Column(name = "COMMENT_EMAIL")
     private String commentEmail;
     @Column(name = "CONTENT")
-    private String commentContent;
+    private String content;
 
     @Builder.Default
     @Column(name = "USED_YN", length = 1)

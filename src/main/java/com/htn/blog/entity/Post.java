@@ -1,5 +1,6 @@
 package com.htn.blog.entity;
 
+import com.htn.blog.dto.PostDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -49,4 +50,15 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_ID")
     private Category category;
+
+    public Post update(PostDTO postDTO){
+        this.setTitle(postDTO.getTitle());
+        this.setDescription(postDTO.getDescription());
+        this.setContent(postDTO.getContent());
+        this.setModId(postDTO.getModId());
+        this.setSlug(postDTO.getSlug());
+        this.setModDt(new Date());
+        this.setUsedYn(postDTO.getUsedYn());
+        return this;
+    }
 }

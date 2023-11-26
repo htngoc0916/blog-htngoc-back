@@ -4,6 +4,7 @@ import com.htn.blog.entity.Category;
 import lombok.*;
 
 import java.util.Date;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -25,4 +26,5 @@ public class PostVO {
     private Date modDt;
     private String modId;
     private Long categoryId;
+    private Set<CommentVO> comments;
 }

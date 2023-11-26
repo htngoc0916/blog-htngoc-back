@@ -11,6 +11,10 @@ import com.htn.blog.vo.PostResponseVO;
 import com.htn.blog.vo.PostVO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,36 +33,72 @@ public class PostServiceImpl implements PostService {
         Category category =  categoryRepository.findById(postDTO.getCategoryId()).orElseThrow(
                 () -> new NotFoundException("Category not found with categoryId = " + postDTO.getCategoryId())
         );
-
         Post post = modelMapper.map(postDTO, Post.class);
         post.setCategory(category);
-
         return modelMapper.map(postRepository.save(post), PostVO.class);
     }
 
     @Override
     public PostResponseVO getAllPosts(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
-        return null;
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        //create pageable instance
+        Pageable pageable = PageRequest.of(pageNo, pageSize , sort);
+        Page<Post> postPage = postRepository.findAll(pageable);
+        List<Post> postList = postPage.getContent();
+        List<PostVO> postVOList = postList.stream().map(post -> modelMapper.map(post, PostVO.class)).toList();
+
+        return PostResponseVO.builder()
+                .data(postVOList)
+                .pageNo(postPage.getNumber())
+                .pageSize(postPage.getSize())
+                .totalElements(postPage.getTotalElements())
+                .totalPage(postPage.getTotalPages())
+                .last(postPage.isLast())
+                .build();
     }
 
     @Override
-    public Post getPostById(Long id) {
-        return null;
+    public PostVO getPostById(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Post not found with id = " + id)
+        );
+
+        return modelMapper.map(post, PostVO.class);
     }
 
     @Override
-    public Post updatePost(PostDTO postDTO, Long id) {
-        return null;
+    public PostVO updatePost(PostDTO postDTO, Long id) {
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Post not found with id = " + id)
+        );
+        Category category = categoryRepository.findById(postDTO.getCategoryId()).orElseThrow(
+                () -> new NotFoundException("Category not found with id = " + postDTO.getCategoryId())
+        );
+
+        post = post.update(postDTO);
+        post.setCategory(category);
+        return modelMapper.map(postRepository.save(post), PostVO.class);
     }
 
     @Override
     public void deletePostById(Long id) {
-
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Post not found with id = " + id)
+        );
+        postRepository.delete(post);
     }
 
     @Override
-    public List<Post> getPostsByCategory(Long categoryId) {
-        return null;
+    public List<PostVO> getPostsByCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new NotFoundException("Category not found with category id = " + categoryId)
+        );
+
+        List<Post> postList = postRepository.findByCategoryId(categoryId);
+        return postList.stream().map(post -> modelMapper.map(post, PostVO.class)).toList();
     }
 }
 
