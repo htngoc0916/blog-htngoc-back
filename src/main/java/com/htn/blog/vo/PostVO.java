@@ -1,6 +1,6 @@
 package com.htn.blog.vo;
 
-import com.htn.blog.entity.Category;
+import com.htn.blog.entity.Tag;
 import lombok.*;
 
 import java.util.Date;
@@ -27,4 +27,5 @@ public class PostVO {
     private String modId;
     private Long categoryId;
     private Set<CommentVO> comments;
+    private Set<Tag> tags;
 }

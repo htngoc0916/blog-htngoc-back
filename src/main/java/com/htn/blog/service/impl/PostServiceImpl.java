@@ -3,9 +3,11 @@ package com.htn.blog.service.impl;
 import com.htn.blog.dto.PostDTO;
 import com.htn.blog.entity.Category;
 import com.htn.blog.entity.Post;
+import com.htn.blog.entity.Tag;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.CategoryRepository;
 import com.htn.blog.repository.PostRepository;
+import com.htn.blog.repository.TagRepository;
 import com.htn.blog.service.PostService;
 import com.htn.blog.vo.PostResponseVO;
 import com.htn.blog.vo.PostVO;
@@ -18,6 +20,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -26,6 +31,8 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
+    private TagRepository tagRepository;
+    @Autowired
     private ModelMapper modelMapper;
 
     @Override
@@ -33,6 +40,7 @@ public class PostServiceImpl implements PostService {
         Category category =  categoryRepository.findById(postDTO.getCategoryId()).orElseThrow(
                 () -> new NotFoundException("Category not found with categoryId = " + postDTO.getCategoryId())
         );
+
         Post post = modelMapper.map(postDTO, Post.class);
         post.setCategory(category);
         return modelMapper.map(postRepository.save(post), PostVO.class);

@@ -1,7 +1,6 @@
 package com.htn.blog.service;
 
 import com.htn.blog.dto.PostDTO;
-import com.htn.blog.entity.Post;
 import com.htn.blog.vo.PostResponseVO;
 import com.htn.blog.vo.PostVO;
 

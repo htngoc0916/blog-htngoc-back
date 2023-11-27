@@ -13,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "posts", uniqueConstraints = {@UniqueConstraint(columnNames = "title")})
+@Table(name = "posts", uniqueConstraints = {@UniqueConstraint(columnNames = "TITLE")})
 @Builder
 public class Post {
     @Id
@@ -50,6 +50,12 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_ID")
     private Category category;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "posts_tags",
+            joinColumns = {@JoinColumn(name = "POST_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "TAG_ID")})
+    private Set<Tag> tags = new HashSet<>();
 
     public Post update(PostDTO postDTO){
         this.setTitle(postDTO.getTitle());
