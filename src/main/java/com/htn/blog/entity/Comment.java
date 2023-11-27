@@ -1,5 +1,6 @@
 package com.htn.blog.entity;
 
+import com.htn.blog.dto.CommentDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,4 +43,14 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "POST_ID", nullable = false)
     private Post post;
+
+    public Comment update(CommentDTO commentDTO){
+        this.setCommentName(commentDTO.getCommentName());
+        this.setCommentEmail(commentDTO.getCommentEmail());
+        this.setContent(commentDTO.getContent());
+        this.setUsedYn(commentDTO.getUsedYn());
+        this.setModDt(new Date());
+        this.setModId(commentDTO.getModId());
+        return this;
+    }
 }

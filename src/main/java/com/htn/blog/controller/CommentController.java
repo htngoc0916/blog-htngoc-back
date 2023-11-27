@@ -19,19 +19,6 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    @PostMapping("/post/{postId}/comments")
-    public ResponseEntity<?> addComment(@PathVariable(value = "postId") Long postId,
-                                        @Valid @RequestBody CommentDTO commentDTO){
-        CommentVO commentVO = commentService.addComment(postId, commentDTO);
-        return ResponseEntity.ok(
-                ResponseDTO.builder()
-                        .status(BlogCode.SUCCESS)
-                        .message("Created a new comment successfully!")
-                        .data(commentVO)
-                        .build()
-        );
-    }
-
     @GetMapping("/post/{postId}/comments")
     public ResponseEntity<?> getCommentByPostId(@PathVariable(value = "postId") Long postId){
         List<CommentVO> comments = commentService.getCommentsByPostId(postId);
@@ -57,5 +44,43 @@ public class CommentController {
         );
     }
 
+    @PostMapping("/post/{postId}/comments")
+    public ResponseEntity<?> addComment(@PathVariable(value = "postId") Long postId,
+                                        @Valid @RequestBody CommentDTO commentDTO){
+        CommentVO commentVO = commentService.addComment(postId, commentDTO);
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .status(BlogCode.SUCCESS)
+                        .message("Created a new comment successfully!")
+                        .data(commentVO)
+                        .build()
+        );
+    }
 
+    @PutMapping("/post/{postId}/comments/{id}")
+    public ResponseEntity<?> updateComment(@PathVariable(value = "postId") Long postId,
+                                           @PathVariable(value = "id") Long commentId,
+                                           @Valid @RequestBody CommentDTO commentDTO){
+        CommentVO commentVO = commentService.updateCommentById(postId, commentId, commentDTO);
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .status(BlogCode.SUCCESS)
+                        .message("Updated comment successfully!")
+                        .data(commentVO)
+                        .build()
+        );
+    }
+
+    @DeleteMapping("/post/{postId}/comments/{id}")
+    public ResponseEntity<?> deleteComment(@PathVariable(value = "postId") Long postId,
+                                           @PathVariable(value = "id") Long commentId){
+        commentService.deleteComment(postId, commentId);
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .status(BlogCode.SUCCESS)
+                        .message("Deleted comment successfully!")
+                        .data("")
+                        .build()
+        );
+    }
 }
