@@ -22,5 +22,5 @@ public class CommentVO {
     private String regId;
     private Date modDt;
     private String modId;
-    private Post post;
+    private Long postId;
 }
