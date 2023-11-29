@@ -5,6 +5,7 @@ import com.htn.blog.dto.CategoryDTO;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.entity.Category;
 import com.htn.blog.service.CategoryService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,18 +20,7 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getCategory(@PathVariable("id") Long categoryId){
-        Category category = categoryService.getCategory(categoryId);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDTO.builder()
-                        .status(BlogCode.SUCCESS)
-                        .message("Search category successfully!")
-                        .data(category)
-                        .build()
-        );
-    }
-
+    @Operation(summary = "Get all category rest api")
     @GetMapping()
     public ResponseEntity<?> getAllCategory(){
         List<Category> categoryList = categoryService.getAllCategories();
@@ -42,7 +32,19 @@ public class CategoryController {
                         .build()
         );
     }
-
+    @Operation(summary = "Get category by categoryId rest api")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCategory(@PathVariable("id") Long categoryId){
+        Category category = categoryService.getCategory(categoryId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDTO.builder()
+                        .status(BlogCode.SUCCESS)
+                        .message("Search category successfully!")
+                        .data(category)
+                        .build()
+        );
+    }
+    @Operation(summary = "Add new a category rest api")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addCategory(@RequestBody CategoryDTO categoryDTO){
@@ -55,7 +57,7 @@ public class CategoryController {
                             .build()
         );
     }
-
+    @Operation(summary = "Update category rest api")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateCategory(@RequestBody CategoryDTO categoryDTO, @PathVariable("id") Long categoryId){
@@ -68,7 +70,7 @@ public class CategoryController {
                         .build()
         );
     }
-
+    @Operation(summary = "Delete category rest api")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable("id") Long categoryId){

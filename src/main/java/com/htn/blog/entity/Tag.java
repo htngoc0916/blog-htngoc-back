@@ -1,6 +1,7 @@
 package com.htn.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.htn.blog.dto.TagDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,4 +44,14 @@ public class Tag {
     private Date modDt;
     @Column(name = "MOD_ID")
     private String modId;
+
+    public Tag update(TagDTO tagDTO){
+        this.setTagName(tagDTO.getTagName());
+        this.setColor(tagDTO.getColor());
+        this.setUsedYn(tagDTO.getUsedYn());
+        this.setRegId(tagDTO.getRegId());
+        this.setModDt(new Date());
+        this.setModId(tagDTO.getModId());
+        return this;
+    }
 }

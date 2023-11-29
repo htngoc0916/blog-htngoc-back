@@ -54,7 +54,7 @@ public class Post {
     private Category category;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "POST_TAG",
+    @JoinTable(name = "post_tag",
             joinColumns = {@JoinColumn(name = "POST_ID")},
             inverseJoinColumns = {@JoinColumn(name = "TAG_ID")})
     private Set<Tag> tags = new HashSet<>();

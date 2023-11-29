@@ -10,4 +10,6 @@ public interface TagService {
     Tag getTagById(Long tagId);
     List<Tag> getAllTag();
     Tag addTag(TagDTO tagDTO);
+    Tag updateTag(Long tagId, TagDTO tagDTO);
+    void deleteTag(Long tagId);
 }

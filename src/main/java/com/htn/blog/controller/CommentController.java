@@ -6,6 +6,8 @@ import com.htn.blog.dto.CommentDTO;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.entity.Comment;
 import com.htn.blog.service.CommentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,8 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
+    @Operation(summary = "Get comments by postId rest api")
+    @ApiResponse(responseCode = "200", description = "Http status 200 success")
     @GetMapping("/post/{postId}/comments")
     public ResponseEntity<?> getCommentByPostId(@PathVariable(value = "postId") Long postId){
         List<Comment> comments = commentService.getCommentsByPostId(postId);
@@ -30,7 +34,7 @@ public class CommentController {
                         .build()
         );
     }
-
+    @Operation(summary = "Get comment by commentId rest api")
     @GetMapping("/post/{postId}/comments/{id}")
     public ResponseEntity<?> getCommentById(@PathVariable(value = "postId") Long postId,
                                             @PathVariable(value = "id") Long commentId){
@@ -43,7 +47,7 @@ public class CommentController {
                         .build()
         );
     }
-
+    @Operation(summary = "Create new a comment rest api")
     @PostMapping("/post/{postId}/comments")
     public ResponseEntity<?> addComment(@PathVariable(value = "postId") Long postId,
                                         @Valid @RequestBody CommentDTO commentDTO){
@@ -56,7 +60,7 @@ public class CommentController {
                         .build()
         );
     }
-
+    @Operation(summary = "Update comment rest api")
     @PutMapping("/post/{postId}/comments/{id}")
     public ResponseEntity<?> updateComment(@PathVariable(value = "postId") Long postId,
                                            @PathVariable(value = "id") Long commentId,
@@ -70,7 +74,7 @@ public class CommentController {
                         .build()
         );
     }
-
+    @Operation(summary = "Delete comment by commentId rest api")
     @DeleteMapping("/post/{postId}/comments/{id}")
     public ResponseEntity<?> deleteComment(@PathVariable(value = "postId") Long postId,
                                            @PathVariable(value = "id") Long commentId){

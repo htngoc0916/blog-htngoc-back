@@ -3,6 +3,7 @@ package com.htn.blog.service.impl;
 import com.htn.blog.dto.PostDTO;
 import com.htn.blog.entity.Category;
 import com.htn.blog.entity.Post;
+import com.htn.blog.entity.Tag;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.CategoryRepository;
 import com.htn.blog.repository.PostRepository;
@@ -10,6 +11,7 @@ import com.htn.blog.repository.TagRepository;
 import com.htn.blog.service.PostService;
 import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.PostVO;
+import com.htn.blog.vo.TagVO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,8 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -38,9 +40,30 @@ public class PostServiceImpl implements PostService {
                 () -> new NotFoundException("Category not found with categoryId = " + postDTO.getCategoryId())
         );
 
+        Set<Tag> tagList = new HashSet<>();
+        for(String tagName: postDTO.getTags()){
+            Tag tag = tagRepository.findByTagName(tagName);
+            if(tag == null){
+                tag = tagRepository.save(Tag.builder()
+                        .tagName(tagName)
+                        .regId(postDTO.getRegId())
+                        .build());
+            }
+            tagList.add(tag);
+        }
+
         Post post = modelMapper.map(postDTO, Post.class);
         post.setCategory(category);
-        return modelMapper.map(postRepository.save(post), PostVO.class);
+        post.setTags(tagList);
+        post = postRepository.save(post);
+
+        PostVO resPost = modelMapper.map(post, PostVO.class);
+        Set<TagVO> tagVOSet = post.getTags()
+                                .stream()
+                                .map(tag -> modelMapper.map(tag, TagVO.class))
+                                .collect(Collectors.toSet());
+        resPost.setTags(tagVOSet);
+        return resPost;
     }
 
     @Override
