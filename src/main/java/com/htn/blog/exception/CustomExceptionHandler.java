@@ -1,7 +1,6 @@
 package com.htn.blog.exception;
 
 import com.htn.blog.common.BlogCode;
-import com.htn.blog.dto.ErrorDetailsDTO;
 import com.htn.blog.dto.ResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.lang.module.ResolutionException;
-import java.util.Date;
 
 @ControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {

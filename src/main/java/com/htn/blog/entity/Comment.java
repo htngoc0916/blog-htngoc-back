@@ -1,5 +1,6 @@
 package com.htn.blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.htn.blog.dto.CommentDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -42,6 +43,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "POST_ID", nullable = false)
+    @JsonIgnore
     private Post post;
 
     public Comment update(CommentDTO commentDTO){

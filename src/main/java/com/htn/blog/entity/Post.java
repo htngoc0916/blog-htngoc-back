@@ -1,5 +1,6 @@
 package com.htn.blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.htn.blog.dto.PostDTO;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,6 +45,7 @@ public class Post {
     @Column(name = "MOD_ID")
     private String modId;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments = new HashSet<>();
 
@@ -52,7 +54,7 @@ public class Post {
     private Category category;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "posts_tags",
+    @JoinTable(name = "POST_TAG",
             joinColumns = {@JoinColumn(name = "POST_ID")},
             inverseJoinColumns = {@JoinColumn(name = "TAG_ID")})
     private Set<Tag> tags = new HashSet<>();

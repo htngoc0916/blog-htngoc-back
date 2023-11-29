@@ -1,5 +1,6 @@
 package com.htn.blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.htn.blog.dto.CategoryDTO;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,6 +38,7 @@ public class Category {
     @Column(name = "MOD_ID")
     private String modId;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts;
 
