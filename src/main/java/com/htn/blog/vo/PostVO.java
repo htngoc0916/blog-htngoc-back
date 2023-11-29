@@ -26,6 +26,5 @@ public class PostVO {
     private Date modDt;
     private String modId;
     private Long categoryId;
-    private Set<CommentVO> comments;
     private Set<Tag> tags;
 }

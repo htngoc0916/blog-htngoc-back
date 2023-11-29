@@ -8,7 +8,6 @@ import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.CommentRepository;
 import com.htn.blog.repository.PostRepository;
 import com.htn.blog.service.CommentService;
-import com.htn.blog.vo.CommentVO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,7 @@ public class CommentServiceImpl implements CommentService {
     private ModelMapper modelMapper;
 
     @Override
-    public CommentVO addComment(Long postId, CommentDTO commentDTO) {
+    public Comment addComment(Long postId, CommentDTO commentDTO) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NotFoundException("Post not found with id = " + postId)
         );
@@ -34,22 +33,20 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = modelMapper.map(commentDTO, Comment.class);
         comment.setPost(post);
 
-        return modelMapper.map(commentRepository.save(comment), CommentVO.class);
+        return commentRepository.save(comment);
     }
 
     @Override
-    public List<CommentVO> getCommentsByPostId(Long postId) {
+    public List<Comment> getCommentsByPostId(Long postId) {
         postRepository.findById(postId).orElseThrow(
                 () -> new NotFoundException("Post not found with id = " + postId)
         );
         List<Comment> commentList = commentRepository.findByPostId(postId);
-        return commentList.stream()
-                        .map(comment -> modelMapper.map(comment, CommentVO.class))
-                        .toList();
+        return commentList;
     }
 
     @Override
-    public CommentVO getCommentById(Long postId, Long commentId){
+    public Comment getCommentById(Long postId, Long commentId){
         postRepository.findById(postId)
                 .orElseThrow(
                 () -> new NotFoundException("Post not found with id = " + postId)
@@ -63,11 +60,11 @@ public class CommentServiceImpl implements CommentService {
             throw new BlogApiException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
         }
 
-        return modelMapper.map(comment, CommentVO.class);
+        return comment;
     }
 
     @Override
-    public CommentVO updateCommentById(Long postId, Long commentId, CommentDTO commentDTO) {
+    public Comment updateCommentById(Long postId, Long commentId, CommentDTO commentDTO) {
         postRepository.findById(postId).orElseThrow(
                 () -> new NotFoundException("Post not found with id = " + postId)
         );
@@ -80,7 +77,7 @@ public class CommentServiceImpl implements CommentService {
             throw new BlogApiException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
         }
         comment = comment.update(commentDTO);
-        return modelMapper.map(commentRepository.save(comment), CommentVO.class);
+        return commentRepository.save(comment);
     }
 
     @Override

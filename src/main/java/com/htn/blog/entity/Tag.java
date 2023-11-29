@@ -22,6 +22,9 @@ public class Tag {
     private Long id;
     @Column(name = "TAG_NAME", nullable = false, unique = true)
     private String tagName;
+    @Column(name = "COLOR")
+    private String color;
+
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE},
             mappedBy = "tags")

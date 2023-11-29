@@ -4,8 +4,8 @@ package com.htn.blog.controller;
 import com.htn.blog.common.BlogCode;
 import com.htn.blog.dto.CommentDTO;
 import com.htn.blog.dto.ResponseDTO;
+import com.htn.blog.entity.Comment;
 import com.htn.blog.service.CommentService;
-import com.htn.blog.vo.CommentVO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class CommentController {
 
     @GetMapping("/post/{postId}/comments")
     public ResponseEntity<?> getCommentByPostId(@PathVariable(value = "postId") Long postId){
-        List<CommentVO> comments = commentService.getCommentsByPostId(postId);
+        List<Comment> comments = commentService.getCommentsByPostId(postId);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
                         .status(BlogCode.SUCCESS)
@@ -34,12 +34,12 @@ public class CommentController {
     @GetMapping("/post/{postId}/comments/{id}")
     public ResponseEntity<?> getCommentById(@PathVariable(value = "postId") Long postId,
                                             @PathVariable(value = "id") Long commentId){
-        CommentVO commentVO = commentService.getCommentById(postId, commentId);
+        Comment comment = commentService.getCommentById(postId, commentId);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
                         .status(BlogCode.SUCCESS)
                         .message("Selected comment successfully!")
-                        .data(commentVO)
+                        .data(comment)
                         .build()
         );
     }
@@ -47,12 +47,12 @@ public class CommentController {
     @PostMapping("/post/{postId}/comments")
     public ResponseEntity<?> addComment(@PathVariable(value = "postId") Long postId,
                                         @Valid @RequestBody CommentDTO commentDTO){
-        CommentVO commentVO = commentService.addComment(postId, commentDTO);
+        Comment comment = commentService.addComment(postId, commentDTO);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
                         .status(BlogCode.SUCCESS)
                         .message("Created a new comment successfully!")
-                        .data(commentVO)
+                        .data(comment)
                         .build()
         );
     }
@@ -61,12 +61,12 @@ public class CommentController {
     public ResponseEntity<?> updateComment(@PathVariable(value = "postId") Long postId,
                                            @PathVariable(value = "id") Long commentId,
                                            @Valid @RequestBody CommentDTO commentDTO){
-        CommentVO commentVO = commentService.updateCommentById(postId, commentId, commentDTO);
+        Comment comment = commentService.updateCommentById(postId, commentId, commentDTO);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
                         .status(BlogCode.SUCCESS)
                         .message("Updated comment successfully!")
-                        .data(commentVO)
+                        .data(comment)
                         .build()
         );
     }
