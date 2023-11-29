@@ -11,8 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostResponseVO {
-    private List<PostVO> data;
+public class PagedResponseVO<T> {
+    private List<T> data;
     private Integer pageNo;
     private Integer pageSize;
     private Long totalElements;

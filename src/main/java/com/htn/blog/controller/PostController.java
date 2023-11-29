@@ -4,7 +4,7 @@ import com.htn.blog.common.BlogCode;
 import com.htn.blog.dto.PostDTO;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.service.PostService;
-import com.htn.blog.vo.PostResponseVO;
+import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.PostVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,12 +36,12 @@ public class PostController {
             @RequestParam(value = "sortBy", defaultValue = BlogCode.DEFAULT_SORT_BY, required = false) String sortBy,
             @RequestParam(value = "sortDir", defaultValue = BlogCode.DEFAULT_SORT_DIRECTION, required = false) String sortDir
     ){
-        PostResponseVO postResponseVO = postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
+        PagedResponseVO<PostVO> pagedResponseVO = postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .status(BlogCode.SUCCESS)
                         .message("Get all post successfully!")
-                        .data(postResponseVO)
+                        .data(pagedResponseVO)
                         .build()
         );
     }

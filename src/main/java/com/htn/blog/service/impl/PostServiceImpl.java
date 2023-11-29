@@ -3,13 +3,12 @@ package com.htn.blog.service.impl;
 import com.htn.blog.dto.PostDTO;
 import com.htn.blog.entity.Category;
 import com.htn.blog.entity.Post;
-import com.htn.blog.entity.Tag;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.CategoryRepository;
 import com.htn.blog.repository.PostRepository;
 import com.htn.blog.repository.TagRepository;
 import com.htn.blog.service.PostService;
-import com.htn.blog.vo.PostResponseVO;
+import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.PostVO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -47,18 +44,18 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponseVO getAllPosts(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+    public PagedResponseVO<PostVO> getAllPosts(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        //create pageable instance
-        Pageable pageable = PageRequest.of(pageNo, pageSize , sort);
+        // create pageable instance
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Post> postPage = postRepository.findAll(pageable);
-        List<Post> postList = postPage.getContent();
-        List<PostVO> postVOList = postList.stream().map(post -> modelMapper.map(post, PostVO.class)).toList();
 
-        return PostResponseVO.builder()
+        List<PostVO> postVOList = postPage.getContent().stream().map(post -> modelMapper.map(post, PostVO.class)).toList();
+
+        return PagedResponseVO.<PostVO>builder()
                 .data(postVOList)
                 .pageNo(postPage.getNumber())
                 .pageSize(postPage.getSize())
@@ -67,6 +64,7 @@ public class PostServiceImpl implements PostService {
                 .last(postPage.isLast())
                 .build();
     }
+
 
     @Override
     public PostVO getPostById(Long id) {
