@@ -50,7 +50,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentVO getCommentById(Long postId, Long commentId){
-        postRepository.findById(postId).orElseThrow(
+        postRepository.findById(postId)
+                .orElseThrow(
                 () -> new NotFoundException("Post not found with id = " + postId)
         );
 
@@ -58,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
                 () -> new NotFoundException("Comment not found with id = " + commentId)
         );
 
-        if(comment.getPost().getId().equals(postId)){
+        if(!comment.getPost().getId().equals(postId)){
             throw new BlogApiException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
         }
 
