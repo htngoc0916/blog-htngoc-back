@@ -1,5 +1,6 @@
 package com.htn.blog.service.impl;
 
+import com.htn.blog.common.BlogConstants;
 import com.htn.blog.dto.LoginDTO;
 import com.htn.blog.dto.RegisterDTO;
 import com.htn.blog.entity.Role;
@@ -9,6 +10,7 @@ import com.htn.blog.repository.RoleRepository;
 import com.htn.blog.repository.UserRepository;
 import com.htn.blog.security.jwt.JwtTokenProvider;
 import com.htn.blog.service.AuthService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +47,12 @@ public class AuthServiceImpl implements AuthService {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtTokenProvider.generateToken(authentication);
-        return token;
+        //tra ve chuoi token moi
+        return jwtTokenProvider.generateToken(authentication);
     }
 
     @Override
+    @Transactional
     public String register(RegisterDTO registerDTO) {
 
         //check for email exists in database
@@ -64,7 +67,9 @@ public class AuthServiceImpl implements AuthService {
                 .regId(registerDTO.getRegId())
                 .build();
         Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findByRoleName("ROLE_USER").get();
+        Role userRole = roleRepository.findByRoleName(BlogConstants.ROLE_USER).orElseThrow(
+                () -> new RuntimeException("ROLE_USER not exists!")
+        );
         roles.add(userRole);
         user.setRoles(roles);
 

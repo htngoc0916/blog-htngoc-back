@@ -1,6 +1,6 @@
 package com.htn.blog.controller;
 
-import com.htn.blog.common.BlogCode;
+import com.htn.blog.common.BlogConstants;
 import com.htn.blog.dto.PostDTO;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.service.PostService;
@@ -31,15 +31,15 @@ public class PostController {
     @ApiResponse(responseCode = "200", description = "Http status 200 success")
     @GetMapping
     public ResponseEntity<?> getAllPosts(
-            @RequestParam(value = "pageNo", defaultValue = BlogCode.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = BlogCode.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = BlogCode.DEFAULT_SORT_BY, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = BlogCode.DEFAULT_SORT_DIRECTION, required = false) String sortDir
+            @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
     ){
         PagedResponseVO<PostVO> pagedResponseVO = postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogCode.SUCCESS)
+                        .status(BlogConstants.SUCCESS)
                         .message("Get all post successfully!")
                         .data(pagedResponseVO)
                         .build()
@@ -54,7 +54,7 @@ public class PostController {
         PostVO postVO = postService.getPostById(id);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogCode.SUCCESS)
+                        .status(BlogConstants.SUCCESS)
                         .message("Get all post successfully!")
                         .data(postVO)
                         .build()
@@ -69,7 +69,7 @@ public class PostController {
         List<PostVO> postVOList = postService.getPostsByCategory(categoryId);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogCode.SUCCESS)
+                        .status(BlogConstants.SUCCESS)
                         .message("Get all post successfully!")
                         .data(postVOList)
                         .build()
@@ -86,7 +86,7 @@ public class PostController {
         PostVO postVO = postService.addPost(postDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseDTO.builder()
-                        .status(BlogCode.SUCCESS)
+                        .status(BlogConstants.SUCCESS)
                         .message("Created a post successfully!")
                         .data(postVO)
                         .build()
@@ -103,7 +103,7 @@ public class PostController {
         PostVO postVO = postService.updatePost(postDTO, id);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                .status(BlogCode.SUCCESS)
+                .status(BlogConstants.SUCCESS)
                 .message("Get all post successfully!")
                 .data(postVO)
                 .build()
@@ -120,7 +120,7 @@ public class PostController {
         postService.deletePostById(id);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogCode.SUCCESS)
+                        .status(BlogConstants.SUCCESS)
                         .message("deleted post successfully!")
                         .data("")
                         .build()

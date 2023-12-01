@@ -1,6 +1,6 @@
 package com.htn.blog.exception;
 
-import com.htn.blog.common.BlogCode;
+import com.htn.blog.common.BlogConstants;
 import com.htn.blog.dto.ResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ResolutionException.class)
     public ResponseEntity<?> handleResourceNotFoundException(NotFoundException exception, WebRequest webRequest){
         ResponseDTO responseDTO = ResponseDTO.builder()
-                .status(BlogCode.FAILED)
+                .status(BlogConstants.FAILED)
                 .message(exception.getMessage())
                 .data(webRequest.getDescription(false)).build();
         return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
@@ -26,7 +26,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BlogApiException.class)
     public ResponseEntity<?> handleBlogApiException(BlogApiException exception, WebRequest webRequest){
         ResponseDTO responseDTO = ResponseDTO.builder()
-                                            .status(BlogCode.FAILED)
+                                            .status(BlogConstants.FAILED)
                                             .message(exception.getMessage())
                                             .data(webRequest.getDescription(false)).build();
         return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -35,7 +35,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException exception, WebRequest webRequest){
         ResponseDTO responseDTO = ResponseDTO.builder()
-                                            .status(BlogCode.FAILED)
+                                            .status(BlogConstants.FAILED)
                                             .message(exception.getMessage())
                                             .data(webRequest.getDescription(false)).build();
         return new ResponseEntity<>(responseDTO, HttpStatus.UNAUTHORIZED);
@@ -45,7 +45,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception exception, WebRequest webRequest){
         ResponseDTO responseDTO = ResponseDTO.builder()
-                                            .status(BlogCode.FAILED)
+                                            .status(BlogConstants.FAILED)
                                             .message(exception.getMessage())
                                             .data(webRequest.getDescription(false)).build();
         return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);

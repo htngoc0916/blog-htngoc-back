@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MenuServiceImpl implements MenuService {
@@ -42,12 +41,15 @@ public class MenuServiceImpl implements MenuService {
         Menu menu = menuRepository.findById(menuId).orElseThrow(
                 () -> new NotFoundException("Menu not found width id = " + menuId)
         );
-        menu = menu.update();
-        return null;
+        menu = menu.update(menuDTO);
+        return menuRepository.save(menu);
     }
 
     @Override
     public void deleteMenu(Long menuId) {
-
+        Menu menu = menuRepository.findById(menuId).orElseThrow(
+                () -> new NotFoundException("Menu not found width id = " + menuId)
+        );
+        menuRepository.delete(menu);
     }
 }

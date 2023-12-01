@@ -1,6 +1,6 @@
 package com.htn.blog.controller;
 
-import com.htn.blog.common.BlogCode;
+import com.htn.blog.common.BlogConstants;
 import com.htn.blog.dto.AuthResponseDTO;
 import com.htn.blog.dto.LoginDTO;
 import com.htn.blog.dto.RegisterDTO;
@@ -29,7 +29,7 @@ public class AuthController {
                                                         .build();
 
         ResponseDTO responseDTO = ResponseDTO.builder()
-                                            .status(BlogCode.SUCCESS)
+                                            .status(BlogConstants.SUCCESS)
                                             .message("login successfully")
                                             .data(authResponseDTO)
                                             .build();
@@ -40,8 +40,8 @@ public class AuthController {
     @PostMapping(value = "/register")
     public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO){
         ResponseDTO responseDTO = ResponseDTO.builder()
-                .status(BlogCode.SUCCESS)
-                .message("login successfully")
+                .status(BlogConstants.SUCCESS)
+                .message("register successfully")
                 .data(authService.register(registerDTO))
                 .build();
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);

@@ -1,6 +1,6 @@
 package com.htn.blog.controller;
 
-import com.htn.blog.common.BlogCode;
+import com.htn.blog.common.BlogConstants;
 import com.htn.blog.dto.CategoryDTO;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.entity.Category;
@@ -26,7 +26,7 @@ public class CategoryController {
         List<Category> categoryList = categoryService.getAllCategories();
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogCode.SUCCESS)
+                        .status(BlogConstants.SUCCESS)
                         .message("Search all category successfully!")
                         .data(categoryList)
                         .build()
@@ -38,7 +38,7 @@ public class CategoryController {
         Category category = categoryService.getCategory(categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogCode.SUCCESS)
+                        .status(BlogConstants.SUCCESS)
                         .message("Search category successfully!")
                         .data(category)
                         .build()
@@ -51,7 +51,7 @@ public class CategoryController {
         Category category = categoryService.addCategory(categoryDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseDTO.builder()
-                            .status(BlogCode.SUCCESS)
+                            .status(BlogConstants.SUCCESS)
                             .message("Created new a category.")
                             .data(category)
                             .build()
@@ -64,7 +64,7 @@ public class CategoryController {
         Category category = categoryService.updateCategory(categoryDTO, categoryId);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseDTO.builder()
-                        .status(BlogCode.SUCCESS)
+                        .status(BlogConstants.SUCCESS)
                         .message("Updated category successfully!")
                         .data(category)
                         .build()
@@ -77,7 +77,7 @@ public class CategoryController {
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseDTO.builder()
-                        .status(BlogCode.SUCCESS)
+                        .status(BlogConstants.SUCCESS)
                         .message("deleted category successfully!")
                         .data("")
                         .build()

@@ -1,10 +1,10 @@
 package com.htn.blog.controller;
 
 import com.htn.blog.common.BlogConstants;
+import com.htn.blog.dto.MenuDTO;
 import com.htn.blog.dto.ResponseDTO;
-import com.htn.blog.dto.TagDTO;
-import com.htn.blog.entity.Tag;
-import com.htn.blog.service.TagService;
+import com.htn.blog.entity.Menu;
+import com.htn.blog.service.MenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,70 +16,69 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/tags")
-public class TagController {
+@RequestMapping("api/v1/menus")
+public class MenuController {
     @Autowired
-    private TagService tagService;
-
+    private MenuService menuService;
+    @Operation(summary = "Get all menus rest api")
     @GetMapping
-    @Operation(summary = "Get all tags rest api")
-    public ResponseEntity<?> getAllTags(){
-        List<Tag> tagList = tagService.getAllTag();
+    public ResponseEntity<?> getAllMenus(){
+        List<Menu> menus = menuService.getAllMenus();
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .status(BlogConstants.SUCCESS)
-                        .message("Get all post successfully!")
-                        .data(tagList)
+                        .message("Search all category successfully!")
+                        .data(menus)
                         .build()
         );
     }
-    @Operation(summary = "Get tag by tagId rest api")
+    @Operation(summary = "Get menu by menuId rest api")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getTagById(@PathVariable(name = "id") Long tagId){
-        Tag tag = tagService.getTagById(tagId);
+    public ResponseEntity<?> getMenu(@PathVariable("id") Long menuId){
+        Menu menu = menuService.getMenu(menuId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .status(BlogConstants.SUCCESS)
-                        .message("Get post by id successfully!")
-                        .data(tag)
+                        .message("Search category successfully!")
+                        .data(menu)
                         .build()
         );
     }
-    @Operation(summary = "Create new a tag rest api")
+    @Operation(summary = "Add new a menu rest api")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> addTag(@RequestBody TagDTO tagDTO){
-        Tag tag = tagService.addTag(tagDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(
+    public ResponseEntity<?> addMenu(@Valid  @RequestBody MenuDTO menuDTO){
+        Menu menu = menuService.addMenu(menuDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseDTO.builder()
                         .status(BlogConstants.SUCCESS)
-                        .message("Created tags successfully!")
-                        .data(tag)
+                        .message("Created a menu successfully!")
+                        .data(menu)
                         .build()
         );
     }
-    @Operation(summary = "Update tag rest api")
+    @Operation(summary = "Update a menu rest api")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateTag(@PathVariable(name = "id") Long tagId, @Valid @RequestBody TagDTO tagDTO){
-        Tag tag = tagService.updateTag(tagId, tagDTO);
+    public ResponseEntity<?> updateMenu(@PathVariable(name = "id") Long menuId, @RequestBody MenuDTO menuDTO){
+        Menu menu = menuService.updateMenu(menuId, menuDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .status(BlogConstants.SUCCESS)
-                        .message("Updated tag successfully!")
-                        .data(tag)
+                        .message("Updated menu successfully!")
+                        .data(menu)
                         .build()
         );
     }
-    @Operation(summary = "Delete tag rest api")
+    @Operation(summary = "Delete a menu rest api")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteTag(@PathVariable(name = "id") Long tagId){
-        tagService.deleteTag(tagId);
+    public ResponseEntity<?> deleteMenu(@PathVariable(name = "id") Long menuId){
+        menuService.deleteMenu(menuId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .status(BlogConstants.SUCCESS)
-                        .message("Deleted tag successfully!")
+                        .message("Deleted a menu successfully!")
                         .data("")
                         .build()
         );

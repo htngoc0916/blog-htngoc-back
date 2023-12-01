@@ -59,6 +59,10 @@ public class Post {
             inverseJoinColumns = {@JoinColumn(name = "TAG_ID")})
     private Set<Tag> tags = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID")
+    private User user;
+
     public Post update(PostDTO postDTO){
         this.setTitle(postDTO.getTitle());
         this.setDescription(postDTO.getDescription());

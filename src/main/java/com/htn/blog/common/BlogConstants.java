@@ -1,7 +1,7 @@
 package com.htn.blog.common;
 
 
-public class BlogCode {
+public class BlogConstants {
     //api code
     public final static String SUCCESS = "SUCCESS";
     public final static String FAILED = "FAILED";
@@ -11,4 +11,9 @@ public class BlogCode {
     public final static String DEFAULT_PAGE_SIZE = "10";
     public final static String DEFAULT_SORT_BY = "id";
     public final static String DEFAULT_SORT_DIRECTION = "asc";
+
+    //role name
+    public final static String ROLE_USER = "ROLE_USER";
+    public final static String ROLE_ADMIN = "ROLE_ADMIN";
+
 }

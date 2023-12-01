@@ -48,6 +48,9 @@ public class Menu {
         this.setMenuName(menuDTO.getMenuName());
         this.setMenuOrd(menuDTO.getMenuOrd());
         this.setMenuUrl(menuDTO.getMenuUrl());
+        this.setUsedYn(menuDTO.getUsedYn());
+        this.setModId(menuDTO.getModId());
+        this.setModDt(new Date());
         return this;
     }
 }
