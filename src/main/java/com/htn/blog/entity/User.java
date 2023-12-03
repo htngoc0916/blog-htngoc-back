@@ -1,6 +1,8 @@
 package com.htn.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.htn.blog.dto.UserDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,6 +28,7 @@ public class User {
     private String email;
     @Column(name = "AVATAR")
     private String avatar;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "PASSWORD", nullable = false)
     private String password;
     @Column(name = "USED_YN", length = 1)
@@ -54,4 +57,12 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
     private Set<Role> roles;
+
+    public User update(UserDTO userDTO){
+        this.setUserName(userDTO.getUserName());
+        this.setAvatar(userDTO.getAvatar());
+        this.setModId(userDTO.getModId());
+        this.setUsedYn(userDTO.getUsedYn());
+        return this;
+    }
 }

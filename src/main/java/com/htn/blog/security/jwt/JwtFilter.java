@@ -25,11 +25,6 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
-//    public JwtFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService){
-//        this.jwtTokenProvider = jwtTokenProvider;
-//        this.userDetailsService = userDetailsService;
-//    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request
                                     , HttpServletResponse response

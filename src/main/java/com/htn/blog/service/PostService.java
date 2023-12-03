@@ -12,5 +12,6 @@ public interface PostService {
     PostVO getPostById(Long id);
     PostVO updatePost(PostDTO postDTO, Long id);
     void deletePostById(Long id);
-    List<PostVO> getPostsByCategory(Long categoryId);
+    PagedResponseVO<PostVO> getPostsByCategory(Long categoryId, Integer pageNo, Integer pageSize, String  sortBy, String sortDir);
+    PagedResponseVO<PostVO> getPostsByTag(Long tagId, Integer pageNo, Integer pageSize, String  sortBy, String sortDir);
 }

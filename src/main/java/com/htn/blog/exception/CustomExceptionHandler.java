@@ -50,4 +50,24 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                                             .data(webRequest.getDescription(false)).build();
         return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    //file storage
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<?> handleFileStorageException(Exception exception, WebRequest webRequest){
+        ResponseDTO responseDTO = ResponseDTO.builder()
+                .status(BlogConstants.FAILED)
+                .message(exception.getMessage())
+                .data(webRequest.getDescription(false)).build();
+        return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //file not found
+    @ExceptionHandler(MyFileNotFoundException.class)
+    public ResponseEntity<?> handleMyFileNotFoundException(Exception exception, WebRequest webRequest){
+        ResponseDTO responseDTO = ResponseDTO.builder()
+                .status(BlogConstants.FAILED)
+                .message(exception.getMessage())
+                .data(webRequest.getDescription(false)).build();
+        return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+    }
 }

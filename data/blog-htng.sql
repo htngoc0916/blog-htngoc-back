@@ -159,3 +159,18 @@ CREATE TABLE `code_detail` (
                                KEY `KF_CODE_GROUP_CODE_DETAIL` (`GROUP_CODE`),
                                CONSTRAINT `KF_CODE_GROUP_CODE_DETAIL` FOREIGN KEY (`GROUP_CODE`) REFERENCES `code_group` (`GROUP_CODE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE images (
+                        ID int AUTO_INCREMENT PRIMARY KEY,
+                        FILE_URL VARCHAR(255) NOT NULL,
+                        FILE_NAME VARCHAR(255) NOT NULL,
+                        FILE_ORIGIN_NAME VARCHAR(100),
+                        FILE_TYPE VARCHAR(15),
+                        FILE_SIZE INT DEFAULT 0,
+                        `USED_YN` varchar(1) DEFAULT 'Y',
+                        `REG_DT` datetime DEFAULT CURRENT_TIMESTAMP,
+                        `REG_ID` varchar(50) DEFAULT NULL,
+                        `MOD_DT` datetime DEFAULT NULL,
+                        `MOD_ID` varchar(50) DEFAULT NULL
+);
