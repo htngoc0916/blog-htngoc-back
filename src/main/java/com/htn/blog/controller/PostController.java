@@ -61,17 +61,40 @@ public class PostController {
         );
     }
 
+    @Operation(summary = "Get post By tag id")
+    @GetMapping("/tag/{id}")
+    public ResponseEntity<?> getPostByTagId(@PathVariable("id") Long tagId,
+            @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
+
+        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByTag(tagId, pageNo, pageSize, sortBy, sortDir);
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .status(BlogConstants.SUCCESS)
+                        .message("Get post with category Id successfully!")
+                        .data(pagedResponseVO)
+                        .build()
+        );
+    }
+
     @Operation(summary = "Get post by category api",
         description = "Get post by category api is used to get all post with category")
     @ApiResponse(responseCode = "200", description = "Http status 200 success")
     @GetMapping("/category/{id}")
-    public ResponseEntity<?> getPostsByCategoryId(@PathVariable("id") Long categoryId){
-        List<PostVO> postVOList = postService.getPostsByCategory(categoryId);
+    public ResponseEntity<?> getPostsByCategoryId(
+            @PathVariable("id") Long categoryId,
+            @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
+        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByCategory(categoryId, pageNo, pageSize, sortBy, sortDir);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
                         .status(BlogConstants.SUCCESS)
-                        .message("Get all post successfully!")
-                        .data(postVOList)
+                        .message("Get post with category Id successfully!")
+                        .data(pagedResponseVO)
                         .build()
         );
     }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TagVO {
+    private Long id;
     private String tagName;
     private String color;
 }

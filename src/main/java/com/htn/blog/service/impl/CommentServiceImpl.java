@@ -29,7 +29,6 @@ public class CommentServiceImpl implements CommentService {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NotFoundException("Post not found with id = " + postId)
         );
-
         Comment comment = modelMapper.map(commentDTO, Comment.class);
         comment.setPost(post);
 
@@ -38,41 +37,28 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> getCommentsByPostId(Long postId) {
-        postRepository.findById(postId).orElseThrow(
-                () -> new NotFoundException("Post not found with id = " + postId)
-        );
-        List<Comment> commentList = commentRepository.findByPostId(postId);
-        return commentList;
+        findPost(postId);
+        return commentRepository.findByPostId(postId);
     }
 
     @Override
     public Comment getCommentById(Long postId, Long commentId){
-        postRepository.findById(postId)
-                .orElseThrow(
-                () -> new NotFoundException("Post not found with id = " + postId)
-        );
-
+        findPost(postId);
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new NotFoundException("Comment not found with id = " + commentId)
         );
-
         if(!comment.getPost().getId().equals(postId)){
             throw new BlogApiException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
         }
-
         return comment;
     }
 
     @Override
     public Comment updateCommentById(Long postId, Long commentId, CommentDTO commentDTO) {
-        postRepository.findById(postId).orElseThrow(
-                () -> new NotFoundException("Post not found with id = " + postId)
-        );
-
+        findPost(postId);
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new NotFoundException("Comment not found with id = " + commentId)
         );
-
         if(!comment.getPost().getId().equals(postId)){
             throw new BlogApiException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
         }
@@ -82,17 +68,19 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(Long postId, Long commentId) {
-        postRepository.findById(postId).orElseThrow(
-                () -> new NotFoundException("Post not found with id = " + postId)
-        );
-
+        findPost(postId);
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new NotFoundException("Comment not found with id = " + commentId)
         );
-
         if(!comment.getPost().getId().equals(postId)){
             throw new BlogApiException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
         }
         commentRepository.delete(comment);
+    }
+
+    private void findPost(Long postId){
+        postRepository.findById(postId).orElseThrow(
+                () -> new NotFoundException("Post not found with id = " + postId)
+        );
     }
 }

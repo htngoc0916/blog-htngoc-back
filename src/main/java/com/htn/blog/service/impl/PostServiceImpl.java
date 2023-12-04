@@ -58,37 +58,13 @@ public class PostServiceImpl implements PostService {
         post = postRepository.save(post);
 
         PostVO resPost = modelMapper.map(post, PostVO.class);
-        Set<TagVO> tagVOSet = post.getTags()
+        Set<TagVO> tagVOS = post.getTags()
                                 .stream()
                                 .map(tag -> modelMapper.map(tag, TagVO.class))
                                 .collect(Collectors.toSet());
-        resPost.setTags(tagVOSet);
+        resPost.setTags(tagVOS);
         return resPost;
     }
-
-    @Override
-    public PagedResponseVO<PostVO> getAllPosts(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
-
-        // create pageable instance
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-        Page<Post> postPage = postRepository.findAll(pageable);
-
-        List<PostVO> postVOList = postPage.getContent().stream().map(post -> modelMapper.map(post, PostVO.class)).toList();
-
-        return PagedResponseVO.<PostVO>builder()
-                .data(postVOList)
-                .pageNo(postPage.getNumber())
-                .pageSize(postPage.getSize())
-                .totalElements(postPage.getTotalElements())
-                .totalPage(postPage.getTotalPages())
-                .last(postPage.isLast())
-                .build();
-    }
-
-
     @Override
     public PostVO getPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
@@ -97,7 +73,6 @@ public class PostServiceImpl implements PostService {
 
         return modelMapper.map(post, PostVO.class);
     }
-
     @Override
     public PostVO updatePost(PostDTO postDTO, Long id) {
         Post post = postRepository.findById(id).orElseThrow(
@@ -111,7 +86,6 @@ public class PostServiceImpl implements PostService {
         post.setCategory(category);
         return modelMapper.map(postRepository.save(post), PostVO.class);
     }
-
     @Override
     public void deletePostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
@@ -119,15 +93,57 @@ public class PostServiceImpl implements PostService {
         );
         postRepository.delete(post);
     }
-
     @Override
-    public List<PostVO> getPostsByCategory(Long categoryId) {
+    public PagedResponseVO<PostVO> getAllPosts(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+        Sort sort = getSortByDir(sortBy, sortDir);
+        // create pageable instance
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<Post> postPage = postRepository.findAll(pageable);
+
+        return getPostPaged(postPage);
+    }
+    @Override
+    public PagedResponseVO<PostVO> getPostsByCategory(Long categoryId, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new NotFoundException("Category not found with category id = " + categoryId)
         );
+        Sort sort = getSortByDir(sortBy, sortDir);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        List<Post> postList = postRepository.findByCategoryId(categoryId);
-        return postList.stream().map(post -> modelMapper.map(post, PostVO.class)).toList();
+        Page<Post> postPage = postRepository.findByCategoryId(categoryId, pageable);
+        return getPostPaged(postPage);
+    }
+    @Override
+    public PagedResponseVO<PostVO> getPostsByTag(Long tagId, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+        Tag tag = tagRepository.findById(tagId).orElseThrow(
+                () -> new NotFoundException("Category not found with tag id = " + tagId)
+        );
+        Set<Tag> tags = new HashSet<>();
+        tags.add(tag);
+        Sort sort = getSortByDir(sortBy, sortDir);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Post> postPage = postRepository.findByTagsIn(tags, pageable);
+        return getPostPaged(postPage);
+    }
+    private Sort getSortByDir( String sortBy, String sortDir){
+        return sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+    }
+    private PagedResponseVO<PostVO> getPostPaged(Page<Post> postPage) {
+        List<PostVO> postList = postPage.getContent().stream()
+                                        .map(_post -> modelMapper.map(_post, PostVO.class))
+                                        .toList();
+
+        return PagedResponseVO.<PostVO>builder()
+                .data(postList)
+                .pageNo(postPage.getNumber())
+                .pageSize(postPage.getSize())
+                .totalElements(postPage.getTotalElements())
+                .totalPage(postPage.getTotalPages())
+                .last(postPage.isLast())
+                .build();
     }
 }
 
