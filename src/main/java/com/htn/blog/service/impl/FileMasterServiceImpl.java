@@ -2,8 +2,8 @@ package com.htn.blog.service.impl;
 
 import com.htn.blog.dto.UploadResponseDTO;
 import com.htn.blog.entity.FileMaster;
-import com.htn.blog.exception.BlogApiException;
 import com.htn.blog.exception.FileStorageException;
+import com.htn.blog.exception.MyFileNotFoundException;
 import com.htn.blog.repository.FileMasterRepository;
 import com.htn.blog.service.FileMasterService;
 import com.htn.blog.utils.FileAbstract;
@@ -15,7 +15,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,7 @@ public class FileMasterServiceImpl extends FileAbstract implements FileMasterSer
     public Resource loadFileAsResource(String fileName) {
         try {
             FileMaster fileMaster = fileMasterRepository.findByFileName(fileName).orElseThrow(
-                    () -> new FileStorageException("File not found with id" + fileName)
+                    () -> new MyFileNotFoundException("File not found with id" + fileName)
             );
 
             return loadFileStore(fileMaster.getFileUrl());
