@@ -2,10 +2,11 @@ package com.htn.blog.utils;
 
 import com.htn.blog.common.BlogConstants;
 import com.htn.blog.dto.UploadResponseDTO;
-import com.htn.blog.exception.FileStorageException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -26,18 +27,16 @@ public abstract class FileAbstract {
     private String folder;
 
     public FileAbstract() {
-        LocalDate currentDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        this.folder = currentDate.format(formatter);
+        this.folder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
     public void createDirectory() throws Exception{
-        Path path = Paths.get(String.join(File.separator, uploadPath, folder));
+        Path path = Paths.get(uploadPath).resolve(folder);
         if (!Files.exists(path)) {
             Files.createDirectories(path);
         }
     }
 
-    public void validationFile(List<MultipartFile> files) throws FileStorageException {
+    public void validationFile(List<MultipartFile> files){
         if (files.size() > BlogConstants.MAXIMUM_IMAGES_PER_PRODUCT) {
             throw new RuntimeException("Can only upload a maximum of 5 files");
         }
@@ -56,9 +55,10 @@ public abstract class FileAbstract {
         String originalFilename = file.getOriginalFilename();
         String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileName = randomUUID.concat(fileExtension);
-        String savePath = String.join(File.separator, uploadPath, folder, fileName);
+        String savePath = String.join(File.separator, folder, fileName);
 
-        Files.copy(file.getInputStream(), Paths.get(savePath));
+        Path path = Paths.get(uploadPath).resolve(savePath);
+        Files.copy(file.getInputStream(), path);
 
         return UploadResponseDTO.builder()
                 .fileUrl(savePath)
@@ -67,5 +67,19 @@ public abstract class FileAbstract {
                 .fileType(fileExtension)
                 .fileSize(file.getSize())
                 .build();
+    }
+
+    public Resource loadFileStore(String fileName) throws IOException{
+        Path file = Paths.get(uploadPath).resolve(fileName);
+        Resource resource = new UrlResource(file.toUri());
+        if(resource.exists() && resource.isReadable()){
+            return resource;
+        }
+        throw new RuntimeException("Could not read the file!");
+    }
+
+    public boolean deleteFileStore(String fileName) throws IOException{
+        Path file = Paths.get(uploadPath).resolve(fileName);
+        return Files.deleteIfExists(file);
     }
 }

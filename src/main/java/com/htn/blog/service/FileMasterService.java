@@ -10,4 +10,5 @@ public interface FileMasterService {
     FileMaster uploadFile(MultipartFile file);
     List<FileMaster> uploadMultipleFiles(MultipartFile[] files);
     Resource loadFileAsResource(String fileName);
+    void deleteFile(String fileName);
 }

@@ -7,6 +7,7 @@ import com.htn.blog.exception.FileStorageException;
 import com.htn.blog.repository.FileMasterRepository;
 import com.htn.blog.service.FileMasterService;
 import com.htn.blog.utils.FileAbstract;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,7 @@ public class FileMasterServiceImpl extends FileAbstract implements FileMasterSer
             List<FileMaster> fileMasterList = handleUploadFiles(List.of(file));
             return fileMasterList.size() > 0 ? fileMasterList.get(0) : null;
         }catch (Exception exception){
-            throw  new FileStorageException(exception.getMessage());
+            throw new FileStorageException(exception.getMessage());
         }
     }
 
@@ -43,14 +45,37 @@ public class FileMasterServiceImpl extends FileAbstract implements FileMasterSer
             log.info("upload multiple files start");
             return handleUploadFiles(List.of(files));
         }catch (Exception exception){
-            throw  new FileStorageException(exception.getMessage());
+            throw new FileStorageException(exception.getMessage());
         }
     }
 
-
     @Override
     public Resource loadFileAsResource(String fileName) {
-        return null;
+        try {
+            FileMaster fileMaster = fileMasterRepository.findByFileName(fileName).orElseThrow(
+                    () -> new FileStorageException("File not found with id" + fileName)
+            );
+
+            return loadFileStore(fileMaster.getFileUrl());
+        }catch (Exception exception){
+            throw new FileStorageException(exception.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteFile(String fileName) {
+        try {
+            FileMaster fileMaster = fileMasterRepository.findByFileName(fileName).orElseThrow(
+                    () -> new FileStorageException("File not found with id" + fileName)
+            );
+            fileMasterRepository.delete(fileMaster);
+            if(!deleteFileStore(fileName)){
+                throw new FileStorageException("File can not delete");
+            }
+        }catch (Exception exception){
+            throw new FileStorageException(exception.getMessage());
+        }
     }
 
     private List<FileMaster> handleUploadFiles(List<MultipartFile> files) throws Exception {
@@ -71,6 +96,4 @@ public class FileMasterServiceImpl extends FileAbstract implements FileMasterSer
         UploadResponseDTO savePath = uploadFileStore(file);
         return modelMapper.map(savePath,FileMaster.class);
     }
-
-
 }
