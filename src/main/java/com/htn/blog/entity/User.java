@@ -15,7 +15,7 @@ import java.util.Set;
 @Entity
 @Builder
 @Table(name = "users")
-public class User {
+public class User extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -28,21 +28,8 @@ public class User {
     private String avatar;
     @Column(name = "PASSWORD", nullable = false)
     private String password;
-    @Column(name = "USED_YN", length = 1)
-    @Builder.Default
-    private String usedYn = "Y";
     @Column(name = "LAST_LOGIN_DT")
     private Date lastLoginDt;
-
-    @Column(name = "REG_DT")
-    @Builder.Default
-    private Date regDt = new Date();
-    @Column(name = "REG_ID")
-    private String regId;
-    @Column(name = "MOD_DT")
-    private Date modDt;
-    @Column(name = "MOD_ID")
-    private String modId;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

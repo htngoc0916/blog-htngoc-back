@@ -46,8 +46,8 @@ public class PostServiceImpl implements PostService {
             if(tag == null){
                 tag = tagRepository.save(Tag.builder()
                         .tagName(tagName)
-                        .regId(postDTO.getRegId())
                         .build());
+                tag.setRegId(postDTO.getRegId());
             }
             tagList.add(tag);
         }

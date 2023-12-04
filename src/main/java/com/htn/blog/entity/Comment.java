@@ -16,7 +16,7 @@ import java.util.Date;
 @Entity
 @Table(name = "comments")
 @Builder
-public class Comment {
+public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -27,19 +27,6 @@ public class Comment {
     private String commentEmail;
     @Column(name = "CONTENT")
     private String content;
-
-    @Builder.Default
-    @Column(name = "USED_YN", length = 1)
-    private String usedYn = "Y";
-    @Builder.Default
-    @Column(name = "REG_DT")
-    private Date regDt = new Date();
-    @Column(name = "REG_ID")
-    private String regId;
-    @Column(name = "MOD_DT")
-    private Date modDt;
-    @Column(name = "MOD_ID")
-    private String modId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "POST_ID", nullable = false)

@@ -16,7 +16,7 @@ import java.util.Set;
 @Entity
 @Table(name = "posts", uniqueConstraints = {@UniqueConstraint(columnNames = "TITLE")})
 @Builder
-public class Post {
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -31,19 +31,6 @@ public class Post {
     private String slug;
     @Column(name = "VIEW_CNT")
     private Long viewCnt;
-
-    @Builder.Default
-    @Column(name = "USED_YN", length = 1)
-    private String usedYn = "Y";
-    @Builder.Default
-    @Column(name = "REG_DT")
-    private Date regDt = new Date();
-    @Column(name = "REG_ID")
-    private String regId;
-    @Column(name = "MOD_DT")
-    private Date modDt;
-    @Column(name = "MOD_ID")
-    private String modId;
 
     @JsonIgnore
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -67,8 +54,8 @@ public class Post {
         this.setTitle(postDTO.getTitle());
         this.setDescription(postDTO.getDescription());
         this.setContent(postDTO.getContent());
-        this.setModId(postDTO.getModId());
         this.setSlug(postDTO.getSlug());
+        this.setModId(postDTO.getModId());
         this.setModDt(new Date());
         this.setUsedYn(postDTO.getUsedYn());
         return this;
