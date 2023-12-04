@@ -64,8 +64,9 @@ public class AuthServiceImpl implements AuthService {
                 .userName(registerDTO.getUserName())
                 .email(registerDTO.getEmail())
                 .password(passwordEncoder.encode(registerDTO.getPassword()))
-                .regId(registerDTO.getRegId())
                 .build();
+        user.setRegId(registerDTO.getRegId());
+
         Set<Role> roles = new HashSet<>();
         Role userRole = roleRepository.findByRoleName(BlogConstants.ROLE_USER).orElseThrow(
                 () -> new RuntimeException("ROLE_USER not exists!")

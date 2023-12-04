@@ -23,6 +23,8 @@ public class Post extends BaseEntity {
     private String title;
     @Column(name = "DESCRIPTION")
     private String description;
+    @Column(name = "THUMBNAIL")
+    private String thumbnail;
     @Column(name = "CONTENT")
     private String content;
     @Column(name = "SLUG")

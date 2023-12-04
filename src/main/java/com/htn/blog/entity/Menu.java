@@ -1,15 +1,13 @@
 package com.htn.blog.entity;
 
 import com.htn.blog.dto.MenuDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 import jakarta.persistence.*;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

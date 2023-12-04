@@ -1,9 +1,16 @@
 package com.htn.blog.service.impl;
 
+import com.htn.blog.dto.UploadResponseDTO;
 import com.htn.blog.entity.FileMaster;
+import com.htn.blog.exception.BlogApiException;
 import com.htn.blog.exception.FileStorageException;
+import com.htn.blog.repository.FileMasterRepository;
 import com.htn.blog.service.FileMasterService;
 import com.htn.blog.utils.FileAbstract;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,54 +18,58 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class FileMasterServiceImpl extends FileAbstract implements FileMasterService{
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private FileMasterRepository fileMasterRepository;
+
     @Override
-    public FileMaster uploadFile(MultipartFile file) {
-        //validation
-        if(file.isEmpty()){
-            throw new FileStorageException("Please select a file!");
-        }
-
-        //upload
+    public FileMaster uploadFile(MultipartFile file){
         try {
-             List<FileMaster> fileMasterList = saveUploadFiles(List.of(file));
-             return fileMasterList.size() > 0 ? fileMasterList.get(0) : null;
-        }catch (Exception ex){
-            throw new FileStorageException(ex.getMessage());
+            log.info("upload file start");
+            List<FileMaster> fileMasterList = handleUploadFiles(List.of(file));
+            return fileMasterList.size() > 0 ? fileMasterList.get(0) : null;
+        }catch (Exception exception){
+            throw  new FileStorageException(exception.getMessage());
         }
     }
 
-    private List<FileMaster> saveUploadFiles(List<MultipartFile> files) throws Exception {
-        List<FileMaster> fileMasterList = new ArrayList<>();
-        createDirectory();
-        for (MultipartFile file : files) {
-            if (validationFile(file)) {
-                fileMasterList.add(save(file));
-            }
+    @Override
+    public List<FileMaster> uploadMultipleFiles(MultipartFile[] files){
+        try {
+            log.info("upload multiple files start");
+            return handleUploadFiles(List.of(files));
+        }catch (Exception exception){
+            throw  new FileStorageException(exception.getMessage());
         }
-        return fileMasterList;
     }
 
-    private FileMaster save(MultipartFile file) throws IOException {
-        String savePath = uploadFileStore(file);
-        FileMaster fileMaster = FileMaster.builder()
-                .fileUrl(savePath)
-                .fileType(file.getContentType())
-                .fileOriginName(file.getOriginalFilename())
-                .fileName("aaa")
-                .fileSize(file.getSize())
-                .usedYn("Y")
-                .build();
+
+    @Override
+    public Resource loadFileAsResource(String fileName) {
         return null;
     }
 
-    private void saveMetaData(MultipartFile file, String originalFilename) throws IOException {
-//        FileUploadMetaData metaData = new FileUploadMetaData();
-//        metaData.setName(file.getOriginalFilename());
-//        metaData.setContentType(file.getContentType());
-//        metaData.setContentSize(file.getSize());
-//        fileUploadMetaData.save(metaData);
+    private List<FileMaster> handleUploadFiles(List<MultipartFile> files) throws Exception {
+        List<FileMaster> fileMasterList = new ArrayList<>();
+        //validation
+        validationFile(files);
+        createDirectory();
+        for (MultipartFile file : files) {
+            fileMasterList.add(saveFile(file));
+        }
+
+        return fileMasterList.stream()
+                .map(fileMaster -> fileMasterRepository.save(fileMaster))
+                .toList();
+    }
+
+    private FileMaster saveFile(MultipartFile file) throws IOException {
+        UploadResponseDTO savePath = uploadFileStore(file);
+        return modelMapper.map(savePath,FileMaster.class);
     }
 
 

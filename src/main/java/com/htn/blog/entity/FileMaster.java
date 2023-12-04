@@ -1,30 +1,22 @@
 package com.htn.blog.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "file_master")
 @Builder
-public class FileMaster {
+public class FileMaster extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Integer id;
-
-    @Column(name = "RELATED_ID")
-    private Integer relatedId;
-
-    @Column(name = "RELATED_CODE")
-    private String relatedCode;
 
     @Column(name = "FILE_URL")
     private String fileUrl;
@@ -40,21 +32,4 @@ public class FileMaster {
 
     @Column(name = "FILE_SIZE")
     private Long fileSize;
-
-    @Column(name = "USED_YN")
-    private String usedYn;
-
-    @Builder.Default
-    @Column(name = "REG_DT")
-    private Date regDt = new Date();
-
-    @Column(name = "REG_ID")
-    private String regId;
-
-    @Builder.Default
-    @Column(name = "MOD_DT")
-    private Date modDt = new Date();
-
-    @Column(name = "MOD_ID")
-    private String modId;
 }
