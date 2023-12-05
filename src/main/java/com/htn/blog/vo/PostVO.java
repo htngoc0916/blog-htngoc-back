@@ -1,4 +1,5 @@
 package com.htn.blog.vo;
+
 import lombok.*;
 
 import java.util.Date;
@@ -26,4 +27,5 @@ public class PostVO {
     private String modId;
     private Long categoryId;
     private Set<TagVO> tags;
+    private List<FileMasterVO> fileMasters;
 }

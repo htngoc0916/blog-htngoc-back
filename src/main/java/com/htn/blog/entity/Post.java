@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.htn.blog.dto.PostDTO;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.util.*;
 
@@ -21,14 +22,14 @@ public class Post extends BaseEntity {
     private Long id;
     @Column(name = "TITLE", nullable = false)
     private String title;
+    @Column(name = "SLUG")
+    private String slug;
     @Column(name = "DESCRIPTION")
     private String description;
     @Column(name = "THUMBNAIL")
     private String thumbnail;
     @Column(name = "CONTENT")
     private String content;
-    @Column(name = "SLUG")
-    private String slug;
     @Column(name = "VIEW_CNT")
     private Long viewCnt;
 
@@ -39,6 +40,11 @@ public class Post extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_ID")
     private Category category;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "RELATED_ID", referencedColumnName = "ID")
+    @Where(clause = "RELATED_CODE = 'POST'")
+    private List<FileMaster> fileMasters = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "post_tag",

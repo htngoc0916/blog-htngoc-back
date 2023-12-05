@@ -47,4 +47,7 @@ public class PostDTO {
 
     @Schema(description = "Blog category id")
     private Set<String> tags;
+
+    @Schema(description = "Blog images id")
+    private Set<String> images;
 }

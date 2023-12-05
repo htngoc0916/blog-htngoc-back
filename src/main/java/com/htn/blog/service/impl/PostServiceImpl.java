@@ -2,16 +2,20 @@ package com.htn.blog.service.impl;
 
 import com.htn.blog.dto.PostDTO;
 import com.htn.blog.entity.Category;
+import com.htn.blog.entity.FileMaster;
 import com.htn.blog.entity.Post;
 import com.htn.blog.entity.Tag;
+import com.htn.blog.exception.MyFileNotFoundException;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.CategoryRepository;
+import com.htn.blog.repository.FileMasterRepository;
 import com.htn.blog.repository.PostRepository;
 import com.htn.blog.repository.TagRepository;
 import com.htn.blog.service.PostService;
+import com.htn.blog.vo.FileMasterVO;
 import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.PostVO;
-import com.htn.blog.vo.TagVO;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,8 +24,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -32,9 +37,12 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private TagRepository tagRepository;
     @Autowired
+    private FileMasterRepository fileMasterRepository;
+    @Autowired
     private ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public PostVO addPost(PostDTO postDTO) {
         Category category =  categoryRepository.findById(postDTO.getCategoryId()).orElseThrow(
                 () -> new NotFoundException("Category not found with categoryId = " + postDTO.getCategoryId())
@@ -56,21 +64,30 @@ public class PostServiceImpl implements PostService {
         post.setCategory(category);
         post.setTags(tagList);
         post = postRepository.save(post);
+        Long postId = post.getId();
+        String regId = post.getRegId();
 
-        PostVO resPost = modelMapper.map(post, PostVO.class);
-        Set<TagVO> tagVOS = post.getTags()
-                                .stream()
-                                .map(tag -> modelMapper.map(tag, TagVO.class))
-                                .collect(Collectors.toSet());
-        resPost.setTags(tagVOS);
-        return resPost;
+        List<FileMasterVO> fileMasterVOSet = postDTO.getImages()
+                .stream()
+                .map(fileName -> {
+                    FileMaster _fileMaster = fileMasterRepository.findByFileName(fileName)
+                            .orElseThrow(() -> new MyFileNotFoundException("File not found with filename = " + fileName));
+                    _fileMaster.setRelatedCode("POST");
+                    _fileMaster.setRelatedId(postId);
+                    _fileMaster.setRegId(regId);
+                    return modelMapper.map(fileMasterRepository.save(_fileMaster), FileMasterVO.class);
+                })
+                .toList();
+        PostVO postVO = modelMapper.map(post, PostVO.class);
+        postVO.setFileMasters(fileMasterVOSet);
+        return postVO;
     }
     @Override
     public PostVO getPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Post not found with id = " + id)
         );
-
+        PostVO postVO =  modelMapper.map(post, PostVO.class);
         return modelMapper.map(post, PostVO.class);
     }
     @Override
