@@ -66,21 +66,10 @@ public class PostServiceImpl implements PostService {
         post.setCategory(category);
         post.setTags(tagList);
         post = postRepository.save(post);
-        Long postId = post.getId();
 
-        fileMasterMapper.updateRelatedFiles(postId, FileRelatedCode.POST.toString());
-//        List<FileMasterVO> fileMasterVOSet = postDTO.getImages()
-//                .stream()
-//                .map(fileName -> {
-//                    FileMaster _fileMaster = fileMasterRepository.findByFileName(fileName)
-//                            .orElseThrow(() -> new MyFileNotFoundException("File not found with filename = " + fileName));
-//                    _fileMaster.setRelatedCode("POST");
-//                    _fileMaster.setRelatedId(postId);
-//                    return modelMapper.map(fileMasterRepository.save(_fileMaster), FileMasterVO.class);
-//                })
-//                .toList();
-
-
+        if(postDTO.getImages() != null && postDTO.getImages().size() > 0){
+            fileMasterMapper.updateRelatedFiles(postDTO.getImages(), post.getId(), FileRelatedCode.POST.toString());
+        }
         return modelMapper.map(post, PostVO.class);
     }
     @Override
@@ -92,6 +81,7 @@ public class PostServiceImpl implements PostService {
         return modelMapper.map(post, PostVO.class);
     }
     @Override
+    @Transactional
     public PostVO updatePost(PostDTO postDTO, Long id) {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Post not found with id = " + id)
@@ -102,13 +92,23 @@ public class PostServiceImpl implements PostService {
 
         post = post.update(postDTO);
         post.setCategory(category);
-        return modelMapper.map(postRepository.save(post), PostVO.class);
+        post = postRepository.save(post);
+
+        //file upload
+        fileMasterMapper.deleteRelatedFiles(post.getId(), FileRelatedCode.POST.toString());
+        if(postDTO.getImages() != null && postDTO.getImages().size() > 0){
+            fileMasterMapper.updateRelatedFiles(postDTO.getImages(), post.getId(), FileRelatedCode.POST.toString());
+        }
+
+        return modelMapper.map(post, PostVO.class);
     }
     @Override
+    @Transactional
     public void deletePostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Post not found with id = " + id)
         );
+        fileMasterMapper.deleteRelatedFiles(post.getId(), FileRelatedCode.POST.toString());
         postRepository.delete(post);
     }
     @Override

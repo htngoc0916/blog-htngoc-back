@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="">
+<mapper namespace="com.htn.blog.mapper.FileMasterMapper">
 
+    <update id="updateRelatedFiles">
+        UPDATE FILE_MASTER
+        SET RELATED_ID = #{relatedId}
+        AND RELATED_CODE = #{relatedCode}
+        WHERE ID IN
+        <foreach collection="fileId" item="fileId" open="(" close=")" separator=",">
+            #{fileId}
+        </foreach>
+    </update>
+
+    <delete id="deleteRelatedFiles">
+        DELETE FROM FILE_MASTER
+        WHERE RELATED_ID = #{relatedId}
+        AND RELATED_CODE = #{relatedCode}
+    </delete>
 </mapper>

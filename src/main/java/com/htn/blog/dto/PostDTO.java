@@ -33,6 +33,9 @@ public class PostDTO {
     @Schema(description = "Blog post slug")
     private String slug;
 
+    @Schema(description = "Blog thumbnail")
+    private String thumbnail;
+
     @Schema(description = "Blog post use flag")
     @Size(max = 1, message = "Post usedYn only allows 1 character")
     private String usedYn;
@@ -50,5 +53,5 @@ public class PostDTO {
     private Set<String> tags;
 
     @Schema(description = "Blog images id")
-    private List<String> images;
+    private List<Long> images;
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface FileMasterMapper {
-    List<FileMaster> getRelatedFiles(List<FileMaster> fileMasters, String relatedCode);
-    void deleteRelatedFile(Long relatedId, String relatedCode);
-    void updateRelatedFiles(Long relatedId, String relatedCode);
+    List<FileMaster> getRelatedFiles(List<Long> fileIds, String relatedCode);
+    void deleteRelatedFiles(Long relatedId, String relatedCode);
+    void updateRelatedFiles(List<Long> fileId, Long relatedId, String relatedCode);
 }

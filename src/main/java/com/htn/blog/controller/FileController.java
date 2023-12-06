@@ -27,7 +27,7 @@ public class FileController {
 
     @Operation(summary = "Upload single file rest api")
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/{userId}/upload-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{userId}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadFile(@PathVariable("userId") Long userId,
                                         @RequestParam("file") MultipartFile file){
         FileMaster resultFile = fileMasterService.uploadFile(userId, file);
@@ -41,7 +41,7 @@ public class FileController {
     }
     @Operation(summary = "Upload multiple files rest api")
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/{userId}/upload-list", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{userId}/uploadMultiple", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadMultipleFiles(@PathVariable("userId") Long userId,
                                                  @RequestParam("file") MultipartFile[] files){
         List<FileMaster> resultFile = fileMasterService.uploadMultipleFiles(userId, files);
@@ -63,6 +63,7 @@ public class FileController {
     }
     @Operation(summary = "delete file rest api")
     @DeleteMapping("/{fileName:.+}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteFile(@PathVariable String fileName) {
         fileMasterService.deleteFile(fileName);
         return ResponseEntity.status(HttpStatus.OK).body(
