@@ -44,6 +44,7 @@ public abstract class FileAbstract {
             throw new RuntimeException("Please select a file");
         }
         for(MultipartFile file : files){
+            if(file.getSize() == 0) continue;
             if(file.getContentType() == null || !file.getContentType().startsWith("image/")) {
                 throw new RuntimeException("Upload file must be image");
             }

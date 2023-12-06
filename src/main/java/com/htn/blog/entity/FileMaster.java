@@ -1,7 +1,11 @@
 package com.htn.blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -19,7 +23,6 @@ public class FileMaster extends BaseEntity{
     private Long relatedId;
     @Column(name = "RELATED_CODE")
     private String relatedCode;
-
     @Column(name = "FILE_URL")
     private String fileUrl;
     @Column(name = "FILE_NAME")

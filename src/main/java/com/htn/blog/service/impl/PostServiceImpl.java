@@ -7,11 +7,13 @@ import com.htn.blog.entity.Post;
 import com.htn.blog.entity.Tag;
 import com.htn.blog.exception.MyFileNotFoundException;
 import com.htn.blog.exception.NotFoundException;
+import com.htn.blog.mapper.FileMasterMapper;
 import com.htn.blog.repository.CategoryRepository;
 import com.htn.blog.repository.FileMasterRepository;
 import com.htn.blog.repository.PostRepository;
 import com.htn.blog.repository.TagRepository;
 import com.htn.blog.service.PostService;
+import com.htn.blog.utils.FileRelatedCode;
 import com.htn.blog.vo.FileMasterVO;
 import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.PostVO;
@@ -37,7 +39,7 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private TagRepository tagRepository;
     @Autowired
-    private FileMasterRepository fileMasterRepository;
+    private FileMasterMapper fileMasterMapper;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -65,22 +67,21 @@ public class PostServiceImpl implements PostService {
         post.setTags(tagList);
         post = postRepository.save(post);
         Long postId = post.getId();
-        String regId = post.getRegId();
 
-        List<FileMasterVO> fileMasterVOSet = postDTO.getImages()
-                .stream()
-                .map(fileName -> {
-                    FileMaster _fileMaster = fileMasterRepository.findByFileName(fileName)
-                            .orElseThrow(() -> new MyFileNotFoundException("File not found with filename = " + fileName));
-                    _fileMaster.setRelatedCode("POST");
-                    _fileMaster.setRelatedId(postId);
-                    _fileMaster.setRegId(regId);
-                    return modelMapper.map(fileMasterRepository.save(_fileMaster), FileMasterVO.class);
-                })
-                .toList();
-        PostVO postVO = modelMapper.map(post, PostVO.class);
-        postVO.setFileMasters(fileMasterVOSet);
-        return postVO;
+        fileMasterMapper.updateRelatedFiles(postId, FileRelatedCode.POST.toString());
+//        List<FileMasterVO> fileMasterVOSet = postDTO.getImages()
+//                .stream()
+//                .map(fileName -> {
+//                    FileMaster _fileMaster = fileMasterRepository.findByFileName(fileName)
+//                            .orElseThrow(() -> new MyFileNotFoundException("File not found with filename = " + fileName));
+//                    _fileMaster.setRelatedCode("POST");
+//                    _fileMaster.setRelatedId(postId);
+//                    return modelMapper.map(fileMasterRepository.save(_fileMaster), FileMasterVO.class);
+//                })
+//                .toList();
+
+
+        return modelMapper.map(post, PostVO.class);
     }
     @Override
     public PostVO getPostById(Long id) {
@@ -130,6 +131,15 @@ public class PostServiceImpl implements PostService {
         Page<Post> postPage = postRepository.findByCategoryId(categoryId, pageable);
         return getPostPaged(postPage);
     }
+
+    @Override
+    public PagedResponseVO<PostVO> getPostsByTitle(String keywords, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+        Sort sort = getSortByDir(sortBy, sortDir);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<Post> postPage = postRepository.findByTitleContaining(keywords, pageable);;
+        return getPostPaged(postPage);
+    }
+
     @Override
     public PagedResponseVO<PostVO> getPostsByTag(Long tagId, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         Tag tag = tagRepository.findById(tagId).orElseThrow(

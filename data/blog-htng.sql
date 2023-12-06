@@ -160,7 +160,6 @@ CREATE TABLE `code_detail` (
                                CONSTRAINT `KF_CODE_GROUP_CODE_DETAIL` FOREIGN KEY (`GROUP_CODE`) REFERENCES `code_group` (`GROUP_CODE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
 CREATE TABLE images (
                         ID int AUTO_INCREMENT PRIMARY KEY,
                         FILE_URL VARCHAR(255) NOT NULL,

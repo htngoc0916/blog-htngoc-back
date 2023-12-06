@@ -4,7 +4,9 @@ import com.htn.blog.dto.UploadResponseDTO;
 import com.htn.blog.entity.FileMaster;
 import com.htn.blog.exception.FileStorageException;
 import com.htn.blog.exception.MyFileNotFoundException;
+import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.FileMasterRepository;
+import com.htn.blog.repository.UserRepository;
 import com.htn.blog.service.FileMasterService;
 import com.htn.blog.utils.FileAbstract;
 import jakarta.transaction.Transactional;
@@ -26,12 +28,14 @@ public class FileMasterServiceImpl extends FileAbstract implements FileMasterSer
     private ModelMapper modelMapper;
     @Autowired
     private FileMasterRepository fileMasterRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
-    public FileMaster uploadFile(MultipartFile file){
+    public FileMaster uploadFile(Long userId, MultipartFile file){
         try {
             log.info("upload file start");
-            List<FileMaster> fileMasterList = handleUploadFiles(List.of(file));
+            List<FileMaster> fileMasterList = handleUploadFiles(userId, List.of(file));
             return fileMasterList.size() > 0 ? fileMasterList.get(0) : null;
         }catch (Exception exception){
             throw new FileStorageException(exception.getMessage());
@@ -39,10 +43,10 @@ public class FileMasterServiceImpl extends FileAbstract implements FileMasterSer
     }
 
     @Override
-    public List<FileMaster> uploadMultipleFiles(MultipartFile[] files){
+    public List<FileMaster> uploadMultipleFiles(Long userId, MultipartFile[] files){
         try {
             log.info("upload multiple files start");
-            return handleUploadFiles(List.of(files));
+            return handleUploadFiles(userId, List.of(files));
         }catch (Exception exception){
             throw new FileStorageException(exception.getMessage());
         }
@@ -77,7 +81,11 @@ public class FileMasterServiceImpl extends FileAbstract implements FileMasterSer
         }
     }
 
-    private List<FileMaster> handleUploadFiles(List<MultipartFile> files) throws Exception {
+    private List<FileMaster> handleUploadFiles(Long userId, List<MultipartFile> files) throws Exception {
+        userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException("user not exists with id = " + userId)
+        );
+
         List<FileMaster> fileMasterList = new ArrayList<>();
         //validation
         validationFile(files);
@@ -85,9 +93,12 @@ public class FileMasterServiceImpl extends FileAbstract implements FileMasterSer
         for (MultipartFile file : files) {
             fileMasterList.add(saveFile(file));
         }
-
+        //data save to DB
         return fileMasterList.stream()
-                .map(fileMaster -> fileMasterRepository.save(fileMaster))
+                .map(fileMaster -> {
+                    fileMaster.setRegId(userId.toString());
+                    return fileMasterRepository.save(fileMaster);
+                })
                 .toList();
     }
 

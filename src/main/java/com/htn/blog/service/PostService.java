@@ -13,5 +13,6 @@ public interface PostService {
     PostVO updatePost(PostDTO postDTO, Long id);
     void deletePostById(Long id);
     PagedResponseVO<PostVO> getPostsByCategory(Long categoryId, Integer pageNo, Integer pageSize, String  sortBy, String sortDir);
+    PagedResponseVO<PostVO> getPostsByTitle(String keywords, Integer pageNo, Integer pageSize, String  sortBy, String sortDir);
     PagedResponseVO<PostVO> getPostsByTag(Long tagId, Integer pageNo, Integer pageSize, String  sortBy, String sortDir);
 }

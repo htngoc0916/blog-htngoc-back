@@ -26,10 +26,10 @@ public class Tag extends BaseEntity {
     @Column(name = "COLOR")
     private String color;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE},
             mappedBy = "tags")
-    @JsonIgnore
     private Set<Post> posts = new HashSet<>();
 
     public Tag update(TagDTO tagDTO){

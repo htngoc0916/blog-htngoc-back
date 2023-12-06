@@ -26,10 +26,11 @@ public class FileController {
     FileMasterService fileMasterService;
 
     @Operation(summary = "Upload single file rest api")
-    @PostMapping(value = "/upload-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file){
-        FileMaster resultFile = fileMasterService.uploadFile(file);
+    @PostMapping(value = "/{userId}/upload-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadFile(@PathVariable("userId") Long userId,
+                                        @RequestParam("file") MultipartFile file){
+        FileMaster resultFile = fileMasterService.uploadFile(userId, file);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .status(BlogConstants.SUCCESS)
@@ -39,10 +40,11 @@ public class FileController {
         );
     }
     @Operation(summary = "Upload multiple files rest api")
-    @PostMapping(value = "/upload-list", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> uploadMultipleFiles(@RequestParam("file") MultipartFile[] files){
-        List<FileMaster> resultFile = fileMasterService.uploadMultipleFiles(files);
+    @PostMapping(value = "/{userId}/upload-list", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadMultipleFiles(@PathVariable("userId") Long userId,
+                                                 @RequestParam("file") MultipartFile[] files){
+        List<FileMaster> resultFile = fileMasterService.uploadMultipleFiles(userId, files);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .status(BlogConstants.SUCCESS)

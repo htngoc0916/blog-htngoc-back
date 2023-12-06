@@ -17,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/posts")
 @Tag(name= "CRUD rest apis for post resource")
@@ -94,6 +92,22 @@ public class PostController {
                 ResponseDTO.builder()
                         .status(BlogConstants.SUCCESS)
                         .message("Get post with category Id successfully!")
+                        .data(pagedResponseVO)
+                        .build()
+        );
+    }
+
+    @GetMapping("/{keywords}")
+    public ResponseEntity<?> searchPostByTitle(@PathVariable("keywords") String keywords,
+                                               @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+                                               @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+                                               @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+                                               @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
+        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByTitle(keywords, pageNo, pageSize, sortBy, sortDir);
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .status(BlogConstants.SUCCESS)
+                        .message("Get posts with title successfully!")
                         .data(pagedResponseVO)
                         .build()
         );
