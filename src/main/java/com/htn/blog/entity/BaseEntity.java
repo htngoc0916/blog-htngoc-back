@@ -32,14 +32,14 @@ public class BaseEntity implements Serializable {
 
     @Column(name = "REG_ID")
     @CreatedBy
-    private String regId;
+    private Long regId;
 
     @Column(name = "MOD_DT")
     private Date modDt;
 
     @LastModifiedBy
     @Column(name = "MOD_ID")
-    private String modId;
+    private Long modId;
 
     @PrePersist
     protected void onCreate(){

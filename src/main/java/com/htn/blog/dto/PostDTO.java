@@ -41,10 +41,10 @@ public class PostDTO {
     private String usedYn;
 
     @Schema(description = "Blog post created user")
-    private String regId;
+    private Long regId;
 
     @Schema(description = "Blog post modify user")
-    private String modId;
+    private Long modId;
 
     @Schema(description = "Blog category id")
     private Long categoryId;

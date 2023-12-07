@@ -34,10 +34,10 @@ public class CommentDTO {
     private String usedYn;
 
     @Schema(description = "Blog post created user")
-    private String regId;
+    private Long regId;
 
     @Schema(description = "Blog post modify user")
-    private String modId;
+    private Long modId;
 
     @Schema(description = "Blog post id")
     private Long postId;

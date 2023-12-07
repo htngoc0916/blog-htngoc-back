@@ -12,6 +12,6 @@ public class TagDTO {
     private String tagName;
     private String color;
     private String usedYn = "Y";
-    private String regId;
-    private String modId;
+    private Long regId;
+    private Long modId;
 }

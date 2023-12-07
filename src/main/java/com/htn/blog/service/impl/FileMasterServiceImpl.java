@@ -96,7 +96,7 @@ public class FileMasterServiceImpl extends FileAbstract implements FileMasterSer
         //data save to DB
         return fileMasterList.stream()
                 .map(fileMaster -> {
-                    fileMaster.setRegId(userId.toString());
+                    fileMaster.setRegId(userId);
                     return fileMasterRepository.save(fileMaster);
                 })
                 .toList();

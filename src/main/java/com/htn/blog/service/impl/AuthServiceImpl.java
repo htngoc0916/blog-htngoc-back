@@ -1,6 +1,6 @@
 package com.htn.blog.service.impl;
 
-import com.htn.blog.common.UserRoles;
+import com.htn.blog.common.RoleConstants;
 import com.htn.blog.dto.LoginDTO;
 import com.htn.blog.dto.RegisterDTO;
 import com.htn.blog.entity.Role;
@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
         user.setRegId(registerDTO.getRegId());
 
         Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findByRoleName(UserRoles.USER_ROLE.toString()).orElseThrow(
+        Role userRole = roleRepository.findByRoleName(RoleConstants.ROLE_USER.toString()).orElseThrow(
                 () -> new RuntimeException("ROLE_USER not exists!")
         );
         roles.add(userRole);

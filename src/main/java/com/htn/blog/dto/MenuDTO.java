@@ -18,6 +18,6 @@ public class MenuDTO {
     private String menuUrl;
 
     private String usedYn;
-    private String regId;
-    private String modId;
+    private Long regId;
+    private Long modId;
 }
