@@ -4,9 +4,9 @@
 
     <update id="updateRelatedFiles">
         UPDATE FILE_MASTER
-        SET RELATED_ID = #{relatedId}
-        AND RELATED_CODE = #{relatedCode}
-        WHERE ID IN
+        SET     RELATED_ID = #{relatedId}
+            ,   RELATED_CODE = #{relatedCode}
+        WHERE   ID IN
         <foreach collection="fileId" item="fileId" open="(" close=")" separator=",">
             #{fileId}
         </foreach>

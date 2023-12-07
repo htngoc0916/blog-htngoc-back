@@ -13,11 +13,6 @@ public class BlogConstants {
     public final static String DEFAULT_SORT_DIRECTION = "asc";
     public static final int MAX_PAGE_SIZE = 30;
 
-
-    //role name
-    public final static String ROLE_USER = "ROLE_USER";
-    public final static String ROLE_ADMIN = "ROLE_ADMIN";
-
     //upload
     public final static int MAXIMUM_IMAGES_PER_PRODUCT = 5;
 }

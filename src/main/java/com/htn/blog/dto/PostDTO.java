@@ -53,5 +53,5 @@ public class PostDTO {
     private Set<String> tags;
 
     @Schema(description = "Blog images id")
-    private List<Long> images;
+    private Set<Long> images;
 }

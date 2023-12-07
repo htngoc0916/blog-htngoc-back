@@ -1,9 +1,14 @@
 package com.htn.blog.service.impl;
 
 import com.htn.blog.dto.UserDTO;
+import com.htn.blog.entity.FileMaster;
+import com.htn.blog.entity.FileRelation;
 import com.htn.blog.entity.User;
+import com.htn.blog.exception.MyFileNotFoundException;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.mapper.FileMasterMapper;
+import com.htn.blog.repository.FileMasterRepository;
+import com.htn.blog.repository.FileRelationRepository;
 import com.htn.blog.repository.UserRepository;
 import com.htn.blog.service.UserService;
 import com.htn.blog.utils.FileRelatedCode;
@@ -12,17 +17,21 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private FileMasterMapper fileMasterMapper;
-    @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private FileRelationRepository fileRelationRepository;
+    @Autowired
+    private FileMasterRepository fileMasterRepository;
 
     @Override
     public List<User> getAllUser(){
@@ -53,10 +62,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("user not found with id = " + userId)
         );
-        fileMasterMapper.deleteRelatedFiles(user.getId(), FileRelatedCode.USER.toString());
-        if(userDTO.getImage() != null){
-            fileMasterMapper.updateRelatedFiles(List.of(userDTO.getImage()), user.getId(), FileRelatedCode.USER.toString());
-        }
+        handleRelationFiles(userDTO.getImage(), userId);
         user = user.update(userDTO);
         return userRepository.save(user);
     }
@@ -67,7 +73,25 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("user not found with id = " + userId)
         );
-        fileMasterMapper.deleteRelatedFiles(user.getId(), FileRelatedCode.USER.toString());
+        fileRelationRepository.deleteAllByRelatedIdAndRelatedCode(userId, FileRelatedCode.USER.toString());
         userRepository.delete(user);
+    }
+
+    private void handleRelationFiles(Long imageId, Long userId) {
+        Set<FileRelation> fileRelations = new HashSet<>();
+        if(imageId != null) {
+            FileMaster fileMaster = fileMasterRepository.findById(imageId).orElseThrow(
+                    () -> new MyFileNotFoundException("Post image not found with imageId = " + imageId)
+            );
+            fileRelations.add(FileRelation.builder()
+                    .fileMaster(fileMaster)
+                    .relatedId(userId)
+                    .relatedCode(FileRelatedCode.USER.toString())
+                    .build());
+        }
+        fileRelationRepository.deleteAllByRelatedIdAndRelatedCode(userId, FileRelatedCode.USER.toString());
+        if(fileRelations.size() > 0){
+            fileRelationRepository.saveAll(fileRelations);
+        }
     }
 }

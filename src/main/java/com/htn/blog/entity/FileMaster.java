@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Setter
@@ -19,10 +18,7 @@ public class FileMaster extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
-    @Column(name = "RELATED_ID")
-    private Long relatedId;
-    @Column(name = "RELATED_CODE")
-    private String relatedCode;
+
     @Column(name = "FILE_URL")
     private String fileUrl;
     @Column(name = "FILE_NAME")
@@ -33,4 +29,8 @@ public class FileMaster extends BaseEntity{
     private String fileType;
     @Column(name = "FILE_SIZE")
     private Long fileSize;
+
+    @JsonIgnore
+    @OneToMany(mappedBy="fileMaster", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<FileRelation> fileRelations;
 }

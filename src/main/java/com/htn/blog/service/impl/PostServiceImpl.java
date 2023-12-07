@@ -1,20 +1,12 @@
 package com.htn.blog.service.impl;
 
 import com.htn.blog.dto.PostDTO;
-import com.htn.blog.entity.Category;
-import com.htn.blog.entity.FileMaster;
-import com.htn.blog.entity.Post;
-import com.htn.blog.entity.Tag;
+import com.htn.blog.entity.*;
 import com.htn.blog.exception.MyFileNotFoundException;
 import com.htn.blog.exception.NotFoundException;
-import com.htn.blog.mapper.FileMasterMapper;
-import com.htn.blog.repository.CategoryRepository;
-import com.htn.blog.repository.FileMasterRepository;
-import com.htn.blog.repository.PostRepository;
-import com.htn.blog.repository.TagRepository;
+import com.htn.blog.repository.*;
 import com.htn.blog.service.PostService;
 import com.htn.blog.utils.FileRelatedCode;
-import com.htn.blog.vo.FileMasterVO;
 import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.PostVO;
 import jakarta.transaction.Transactional;
@@ -37,9 +29,11 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
-    private TagRepository tagRepository;
+    private FileRelationRepository fileRelationRepository;
     @Autowired
-    private FileMasterMapper fileMasterMapper;
+    private FileMasterRepository fileMasterRepository;
+    @Autowired
+    private TagRepository tagRepository;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -50,26 +44,14 @@ public class PostServiceImpl implements PostService {
                 () -> new NotFoundException("Category not found with categoryId = " + postDTO.getCategoryId())
         );
 
-        Set<Tag> tagList = new HashSet<>();
-        for(String tagName: postDTO.getTags()){
-            Tag tag = tagRepository.findByTagName(tagName);
-            if(tag == null){
-                tag = tagRepository.save(Tag.builder()
-                        .tagName(tagName)
-                        .build());
-                tag.setRegId(postDTO.getRegId());
-            }
-            tagList.add(tag);
-        }
-
         Post post = modelMapper.map(postDTO, Post.class);
         post.setCategory(category);
-        post.setTags(tagList);
+        post.setTags(checkTags(postDTO));
         post = postRepository.save(post);
+        Long postId = post.getId();
 
-        if(postDTO.getImages() != null && postDTO.getImages().size() > 0){
-            fileMasterMapper.updateRelatedFiles(postDTO.getImages(), post.getId(), FileRelatedCode.POST.toString());
-        }
+        //handle post images
+        handleRelationFiles(postDTO.getImages(), postId);
         return modelMapper.map(post, PostVO.class);
     }
     @Override
@@ -77,7 +59,6 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Post not found with id = " + id)
         );
-        PostVO postVO =  modelMapper.map(post, PostVO.class);
         return modelMapper.map(post, PostVO.class);
     }
     @Override
@@ -90,25 +71,59 @@ public class PostServiceImpl implements PostService {
                 () -> new NotFoundException("Category not found with id = " + postDTO.getCategoryId())
         );
 
+        //handle post images
+        handleRelationFiles(postDTO.getImages(), post.getId());
+
         post = post.update(postDTO);
         post.setCategory(category);
+        post.setTags(checkTags(postDTO));
         post = postRepository.save(post);
-
-        //file upload
-        fileMasterMapper.deleteRelatedFiles(post.getId(), FileRelatedCode.POST.toString());
-        if(postDTO.getImages() != null && postDTO.getImages().size() > 0){
-            fileMasterMapper.updateRelatedFiles(postDTO.getImages(), post.getId(), FileRelatedCode.POST.toString());
-        }
-
         return modelMapper.map(post, PostVO.class);
     }
+
+    private Set<Tag> checkTags(PostDTO postDTO) {
+        Set<Tag> tags = new HashSet<>();
+        if(postDTO.getTags() != null){
+            for(String tagName: postDTO.getTags()){
+                Tag tag = tagRepository.findByTagName(tagName);
+                if(tag == null){
+                    tag = tagRepository.save(Tag.builder()
+                            .tagName(tagName)
+                            .build());
+                    tag.setRegId(postDTO.getRegId());
+                }
+                tags.add(tag);
+            }
+        }
+        return tags;
+    }
+    private void handleRelationFiles(Set<Long> imagesId, Long postId) {
+        Set<FileRelation> fileRelations = new HashSet<>();
+        if(imagesId != null) {
+            for(Long imageId : imagesId){
+                FileMaster fileMaster = fileMasterRepository.findById(imageId).orElseThrow(
+                        () -> new MyFileNotFoundException("Post image not found with imageId = " + imageId)
+                );
+                fileRelations.add(FileRelation.builder()
+                        .fileMaster(fileMaster)
+                        .relatedId(postId)
+                        .relatedCode(FileRelatedCode.POST.toString())
+                        .build());
+            }
+        }
+        fileRelationRepository.deleteAllByRelatedIdAndRelatedCode(postId, FileRelatedCode.POST.toString());
+        if(fileRelations.size() > 0){
+            fileRelationRepository.saveAll(fileRelations);
+        }
+    }
+
     @Override
     @Transactional
     public void deletePostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Post not found with id = " + id)
         );
-        fileMasterMapper.deleteRelatedFiles(post.getId(), FileRelatedCode.POST.toString());
+        fileRelationRepository.deleteAllByRelatedIdAndRelatedCode(post.getId(), FileRelatedCode.POST.toString());
         postRepository.delete(post);
     }
     @Override
