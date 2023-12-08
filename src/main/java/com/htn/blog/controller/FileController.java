@@ -63,7 +63,7 @@ public class FileController {
     }
 
     @Operation(summary = "View image rest api")
-    @GetMapping("/{fileName:.+}")
+    @GetMapping("/image/{fileName:.+}")
     public ResponseEntity<Resource> viewImage(@PathVariable String fileName) {
         Resource resource = fileMasterService.loadFileAsResource(fileName);
         return ResponseEntity.ok()
