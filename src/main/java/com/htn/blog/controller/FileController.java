@@ -20,14 +20,14 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/files")
+@RequestMapping
 public class FileController {
     @Autowired
     FileMasterService fileMasterService;
 
     @Operation(summary = "Upload single file rest api")
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/{userId}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/api/v1/files/{userId}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadFile(@PathVariable("userId") Long userId,
                                         @RequestParam("file") MultipartFile file){
         FileMaster resultFile = fileMasterService.uploadFile(userId, file);
@@ -41,7 +41,7 @@ public class FileController {
     }
     @Operation(summary = "Upload multiple files rest api")
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/{userId}/uploadMultiple", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/api/v1/files/{userId}/uploadMultiple", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadMultipleFiles(@PathVariable("userId") Long userId,
                                                  @RequestParam("file") MultipartFile[] files){
         List<FileMaster> resultFile = fileMasterService.uploadMultipleFiles(userId, files);
@@ -54,15 +54,26 @@ public class FileController {
         );
     }
     @Operation(summary = "Get download link file rest api")
-    @GetMapping("/download/{fileName:.+}")
+    @GetMapping("/api/v1/files/download/{fileName:.+}")
     public ResponseEntity<?> downloadFile(@PathVariable String fileName) {
         Resource resource = fileMasterService.loadFileAsResource(fileName);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+
+    @Operation(summary = "View image rest api")
+    @GetMapping("/{fileName:.+}")
+    public ResponseEntity<Resource> viewImage(@PathVariable String fileName) {
+        Resource resource = fileMasterService.loadFileAsResource(fileName);
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
     @Operation(summary = "delete file rest api")
-    @DeleteMapping("/{fileName:.+}")
+    @DeleteMapping("/api/v1/files/{fileName:.+}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteFile(@PathVariable String fileName) {
         fileMasterService.deleteFile(fileName);
