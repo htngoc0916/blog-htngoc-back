@@ -12,12 +12,10 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
-import static io.swagger.v3.oas.annotations.enums.SecuritySchemeType.*;
-
 @Configuration
 @SecurityScheme(
         name = "Bear Authentication",
-        type = HTTP,
+        type = SecuritySchemeType.HTTP,
         bearerFormat = "JWT",
         scheme = "bearer"
 )
