@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,17 +25,11 @@ public class CustomUserDetailsService implements UserDetailsService {
                 ()-> new UsernameNotFoundException("User not found with email = " + email)
         );
 
-        updateUserLastLogin(user);
-
         Set<GrantedAuthority> authorities = user.getRoles()
                                                 .stream()
                                                 .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
                                                 .collect(Collectors.toSet());
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
-    }
-    private void updateUserLastLogin(User user){
-        user.setLastLoginDt(new Date());
-        userRepository.save(user);
     }
 }

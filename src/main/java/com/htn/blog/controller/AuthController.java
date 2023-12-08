@@ -27,7 +27,6 @@ public class AuthController {
         AuthResponseDTO authResponseDTO = AuthResponseDTO.builder()
                                                         .accessToken(token)
                                                         .build();
-
         ResponseDTO responseDTO = ResponseDTO.builder()
                                             .status(BlogConstants.SUCCESS)
                                             .message("login successfully")

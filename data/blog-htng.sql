@@ -16,12 +16,14 @@ CREATE TABLE "categories" (
 
 CREATE TABLE "posts" (
                          "ID" int NOT NULL AUTO_INCREMENT,
-                         "TITLE" varchar(100) NOT NULL,
+                         "TITLE" varchar(100) NOT NULL UNIQUE,
                          "SLUG" varchar(150) DEFAULT NULL,
                          "DESCRIPTION" varchar(255) DEFAULT NULL,
                          "CONTENT" text,
                          "VIEW_CNT" int DEFAULT NULL,
                          "CATEGORY_ID" int DEFAULT NULL,
+                         "THUMBNAIL" varchar(255) DEFAULT NULL,
+                         "USER_ID" int DEFAULT NULL,
                          "USED_YN" varchar(1) DEFAULT 'Y',
                          "REG_DT" datetime DEFAULT CURRENT_TIMESTAMP,
                          "REG_ID" int DEFAULT NULL,
