@@ -28,7 +28,6 @@ public class CommentController {
         List<Comment> comments = commentService.getCommentsByPostId(postId);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Created a new comment successfully!")
                         .data(comments)
                         .build()
@@ -41,7 +40,6 @@ public class CommentController {
         Comment comment = commentService.getCommentById(postId, commentId);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Selected comment successfully!")
                         .data(comment)
                         .build()
@@ -54,7 +52,6 @@ public class CommentController {
         Comment comment = commentService.addComment(postId, commentDTO);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Created a new comment successfully!")
                         .data(comment)
                         .build()
@@ -68,7 +65,6 @@ public class CommentController {
         Comment comment = commentService.updateCommentById(postId, commentId, commentDTO);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Updated comment successfully!")
                         .data(comment)
                         .build()
@@ -81,7 +77,6 @@ public class CommentController {
         commentService.deleteComment(postId, commentId);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Deleted comment successfully!")
                         .data("")
                         .build()

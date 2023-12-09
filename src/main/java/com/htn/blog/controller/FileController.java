@@ -33,7 +33,6 @@ public class FileController {
         FileMaster resultFile = fileMasterService.uploadFile(userId, file);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Uploaded a new file successfully!")
                         .data(resultFile)
                         .build()
@@ -47,7 +46,6 @@ public class FileController {
         List<FileMaster> resultFile = fileMasterService.uploadMultipleFiles(userId, files);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Uploaded multiple files successfully!")
                         .data(resultFile)
                         .build()
@@ -79,7 +77,6 @@ public class FileController {
         fileMasterService.deleteFile(fileName);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get download file successfully!")
                         .data("")
                         .build()

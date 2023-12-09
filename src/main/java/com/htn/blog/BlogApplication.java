@@ -14,5 +14,5 @@ public class BlogApplication {
     }
 
     @PostConstruct
-    public void init(){TimeZone.setDefault(TimeZone.getTimeZone("UTC"));}
+    public void init(){TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));}
 }

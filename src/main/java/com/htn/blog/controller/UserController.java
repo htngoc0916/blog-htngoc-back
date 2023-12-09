@@ -28,7 +28,6 @@ public class UserController {
         List<User> users = userService.getAllUser();
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get all user successfully!")
                         .data(users)
                         .build()
@@ -41,7 +40,6 @@ public class UserController {
         User user = userService.getUserInfo(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get user by id successfully!")
                         .data(user)
                         .build()
@@ -52,7 +50,6 @@ public class UserController {
     public ResponseEntity<?> checkEmail(@PathVariable("email") String email){
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get user by id successfully!")
                         .data(userService.existsEmail(email))
                         .build()
@@ -65,7 +62,6 @@ public class UserController {
         User user = userService.addUser(userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get user by id successfully!")
                         .data(user)
                         .build()
@@ -78,7 +74,6 @@ public class UserController {
         User user = userService.updateUser(userId, userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get user by id successfully!")
                         .data(user)
                         .build()
@@ -91,7 +86,6 @@ public class UserController {
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get user by id successfully!")
                         .data("")
                         .build()

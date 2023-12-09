@@ -27,7 +27,6 @@ public class TagController {
         List<Tag> tagList = tagService.getAllTag();
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get all post successfully!")
                         .data(tagList)
                         .build()
@@ -39,7 +38,6 @@ public class TagController {
         Tag tag = tagService.getTagById(tagId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get post by id successfully!")
                         .data(tag)
                         .build()
@@ -52,7 +50,6 @@ public class TagController {
         Tag tag = tagService.addTag(tagDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Created tags successfully!")
                         .data(tag)
                         .build()
@@ -65,7 +62,6 @@ public class TagController {
         Tag tag = tagService.updateTag(tagId, tagDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Updated tag successfully!")
                         .data(tag)
                         .build()
@@ -78,7 +74,6 @@ public class TagController {
         tagService.deleteTag(tagId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Deleted tag successfully!")
                         .data("")
                         .build()

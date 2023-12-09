@@ -43,19 +43,18 @@ public abstract class FileAbstract {
         if (files.isEmpty()){
             throw new RuntimeException("Please select a file");
         }
-        for(MultipartFile file : files){
-            if(file.getSize() == 0) continue;
-            if(file.getContentType() == null || !file.getContentType().startsWith("image/")) {
-                throw new RuntimeException("Upload file must be image");
-            }
-        }
+//        for(MultipartFile file : files){
+//            if(file.getSize() == 0) continue;
+//            if(file.getContentType() == null || !file.getContentType().startsWith("image/")) {
+//                throw new RuntimeException("Upload file must be image");
+//            }
+//        }
     }
 
     public UploadResponseDTO uploadFileStore(MultipartFile file) throws IOException {
-        String randomUUID = UUID.randomUUID().toString();
         String originalFilename = file.getOriginalFilename();
         String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String fileName = randomUUID.concat(fileExtension);
+        String fileName = BlogUtils.generateFileName().concat(fileExtension);
         String savePath = String.join(File.separator, folder, fileName);
 
         Path path = Paths.get(uploadPath).resolve(savePath);

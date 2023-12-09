@@ -1,5 +1,6 @@
 package com.htn.blog.dto;
 
+import com.htn.blog.common.BlogConstants;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,8 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class ResponseDTO {
-    private String status;
+    @Builder.Default
+    private String status = BlogConstants.SUCCESS;
     @Builder.Default
     private Date date = new Date();
     private String message;

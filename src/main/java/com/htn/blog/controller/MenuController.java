@@ -26,7 +26,6 @@ public class MenuController {
         List<Menu> menus = menuService.getAllMenus();
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Search all category successfully!")
                         .data(menus)
                         .build()
@@ -38,7 +37,6 @@ public class MenuController {
         Menu menu = menuService.getMenu(menuId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Search category successfully!")
                         .data(menu)
                         .build()
@@ -51,7 +49,6 @@ public class MenuController {
         Menu menu = menuService.addMenu(menuDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Created a menu successfully!")
                         .data(menu)
                         .build()
@@ -64,7 +61,6 @@ public class MenuController {
         Menu menu = menuService.updateMenu(menuId, menuDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Updated menu successfully!")
                         .data(menu)
                         .build()
@@ -77,7 +73,6 @@ public class MenuController {
         menuService.deleteMenu(menuId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Deleted a menu successfully!")
                         .data("")
                         .build()

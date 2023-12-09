@@ -2,6 +2,7 @@ package com.htn.blog.exception;
 
 import com.htn.blog.common.BlogConstants;
 import com.htn.blog.dto.ResponseDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -12,10 +13,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.lang.module.ResolutionException;
 
+@Slf4j
 @ControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ResolutionException.class)
     public ResponseEntity<?> handleResourceNotFoundException(NotFoundException exception, WebRequest webRequest){
+        log.error(exception.getMessage());
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .status(BlogConstants.FAILED)
                 .message(exception.getMessage())
@@ -25,6 +28,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BlogApiException.class)
     public ResponseEntity<?> handleBlogApiException(BlogApiException exception, WebRequest webRequest){
+        log.error(exception.getMessage());
         ResponseDTO responseDTO = ResponseDTO.builder()
                                             .status(BlogConstants.FAILED)
                                             .message(exception.getMessage())
@@ -34,6 +38,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException exception, WebRequest webRequest){
+        log.error(exception.getMessage());
         ResponseDTO responseDTO = ResponseDTO.builder()
                                             .status(BlogConstants.FAILED)
                                             .message(exception.getMessage())
@@ -44,6 +49,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     //global exception
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception exception, WebRequest webRequest){
+        log.error(exception.getMessage());
         ResponseDTO responseDTO = ResponseDTO.builder()
                                             .status(BlogConstants.FAILED)
                                             .message(exception.getMessage())
@@ -54,6 +60,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     //file storage
     @ExceptionHandler(FileStorageException.class)
     public ResponseEntity<?> handleFileStorageException(Exception exception, WebRequest webRequest){
+        log.error(exception.getMessage());
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .status(BlogConstants.FAILED)
                 .message(exception.getMessage())
@@ -64,6 +71,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     //file not found
     @ExceptionHandler(MyFileNotFoundException.class)
     public ResponseEntity<?> handleMyFileNotFoundException(Exception exception, WebRequest webRequest){
+        log.error(exception.getMessage());
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .status(BlogConstants.FAILED)
                 .message(exception.getMessage())

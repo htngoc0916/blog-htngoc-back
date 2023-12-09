@@ -37,7 +37,6 @@ public class PostController {
         PagedResponseVO<PostVO> pagedResponseVO = postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get all post successfully!")
                         .data(pagedResponseVO)
                         .build()
@@ -52,7 +51,6 @@ public class PostController {
         PostVO postVO = postService.getPostById(id);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get all post successfully!")
                         .data(postVO)
                         .build()
@@ -70,7 +68,6 @@ public class PostController {
         PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByTag(tagId, pageNo, pageSize, sortBy, sortDir);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get post with category Id successfully!")
                         .data(pagedResponseVO)
                         .build()
@@ -90,7 +87,6 @@ public class PostController {
         PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByCategory(categoryId, pageNo, pageSize, sortBy, sortDir);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get post with category Id successfully!")
                         .data(pagedResponseVO)
                         .build()
@@ -106,7 +102,6 @@ public class PostController {
         PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByTitle(keywords, pageNo, pageSize, sortBy, sortDir);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Get posts with title successfully!")
                         .data(pagedResponseVO)
                         .build()
@@ -123,7 +118,6 @@ public class PostController {
         PostVO postVO = postService.addPost(postDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("Created a post successfully!")
                         .data(postVO)
                         .build()
@@ -140,7 +134,6 @@ public class PostController {
         PostVO postVO = postService.updatePost(postDTO, id);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                .status(BlogConstants.SUCCESS)
                 .message("Get all post successfully!")
                 .data(postVO)
                 .build()
@@ -157,7 +150,6 @@ public class PostController {
         postService.deletePostById(id);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .status(BlogConstants.SUCCESS)
                         .message("deleted post successfully!")
                         .data("")
                         .build()

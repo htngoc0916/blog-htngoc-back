@@ -28,7 +28,6 @@ public class AuthController {
                                                         .accessToken(token)
                                                         .build();
         ResponseDTO responseDTO = ResponseDTO.builder()
-                                            .status(BlogConstants.SUCCESS)
                                             .message("login successfully")
                                             .data(authResponseDTO)
                                             .build();
@@ -39,7 +38,6 @@ public class AuthController {
     @PostMapping(value = "/register")
     public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO){
         ResponseDTO responseDTO = ResponseDTO.builder()
-                .status(BlogConstants.SUCCESS)
                 .message("register successfully")
                 .data(authService.register(registerDTO))
                 .build();
