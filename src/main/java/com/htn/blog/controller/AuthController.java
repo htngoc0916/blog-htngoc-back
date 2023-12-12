@@ -1,10 +1,10 @@
 package com.htn.blog.controller;
 
-import com.htn.blog.common.BlogConstants;
 import com.htn.blog.dto.AuthResponseDTO;
 import com.htn.blog.dto.LoginDTO;
 import com.htn.blog.dto.RegisterDTO;
 import com.htn.blog.dto.ResponseDTO;
+import com.htn.blog.entity.User;
 import com.htn.blog.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:3100")
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -37,9 +38,10 @@ public class AuthController {
     // Build Register REST API
     @PostMapping(value = "/register")
     public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO){
+        User user = authService.register(registerDTO);
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .message("register successfully")
-                .data(authService.register(registerDTO))
+                .data(user)
                 .build();
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }

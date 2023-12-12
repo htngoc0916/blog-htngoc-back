@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@CrossOrigin(origins = "http://localhost:3100")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -41,6 +42,18 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message("Get user by id successfully!")
+                        .data(user)
+                        .build()
+        );
+    }
+    @Operation(summary = "Get user with email rest api")
+    @GetMapping("/email/{email}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<?> getUserByEmail(@PathVariable("email") String email){
+        User user = userService.getUserByEmail(email);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDTO.builder()
+                        .message("Get user by email successfully!")
                         .data(user)
                         .build()
         );

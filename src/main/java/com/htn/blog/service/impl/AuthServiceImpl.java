@@ -76,8 +76,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public String register(RegisterDTO registerDTO) {
-
+    public User register(RegisterDTO registerDTO) {
         //check for email exists in database
         if(userRepository.existsByEmail(registerDTO.getEmail())){
             throw new BlogApiException(HttpStatus.BAD_REQUEST, "Email is already exists!");
@@ -97,7 +96,6 @@ public class AuthServiceImpl implements AuthService {
         roles.add(userRole);
         user.setRoles(roles);
 
-        userRepository.save(user);
-        return "User registered successfully!.";
+        return userRepository.save(user);
     }
 }
