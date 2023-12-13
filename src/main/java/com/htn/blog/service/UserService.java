@@ -8,6 +8,7 @@ import java.util.List;
 public interface UserService {
     List<User> getAllUser();
     User getUserInfo(Long id);
+    User getUserByEmail(String email);
     boolean existsEmail(String email);
     User addUser(UserDTO userDTO);
     User updateUser(Long userId, UserDTO userDTO);

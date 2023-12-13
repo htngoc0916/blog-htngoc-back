@@ -44,18 +44,21 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException("user not found with id" + id)
         );
     }
-
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new NotFoundException("user not found with email = " + email)
+        );
+    }
     @Override
     public boolean existsEmail(String email) {
         return userRepository.existsByEmail(email);
     }
-
     @Override
     public User addUser(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
         return userRepository.save(user);
     }
-
     @Override
     @Transactional
     public User updateUser(Long userId, UserDTO userDTO) {

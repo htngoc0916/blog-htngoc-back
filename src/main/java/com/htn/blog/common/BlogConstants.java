@@ -15,4 +15,7 @@ public class BlogConstants {
 
     //upload
     public final static int MAXIMUM_IMAGES_PER_PRODUCT = 5;
+
+    //token
+    public final static int MAX_AUTH_TOKEN = 3;
 }
