@@ -1,6 +1,9 @@
 package com.htn.blog.security.jwt;
 
 import com.htn.blog.exception.BlogApiException;
+import com.htn.blog.security.custom.CustomUserDetailsServiceImpl;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -14,6 +17,8 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class JwtTokenProvider {
     @Value("${blog.jwt-secret}")
     private String jwtSecret;
@@ -21,18 +26,34 @@ public class JwtTokenProvider {
     private long jwtExpirationDate;
 
     //generate JWT token
-    public String generateToken(Authentication authentication){
-        String username = authentication.getName();
+//    public String generateToken(Authentication authentication){
+//        String username = authentication.getName();
+//        Date curentDate = new Date();
+//        Date expireDate = new Date(curentDate.getTime() + jwtExpirationDate);
+//
+//        //tao ra token
+//        return Jwts.builder()
+//                    .setSubject(username)
+//                    .setIssuedAt(new Date())
+//                    .setExpiration(expireDate)
+//                    .signWith(key())
+//                    .compact();
+//    }
+
+    public String generateJwtToken(CustomUserDetailsServiceImpl userDetailsImpl){
+        return generateTokenFromUsername(userDetailsImpl.getEmail());
+    }
+
+    public String generateTokenFromUsername(String username) {
         Date curentDate = new Date();
         Date expireDate = new Date(curentDate.getTime() + jwtExpirationDate);
-
         //tao ra token
         return Jwts.builder()
-                    .setSubject(username)
-                    .setIssuedAt(new Date())
-                    .setExpiration(expireDate)
-                    .signWith(key())
-                    .compact();
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(expireDate)
+                .signWith(key())
+                .compact();
     }
 
     // token key
@@ -57,13 +78,17 @@ public class JwtTokenProvider {
             Jwts.parserBuilder().setSigningKey(key()).build().parse(token);
             return true;
         }catch (MalformedJwtException ex){
-            throw new BlogApiException(HttpStatus.BAD_REQUEST, "Invalid JWT token");
+            log.error("Invalid JWT token: {}", ex.getMessage());
+            throw new BlogApiException("Invalid JWT token");
         }catch (ExpiredJwtException ex){
-            throw new BlogApiException(HttpStatus.BAD_REQUEST, "Expired JWT token");
+            log.error("Expired JWT token: {}", ex.getMessage());
+            throw new BlogApiException("Expired JWT token");
         }catch (UnsupportedJwtException ex) {
-            throw new BlogApiException(HttpStatus.BAD_REQUEST, "Unsupported JWT token");
+            log.error("Unsupported JWT token: {}", ex.getMessage());
+            throw new BlogApiException("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
-            throw new BlogApiException(HttpStatus.BAD_REQUEST, "JWT claims string is empty");
+            log.error("JWT claims string is empty: {}", ex.getMessage());
+            throw new BlogApiException("JWT claims string is empty");
         }
     }
 }

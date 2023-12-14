@@ -9,6 +9,7 @@ import com.htn.blog.exception.BlogApiException;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.RoleRepository;
 import com.htn.blog.repository.UserRepository;
+import com.htn.blog.security.custom.CustomUserDetailsServiceImpl;
 import com.htn.blog.security.jwt.JwtTokenProvider;
 import com.htn.blog.service.AuthService;
 import jakarta.transaction.Transactional;
@@ -16,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,16 +50,11 @@ public class AuthServiceImpl implements AuthService {
     public String login(LoginDTO loginDTO) {
         Authentication authentication = authenticate(loginDTO.getEmail(), loginDTO.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-//        updateLastLogin(loginDTO.getEmail());
-        return jwtTokenProvider.generateToken(authentication);
-    }
 
-    private void updateLastLogin(String email){
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new NotFoundException("user not found with email = " + email)
-        );
-        user.setLastLoginDt(new Date());
-        userRepository.save(user);
+        CustomUserDetailsServiceImpl userDetails = (CustomUserDetailsServiceImpl) authentication.getPrincipal();
+        return jwtTokenProvider.generateJwtToken(userDetails);
+
+//        return jwtTokenProvider.generateToken(authentication);
     }
 
     private Authentication authenticate(String userEmail, String password) {
@@ -69,17 +64,16 @@ public class AuthServiceImpl implements AuthService {
         }
         catch(BadCredentialsException ex) {
             log.error("Invalid email or password");
-            throw new BlogApiException(HttpStatus.BAD_REQUEST, "Invalid email or password");
+            throw new BlogApiException("Invalid email or password");
         }
     }
-
 
     @Override
     @Transactional
     public User register(RegisterDTO registerDTO) {
         //check for email exists in database
         if(userRepository.existsByEmail(registerDTO.getEmail())){
-            throw new BlogApiException(HttpStatus.BAD_REQUEST, "Email is already exists!");
+            throw new BlogApiException("Email is already exists!");
         }
 
         User user = User.builder()

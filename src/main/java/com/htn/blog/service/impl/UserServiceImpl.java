@@ -50,12 +50,6 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException("user not found with email = " + email)
         );
     }
-    @Override
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(
-                () -> new NotFoundException("user not found with email = " + email)
-        );
-    }
 
     @Override
     public boolean existsEmail(String email) {

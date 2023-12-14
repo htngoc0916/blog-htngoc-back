@@ -1,10 +1,7 @@
 package com.htn.blog.controller;
 
 import com.htn.blog.common.BlogConstants;
-import com.htn.blog.dto.AuthResponseDTO;
-import com.htn.blog.dto.LoginDTO;
-import com.htn.blog.dto.RegisterDTO;
-import com.htn.blog.dto.ResponseDTO;
+import com.htn.blog.dto.*;
 import com.htn.blog.entity.Token;
 import com.htn.blog.entity.User;
 import com.htn.blog.service.AuthService;
@@ -15,6 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.xml.crypto.Data;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -34,12 +36,11 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO, HttpServletRequest request){
         String token = authService.login(loginDTO);
         String loginDevice = getLoginDevice(request.getHeader("User-Agent"));
-        AuthResponseDTO result = tokenService.addTokenToLogin(token, loginDevice);
-        ResponseDTO responseDTO = ResponseDTO.builder()
+        Token resultToken = tokenService.addTokenToLogin(token, loginDevice);
+        return ResponseEntity.ok(ResponseDTO.builder()
                                             .message("login successfully")
-                                            .data(result)
-                                            .build();
-        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+                                            .data(mappingToAuthResponse(resultToken))
+                                            .build());
     }
 
     private String getLoginDevice(String header) {
@@ -50,16 +51,30 @@ public class AuthController {
     @PostMapping(value = "/register")
     public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO){
         ResponseDTO responseDTO = ResponseDTO.builder()
-                .message("register successfully")
-                .data(authService.register(registerDTO))
-                .build();
+                                            .message("register successfully ")
+                                            .data(authService.register(registerDTO))
+                                            .build();
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/refresh-token")
-    public ResponseEntity<?> refreshToken(){
-
-        return null;
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO){
+        Token resultToken = tokenService.refreshToken(refreshTokenDTO.getRefreshToken());
+        return ResponseEntity.ok(ResponseDTO.builder()
+                                            .message("Refresh token successfully")
+                                            .data(mappingToAuthResponse(resultToken))
+                                            .build());
     }
 
+    private AuthResponseDTO mappingToAuthResponse(Token resultToken){
+        return AuthResponseDTO.builder()
+                .accessToken(resultToken.getToken())
+                .refreshToken(resultToken.getRefreshToken())
+                .id(resultToken.getUser().getId())
+                .userName(resultToken.getUser().getUserName())
+                .email(resultToken.getUser().getEmail())
+                .avatar(resultToken.getUser().getAvatar())
+                .roles(resultToken.getUser().getRoles().stream().map(role -> role.getRoleName()).collect(Collectors.toSet()))
+                .build();
+    }
 }

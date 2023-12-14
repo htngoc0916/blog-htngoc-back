@@ -33,7 +33,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                                             .status(BlogConstants.FAILED)
                                             .message(exception.getMessage())
                                             .data(webRequest.getDescription(false)).build();
-        return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
