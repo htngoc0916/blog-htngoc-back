@@ -18,6 +18,7 @@ public class PostVO {
     private String description;
     private String content;
     private String slug;
+    private String thumbnail;
     private Integer viewCnt = 0;
 
     private String usedYn = "Y";
@@ -27,4 +28,5 @@ public class PostVO {
     private String modId;
     private Long categoryId;
     private Set<TagVO> tags;
+    private UserVO user;
 }

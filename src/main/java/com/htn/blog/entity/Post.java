@@ -37,12 +37,6 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments = new HashSet<>();
 
-//    @JsonIgnore
-//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "RELATED_ID", referencedColumnName = "ID")
-//    @Where(clause = "RELATED_CODE = 'POST'")
-//    private Set<FileRelation> fileRelations = new HashSet<>();
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_ID")
     private Category category;
