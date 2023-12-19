@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/posts")
 @Tag(name= "CRUD rest apis for post resource")
+@CrossOrigin(origins = "http://localhost:3100")
 public class PostController {
     @Autowired
     private PostService postService;

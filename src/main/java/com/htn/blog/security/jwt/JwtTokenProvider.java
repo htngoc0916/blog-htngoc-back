@@ -14,6 +14,8 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Component
@@ -25,21 +27,6 @@ public class JwtTokenProvider {
     @Value("${blog.jwt-expiration-milliseconds}")
     private long jwtExpirationDate;
 
-    //generate JWT token
-//    public String generateToken(Authentication authentication){
-//        String username = authentication.getName();
-//        Date curentDate = new Date();
-//        Date expireDate = new Date(curentDate.getTime() + jwtExpirationDate);
-//
-//        //tao ra token
-//        return Jwts.builder()
-//                    .setSubject(username)
-//                    .setIssuedAt(new Date())
-//                    .setExpiration(expireDate)
-//                    .signWith(key())
-//                    .compact();
-//    }
-
     public String generateJwtToken(CustomUserDetailsServiceImpl userDetailsImpl){
         return generateTokenFromUsername(userDetailsImpl.getEmail());
     }
@@ -50,7 +37,7 @@ public class JwtTokenProvider {
         //tao ra token
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(new Date())
+                .setIssuedAt(curentDate)
                 .setExpiration(expireDate)
                 .signWith(key())
                 .compact();

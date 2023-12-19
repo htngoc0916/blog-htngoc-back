@@ -108,6 +108,7 @@ CREATE TABLE "menu" (
                         "PARENT_ID" int DEFAULT NULL,
                         "MENU_ORD" int DEFAULT NULL,
                         "MENU_URL" varchar(100) DEFAULT NULL,
+                        "MENU_ICON" varchar(40) DEFAULT NULL,
                         "USED_YN" varchar(1) DEFAULT 'Y',
                         "REG_DT" datetime DEFAULT CURRENT_TIMESTAMP,
                         "REG_ID" int DEFAULT NULL,

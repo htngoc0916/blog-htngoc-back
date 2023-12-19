@@ -1,9 +1,10 @@
 package com.htn.blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "tokens")
@@ -27,10 +28,12 @@ public class Token {
     private String tokenType;
 
     @Column(name = "EXPIRATION_DATE")
-    private LocalDateTime expirationDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private Date expirationDate;
 
     @Column(name = "REFRESH_EXPIRATION_DATE")
-    private LocalDateTime refreshExpirationDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private Date refreshExpirationDate;
 
     @Column(name = "MOBILE_PC", length = 1)
     private String mobilePc;

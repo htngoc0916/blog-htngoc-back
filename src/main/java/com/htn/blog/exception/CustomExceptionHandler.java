@@ -78,4 +78,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                 .data(webRequest.getDescription(false)).build();
         return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(TokenRefreshException.class)
+    public ResponseEntity<?> handleTokenRefreshException(Exception exception, WebRequest webRequest){
+        log.error(exception.getMessage());
+        ResponseDTO responseDTO = ResponseDTO.builder()
+                .status(BlogConstants.FORBIDDEN)
+                .message(exception.getMessage())
+                .data(webRequest.getDescription(false)).build();
+        return new ResponseEntity<>(responseDTO, HttpStatus.FORBIDDEN);
+    }
 }

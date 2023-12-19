@@ -3,8 +3,8 @@ package com.htn.blog.service.impl;
 import com.htn.blog.common.BlogConstants;
 import com.htn.blog.entity.Token;
 import com.htn.blog.entity.User;
-import com.htn.blog.exception.BlogApiException;
 import com.htn.blog.exception.NotFoundException;
+import com.htn.blog.exception.TokenRefreshException;
 import com.htn.blog.repository.TokenRepository;
 import com.htn.blog.repository.UserRepository;
 import com.htn.blog.security.custom.CustomUserDetailsServiceImpl;
@@ -19,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -61,8 +60,9 @@ public class TokenServiceImpl implements TokenService {
             tokenRepository.delete(tokenToDelete);
         }
 
-        LocalDateTime expirationDateTime = LocalDateTime.now().plusSeconds(expiration);
-        LocalDateTime refreshExpirationDateTime = LocalDateTime.now().plusSeconds(refreshExpiration);
+        Date curentDate = new Date();
+        Date expirationDateTime = new Date(curentDate.getTime() + expiration);
+        Date refreshExpirationDateTime = new Date(curentDate.getTime() + refreshExpiration);
 
         //update last login
         user.setLastLoginDt(new Date());
@@ -82,21 +82,22 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public Token refreshToken(String refreshToken) {
         Token token = tokenRepository.findByRefreshToken(refreshToken).orElseThrow(
-                () -> new NotFoundException("Refresh token does not exist!")
+                () -> new TokenRefreshException(refreshToken, "Refresh token does not exist!")
         );
 
-        if(token.getRefreshExpirationDate().compareTo(LocalDateTime.now()) < 0){
+        if(token.getRefreshExpirationDate().compareTo(new Date()) < 0){
             tokenRepository.delete(token);
-            throw new BlogApiException("Refresh token was expired. Please make a new login request");
+            throw new TokenRefreshException(refreshToken, "Refresh token was expired. Please make a new login request");
         }
 
         String newToken = jwtTokenProvider.generateTokenFromUsername(token.getUser().getEmail());
-        LocalDateTime expirationDateTime = LocalDateTime.now().plusSeconds(expiration);
-        LocalDateTime refreshExpirationDateTime = LocalDateTime.now().plusSeconds(refreshExpiration);
+        Date curentDate = new Date();
+        Date expirationDateTime = new Date(curentDate.getTime() + expiration);
+        Date refreshExpirationDateTime = new Date(curentDate.getTime() + refreshExpiration);
 
         token.setToken(newToken);
         token.setExpirationDate(expirationDateTime);
-        token.setRefreshToken(UUID.randomUUID().toString());
+        token.setRefreshToken(refreshToken);
         token.setRefreshExpirationDate(refreshExpirationDateTime);
 
         return token;

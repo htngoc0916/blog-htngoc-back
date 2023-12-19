@@ -1,5 +1,6 @@
 package com.htn.blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -27,6 +28,8 @@ public class BaseEntity implements Serializable {
 
     @Column(name = "USED_YN", length = 1)
     private String usedYn;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @Column(name = "REG_DT")
     private Date regDt;
 
@@ -34,6 +37,7 @@ public class BaseEntity implements Serializable {
     @CreatedBy
     private Long regId;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @Column(name = "MOD_DT")
     private Date modDt;
 

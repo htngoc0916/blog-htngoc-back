@@ -5,6 +5,7 @@ public class BlogConstants {
     //api code
     public final static String SUCCESS = "SUCCESS";
     public final static String FAILED = "FAILED";
+    public final static String FORBIDDEN = "FORBIDDEN";
 
     //page setting
     public final static String DEFAULT_PAGE_NUMBER = "0";
