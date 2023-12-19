@@ -37,6 +37,11 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    public List<Menu> getMenuByCode(String menuCode) {
+        return menuRepository.findByMenuCodeAndUsedYnOrderByMenuOrdAsc(menuCode, "Y");
+    }
+
+    @Override
     public Menu updateMenu(Long menuId, MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuId).orElseThrow(
                 () -> new NotFoundException("Menu not found width id = " + menuId)

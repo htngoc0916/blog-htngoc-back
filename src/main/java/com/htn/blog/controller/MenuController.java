@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/menus")
+@CrossOrigin(origins = "http://localhost:3100")
 public class MenuController {
     @Autowired
     private MenuService menuService;
@@ -26,7 +27,7 @@ public class MenuController {
         List<Menu> menus = menuService.getAllMenus();
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Search all category successfully!")
+                        .message("Search all menus successfully!")
                         .data(menus)
                         .build()
         );
@@ -37,11 +38,24 @@ public class MenuController {
         Menu menu = menuService.getMenu(menuId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Search category successfully!")
+                        .message("Search menu successfully!")
                         .data(menu)
                         .build()
         );
     }
+
+    @Operation(summary = "Get menu by menuId rest api")
+    @GetMapping("/menuCode/{code}")
+    public ResponseEntity<?> getMenuByCode(@PathVariable("code") String menuCode){
+        List<Menu> menu = menuService.getMenuByCode(menuCode);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDTO.builder()
+                        .message("Search menus successfully!")
+                        .data(menu)
+                        .build()
+        );
+    }
+
     @Operation(summary = "Add new a menu rest api")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")

@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface MenuService {
     Menu getMenu(Long menuId);
     List<Menu> getAllMenus();
+    List<Menu> getMenuByCode(String menuCode);
     Menu addMenu(MenuDTO menuDTO);
     Menu updateMenu(Long menuId, MenuDTO menuDTO);
     void deleteMenu(Long menuId);

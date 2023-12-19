@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/cloudinary")
+@CrossOrigin(origins = "http://localhost:3100")
 public class CloudinaryController {
     @Autowired
     private CloudinaryService cloudinaryService;

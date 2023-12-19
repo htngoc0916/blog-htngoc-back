@@ -28,6 +28,8 @@ public class Menu extends BaseEntity {
     private Integer menuOrd;
     @Column(name = "MENU_URL")
     private String menuUrl;
+    @Column(name = "MENU_ICON")
+    private String menuIcon;
 
     public Menu update(MenuDTO menuDTO){
         this.setMenuName(menuDTO.getMenuName());
