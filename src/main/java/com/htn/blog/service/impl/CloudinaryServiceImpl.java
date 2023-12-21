@@ -9,6 +9,7 @@ import com.htn.blog.repository.FileMasterRepository;
 import com.htn.blog.service.CloudinaryService;
 import com.htn.blog.utils.BlogUtils;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,21 +28,19 @@ public class CloudinaryServiceImpl implements CloudinaryService {
     @Autowired
     FileMasterRepository fileMasterRepository;
     private final String cloudinaryFolder;
-    private final String cloudinaryUrl;
     private final Cloudinary cloudinary;
 
     public CloudinaryServiceImpl(@Value("${cloudinary.cloud_name}") String cloudName,
                                  @Value("${cloudinary.api_key}") String apiKey,
                                  @Value("${cloudinary.api_secret}") String apiSecret,
-                                 @Value("${cloudinary.upload_folder}") String uploadFolder,
-                                 @Value("${cloudinary.url}") String url) {
+                                 @Value("${cloudinary.upload_folder}") String uploadFolder) {
         this.cloudinaryFolder = uploadFolder;
-        this.cloudinaryUrl = url;
         this.cloudinary = new Cloudinary(ObjectUtils.asMap(
                 "cloud_name", cloudName,
                         "api_key", apiKey,
                         "api_secret", apiSecret));
-            }
+    }
+
     @Override
     @Transactional
     public FileMaster uploadCloudinary(Long userId, MultipartFile multipartFile) throws FileStorageException {
@@ -54,18 +53,19 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             String publicId = BlogUtils.generateFileName();
             String fileName = publicId + fileType;
 
+            //upload to cloudinary
+            Map params = getUploadOptions(publicId);
+            Map result = cloudinary.uploader().upload(file, params);
+
             //save database
             fileMaster = fileMasterRepository.save(FileMaster.builder()
-                    .fileUrl(String.join("/", cloudinaryUrl, cloudinaryFolder, fileName))
+                    .fileUrl(result.get("secure_url").toString())
+                    .publicId(result.get("public_id").toString())
                     .fileName(fileName)
                     .fileType(fileType)
                     .fileSize(multipartFile.getSize())
                     .fileOriginName(multipartFile.getOriginalFilename())
                     .build());
-
-            //upload to cloudinary
-            Map params = getUploadOptions(publicId);
-            Map result = cloudinary.uploader().upload(file, params);
             log.info("Cloudinary uploaded file: " + result.get("url").toString());
         } catch (Exception ex) {
             throw new RuntimeException("File upload to Cloudinary failed!", ex);
@@ -83,7 +83,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
                     () -> new MyFileNotFoundException("File not found with filename = " + fileName)
             );
             //1702129743169_ac008ea3c5c447e79ccf515e09090742
-            String publicId = fileMaster.getFileName().replace(fileMaster.getFileType(), "");
+            String publicId = fileMaster.getPublicId();
             //database delete
             fileMasterRepository.delete(fileMaster);
             //cloudinary delete

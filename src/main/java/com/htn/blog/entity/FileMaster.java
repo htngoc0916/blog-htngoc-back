@@ -29,6 +29,8 @@ public class FileMaster extends BaseEntity{
     private String fileType;
     @Column(name = "FILE_SIZE")
     private Long fileSize;
+    @Column(name = "PUBLIC_ID")
+    private String publicId;
 
     @JsonIgnore
     @OneToMany(mappedBy="fileMaster", cascade = CascadeType.ALL, orphanRemoval = true)
