@@ -1,25 +1,18 @@
 package com.htn.blog.controller;
 
-import com.htn.blog.common.BlogConstants;
 import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.*;
 import com.htn.blog.entity.Token;
-import com.htn.blog.entity.User;
 import com.htn.blog.service.AuthService;
 import com.htn.blog.service.TokenService;
 import com.htn.blog.utils.LocalizationUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.crypto.Data;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @RestController
@@ -32,7 +25,7 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
     @Autowired
-    LocalizationUtils localizationUtils;
+    private LocalizationUtils localizationUtils;
 
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -48,6 +41,11 @@ public class AuthController {
                                             .message(localizationUtils.translate(MessageKeys.AUTH_LOGIN_SUCCESSFULLY))
                                             .data(mappingToAuthResponse(resultToken))
                                             .build());
+
+//        return ResponseEntity.ok(ResponseDTO.builder()
+//                .message("")
+//                .data(mappingToAuthResponse(resultToken))
+//                .build());
     }
 
     private String getLoginDevice(String header) {

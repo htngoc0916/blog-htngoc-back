@@ -20,9 +20,6 @@ public class I18nConfig {
     private String supportedLocales;
     @Bean
     public LocaleResolver localeResolver() {
-        //SessionLocaleResolver localeResolver = new SessionLocaleResolver();
-//        localeResolver.setDefaultLocale(Locale.forLanguageTag(defaultLocale));
-
         CustomLocaleResolver customLocaleResolver = new CustomLocaleResolver();
         customLocaleResolver.setDefaultLocale(Locale.forLanguageTag(defaultLocale));
 
