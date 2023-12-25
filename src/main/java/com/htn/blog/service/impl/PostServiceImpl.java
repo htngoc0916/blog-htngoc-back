@@ -6,6 +6,7 @@ import com.htn.blog.exception.MyFileNotFoundException;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.*;
 import com.htn.blog.service.PostService;
+import com.htn.blog.utils.BlogUtils;
 import com.htn.blog.utils.FileRelatedCode;
 import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.PostVO;
@@ -128,7 +129,7 @@ public class PostServiceImpl implements PostService {
     }
     @Override
     public PagedResponseVO<PostVO> getAllPosts(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
-        Sort sort = getSortByDir(sortBy, sortDir);
+        Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
         // create pageable instance
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Post> postPage = postRepository.findAll(pageable);
@@ -140,7 +141,7 @@ public class PostServiceImpl implements PostService {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new NotFoundException("Category not found with category id = " + categoryId)
         );
-        Sort sort = getSortByDir(sortBy, sortDir);
+        Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         Page<Post> postPage = postRepository.findByCategoryId(categoryId, pageable);
@@ -149,7 +150,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PagedResponseVO<PostVO> getPostsByTitle(String keywords, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
-        Sort sort = getSortByDir(sortBy, sortDir);
+        Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Post> postPage = postRepository.findByTitleContaining(keywords, pageable);;
         return getPostPaged(postPage);
@@ -162,17 +163,13 @@ public class PostServiceImpl implements PostService {
         );
         Set<Tag> tags = new HashSet<>();
         tags.add(tag);
-        Sort sort = getSortByDir(sortBy, sortDir);
+        Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         Page<Post> postPage = postRepository.findByTagsIn(tags, pageable);
         return getPostPaged(postPage);
     }
-    private Sort getSortByDir( String sortBy, String sortDir){
-        return sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
-    }
+
     private PagedResponseVO<PostVO> getPostPaged(Page<Post> postPage) {
         List<PostVO> postList = postPage.getContent().stream()
                                         .map(_post -> modelMapper.map(_post, PostVO.class))

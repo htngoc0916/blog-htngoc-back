@@ -47,7 +47,6 @@ public class BaseEntity implements Serializable {
 
     @PrePersist
     protected void onCreate(){
-        usedYn = "Y";
         regDt = new Date();
     }
 

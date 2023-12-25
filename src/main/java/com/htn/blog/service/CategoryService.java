@@ -2,13 +2,12 @@ package com.htn.blog.service;
 
 import com.htn.blog.dto.CategoryDTO;
 import com.htn.blog.entity.Category;
-
-import java.util.List;
+import com.htn.blog.vo.PagedResponseVO;
 
 public interface CategoryService {
     Category addCategory(CategoryDTO categoryDTO);
     Category getCategory(Long categoryId);
-    List<Category> getAllCategories();
+    PagedResponseVO<Category> getAllCategories(Integer pageNo, Integer pageSize, String  sortBy, String sortDir);
     Category updateCategory(CategoryDTO categoryDTO, Long categoryId);
     void deleteCategory(Long categoryId);
 }
