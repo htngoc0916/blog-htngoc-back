@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
-    public List<Menu> findByMenuCodeAndUsedYnOrderByMenuOrdAsc(String menuCode, String usedYn);
+    List<Menu> findByMenuCodeAndUsedYnOrderByMenuOrdAsc(String menuCode, String usedYn);
+    List<Menu> findByParentId(Long parentId);
 }

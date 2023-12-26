@@ -5,6 +5,7 @@ import com.htn.blog.dto.MenuDTO;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.entity.Menu;
 import com.htn.blog.service.MenuService;
+import com.htn.blog.vo.MenuVO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,12 @@ public class MenuController {
     @Operation(summary = "Get all menus rest api")
     @GetMapping
     public ResponseEntity<?> getAllMenus(){
-        List<Menu> menus = menuService.getAllMenus();
+//        List<Menu> menus = menuService.getAllMenus();
+        List<MenuVO> menuVO = menuService.getAllMenus();
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message("Search all menus successfully!")
-                        .data(menus)
+                        .data(menuVO)
                         .build()
         );
     }
