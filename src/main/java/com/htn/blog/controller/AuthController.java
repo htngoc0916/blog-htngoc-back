@@ -41,11 +41,6 @@ public class AuthController {
                                             .message(localizationUtils.translate(MessageKeys.AUTH_LOGIN_SUCCESSFULLY))
                                             .data(mappingToAuthResponse(resultToken))
                                             .build());
-
-//        return ResponseEntity.ok(ResponseDTO.builder()
-//                .message("")
-//                .data(mappingToAuthResponse(resultToken))
-//                .build());
     }
 
     private String getLoginDevice(String header) {

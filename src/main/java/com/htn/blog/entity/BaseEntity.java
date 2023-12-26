@@ -18,10 +18,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
-@JsonIgnoreProperties(
-        value = { "regId", "modId", "usedYn", "modDt", "regDt" },
-        allowGetters = true
-)
 public class BaseEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
