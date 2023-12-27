@@ -34,13 +34,36 @@ public class MenuServiceImpl implements MenuService {
         );
     }
 
-//    @Override
-//    public List<Menu> getAllMenus() {
-//        return menuRepository.findAll();
-//    }
+    @Override
+    public List<MenuVO> getMenuByCode(String menuCode) {
+        List<Menu> allMenus = menuRepository.findByMenuCodeAndUsedYnOrderByMenuOrdAsc(menuCode, "Y");
+        return getMenuResponse(allMenus);
+    }
+
+    @Override
+    public Menu updateMenu(Long menuId, MenuDTO menuDTO) {
+        Menu menu = menuRepository.findById(menuId).orElseThrow(
+                () -> new NotFoundException("Menu not found width id = " + menuId)
+        );
+        menu = menu.update(menuDTO);
+        return menuRepository.save(menu);
+    }
+
+    @Override
+    public void deleteMenu(Long menuId) {
+        Menu menu = menuRepository.findById(menuId).orElseThrow(
+                () -> new NotFoundException("Menu not found width id = " + menuId)
+        );
+        menuRepository.delete(menu);
+    }
+
 
     public List<MenuVO> getAllMenus() {
         List<Menu> allMenus = menuRepository.findAll();
+        return getMenuResponse(allMenus);
+    }
+
+    private List<MenuVO> getMenuResponse(List<Menu> allMenus) {
         List<Menu> rootMenus = findRootMenus(allMenus);
 
         List<MenuVO> menuVOList = new ArrayList<>();
@@ -72,29 +95,6 @@ public class MenuServiceImpl implements MenuService {
     }
 
     private List<Menu> findAllChildMenus(Long rootId, List<Menu> allMenus) {
-        List<Menu> menuList = allMenus.stream().filter(menu -> Objects.equals(menu.getParentId(), rootId)).toList();
-        return menuList;
-    }
-
-    @Override
-    public List<Menu> getMenuByCode(String menuCode) {
-        return menuRepository.findByMenuCodeAndUsedYnOrderByMenuOrdAsc(menuCode, "Y");
-    }
-
-    @Override
-    public Menu updateMenu(Long menuId, MenuDTO menuDTO) {
-        Menu menu = menuRepository.findById(menuId).orElseThrow(
-                () -> new NotFoundException("Menu not found width id = " + menuId)
-        );
-        menu = menu.update(menuDTO);
-        return menuRepository.save(menu);
-    }
-
-    @Override
-    public void deleteMenu(Long menuId) {
-        Menu menu = menuRepository.findById(menuId).orElseThrow(
-                () -> new NotFoundException("Menu not found width id = " + menuId)
-        );
-        menuRepository.delete(menu);
+        return allMenus.stream().filter(menu -> Objects.equals(menu.getParentId(), rootId)).toList();
     }
 }

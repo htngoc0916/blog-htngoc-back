@@ -25,7 +25,6 @@ public class MenuController {
     @Operation(summary = "Get all menus rest api")
     @GetMapping
     public ResponseEntity<?> getAllMenus(){
-//        List<Menu> menus = menuService.getAllMenus();
         List<MenuVO> menuVO = menuService.getAllMenus();
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
@@ -49,7 +48,7 @@ public class MenuController {
     @Operation(summary = "Get menu by menuId rest api")
     @GetMapping("/menuCode/{code}")
     public ResponseEntity<?> getMenuByCode(@PathVariable("code") String menuCode){
-        List<Menu> menu = menuService.getMenuByCode(menuCode);
+        List<MenuVO> menu = menuService.getMenuByCode(menuCode);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message("Search menus successfully!")

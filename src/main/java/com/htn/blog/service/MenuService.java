@@ -10,7 +10,7 @@ public interface MenuService {
     Menu getMenu(Long menuId);
 //    List<Menu> getAllMenus();
     List<MenuVO> getAllMenus();
-    List<Menu> getMenuByCode(String menuCode);
+    List<MenuVO> getMenuByCode(String menuCode);
     Menu addMenu(MenuDTO menuDTO);
     Menu updateMenu(Long menuId, MenuDTO menuDTO);
     void deleteMenu(Long menuId);

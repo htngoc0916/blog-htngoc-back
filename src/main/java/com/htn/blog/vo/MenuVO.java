@@ -15,9 +15,10 @@ public class MenuVO {
     private Long id;
     private String menuCode;
     private String menuName;
+    private Integer parentId;
     private Integer menuOrder;
     private String menuUrl;
     private String menuIcon;
-    private Integer parentId;
+    private String usedYn;
     private List<MenuVO> children;
 }
