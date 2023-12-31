@@ -13,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/categories")
 @CrossOrigin(origins = "http://localhost:3100")
@@ -27,8 +25,10 @@ public class CategoryController {
     public ResponseEntity<?> getAllCategory(@RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
                                             @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
                                             @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-                                            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
-        PagedResponseVO<Category> categoryList = categoryService.getAllCategories(pageNo, pageSize, sortBy, sortDir);
+                                            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
+                                            @RequestParam(value = "usedYn", required = false) String usedYn,
+                                            @RequestParam(value = "categoryName", required = false) String categoryName){
+        PagedResponseVO<Category> categoryList = categoryService.getAllCategories(pageNo, pageSize, sortBy, sortDir, categoryName, usedYn);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message("Search all category successfully!")

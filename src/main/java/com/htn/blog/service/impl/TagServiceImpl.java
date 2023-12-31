@@ -5,9 +5,14 @@ import com.htn.blog.entity.Tag;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.TagRepository;
 import com.htn.blog.service.TagService;
+import com.htn.blog.utils.BlogUtils;
+import com.htn.blog.vo.PagedResponseVO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -26,11 +31,34 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> getAllTag() {
-        List<Tag> tagList = tagRepository.findAll();
-        return tagList.stream()
-                    .map(tag -> modelMapper.map(tag, Tag.class))
-                    .toList();
+    public PagedResponseVO<Tag> getAllTag(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String tagName, String usedYn) {
+        Pageable pageable = BlogUtils.getPageable(sortBy, sortDir, pageNo, pageSize);
+        Page<Tag> resultPage;
+
+        if (StringUtils.hasText(tagName) && StringUtils.hasText(usedYn)) {
+            resultPage = tagRepository.findByTagNameContainingAndUsedYn(tagName, usedYn, pageable);
+        } else if (StringUtils.hasText(tagName)) {
+            resultPage = tagRepository.findByTagNameContaining(tagName, pageable);
+        } else if (StringUtils.hasText(usedYn)) {
+            resultPage = tagRepository.findByUsedYn(usedYn, pageable);
+        } else {
+            resultPage = tagRepository.findAll(pageable);
+        }
+
+
+        List<Tag> tagList = resultPage.getContent()
+                .stream()
+                .map(_tag -> modelMapper.map(_tag, Tag.class))
+                .toList();
+
+        return PagedResponseVO.<Tag>builder()
+                .data(tagList)
+                .pageNo(resultPage.getNumber() + 1)
+                .pageSize(resultPage.getSize())
+                .totalElements(resultPage.getTotalElements())
+                .totalPage(resultPage.getTotalPages())
+                .last(resultPage.isLast())
+                .build();
     }
 
     @Override

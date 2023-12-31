@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -37,9 +38,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public PagedResponseVO<Category> getAllCategories(Integer pageNo, Integer pageSize, String  sortBy, String sortDir) {
+    public PagedResponseVO<Category> getAllCategories(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String categoryName, String usedYn) {
         Pageable pageable = BlogUtils.getPageable(sortBy, sortDir, pageNo, pageSize);
-        Page<Category> resultPage = categoryRepository.findAll(pageable);
+        Page<Category> resultPage;
+
+        if (StringUtils.hasText(categoryName) && StringUtils.hasText(usedYn)) {
+            resultPage = categoryRepository.findByCategoryNameContainingAndUsedYn(categoryName, usedYn, pageable);
+        } else if (StringUtils.hasText(categoryName)) {
+            resultPage = categoryRepository.findByCategoryNameContaining(categoryName, pageable);
+        } else if (StringUtils.hasText(usedYn)) {
+            resultPage = categoryRepository.findByUsedYn(usedYn, pageable);
+        } else {
+            resultPage = categoryRepository.findAll(pageable);
+        }
 
         List<Category> categoryList = resultPage.getContent()
                                             .stream()

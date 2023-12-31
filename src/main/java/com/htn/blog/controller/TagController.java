@@ -3,8 +3,10 @@ package com.htn.blog.controller;
 import com.htn.blog.common.BlogConstants;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.dto.TagDTO;
+import com.htn.blog.entity.Category;
 import com.htn.blog.entity.Tag;
 import com.htn.blog.service.TagService;
+import com.htn.blog.vo.PagedResponseVO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +26,15 @@ public class TagController {
 
     @GetMapping
     @Operation(summary = "Get all tags rest api")
-    public ResponseEntity<?> getAllTags(){
-        List<Tag> tagList = tagService.getAllTag();
+    public ResponseEntity<?> getAllTags(
+            @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
+            @RequestParam(value = "usedYn", required = false) String usedYn,
+            @RequestParam(value = "tagName", required = false) String tagName
+    ){
+        PagedResponseVO<Tag> tagList = tagService.getAllTag(pageNo, pageSize, sortBy, sortDir, tagName, usedYn);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message("Get all post successfully!")
