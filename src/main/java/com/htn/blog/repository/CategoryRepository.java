@@ -1,7 +1,6 @@
 package com.htn.blog.repository;
 
 import com.htn.blog.entity.Category;
-import com.htn.blog.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

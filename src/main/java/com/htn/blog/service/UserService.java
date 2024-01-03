@@ -2,11 +2,12 @@ package com.htn.blog.service;
 
 import com.htn.blog.dto.UserDTO;
 import com.htn.blog.entity.User;
+import com.htn.blog.vo.PagedResponseVO;
 
 import java.util.List;
 
 public interface UserService {
-    List<User> getAllUser();
+    PagedResponseVO<User> getAllUser(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String categoryName, String usedYn);
     User getUserInfo(Long id);
     User getUserByEmail(String email);
     boolean existsEmail(String email);

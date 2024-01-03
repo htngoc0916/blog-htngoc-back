@@ -6,20 +6,23 @@ import com.htn.blog.entity.FileRelation;
 import com.htn.blog.entity.User;
 import com.htn.blog.exception.MyFileNotFoundException;
 import com.htn.blog.exception.NotFoundException;
-import com.htn.blog.mapper.FileMasterMapper;
 import com.htn.blog.repository.FileMasterRepository;
 import com.htn.blog.repository.FileRelationRepository;
 import com.htn.blog.repository.UserRepository;
 import com.htn.blog.service.UserService;
+import com.htn.blog.utils.BlogUtils;
 import com.htn.blog.utils.FileRelatedCode;
+import com.htn.blog.vo.PagedResponseVO;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -34,8 +37,33 @@ public class UserServiceImpl implements UserService {
     private FileMasterRepository fileMasterRepository;
 
     @Override
-    public List<User> getAllUser(){
-        return userRepository.findAll();
+    public PagedResponseVO<User> getAllUser(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String userName, String usedYn){
+        Pageable pageable = BlogUtils.getPageable(sortBy, sortDir, pageNo, pageSize);
+        Page<User> resultPage;
+
+        if (StringUtils.hasText(userName) && StringUtils.hasText(usedYn)) {
+            resultPage = userRepository.findByUserNameContainingAndUsedYn(userName, usedYn, pageable);
+        } else if (StringUtils.hasText(userName)) {
+            resultPage = userRepository.findByUserNameContaining(userName, pageable);
+        } else if (StringUtils.hasText(usedYn)) {
+            resultPage = userRepository.findByUsedYn(usedYn, pageable);
+        } else {
+            resultPage = userRepository.findAll(pageable);
+        }
+
+        List<User> userList = resultPage.getContent()
+                .stream()
+                .map(_category -> modelMapper.map(_category, User.class))
+                .toList();
+
+        return PagedResponseVO.<User>builder()
+                .data(userList)
+                .pageNo(resultPage.getNumber() + 1)
+                .pageSize(resultPage.getSize())
+                .totalElements(resultPage.getTotalElements())
+                .totalPage(resultPage.getTotalPages())
+                .last(resultPage.isLast())
+                .build();
     }
 
     @Override
