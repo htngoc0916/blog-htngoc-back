@@ -1,5 +1,6 @@
 package com.htn.blog.dto;
 
+import com.htn.blog.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +21,5 @@ public class AuthResponseDTO {
     private String userName;
     private String email;
     private String avatar;
-    private Set<String> roles;
+    private Set<Role> roles;
 }

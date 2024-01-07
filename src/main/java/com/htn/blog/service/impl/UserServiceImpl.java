@@ -1,13 +1,16 @@
 package com.htn.blog.service.impl;
 
+import com.htn.blog.common.RoleConstants;
 import com.htn.blog.dto.UserDTO;
 import com.htn.blog.entity.FileMaster;
 import com.htn.blog.entity.FileRelation;
+import com.htn.blog.entity.Role;
 import com.htn.blog.entity.User;
 import com.htn.blog.exception.MyFileNotFoundException;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.FileMasterRepository;
 import com.htn.blog.repository.FileRelationRepository;
+import com.htn.blog.repository.RoleRepository;
 import com.htn.blog.repository.UserRepository;
 import com.htn.blog.service.UserService;
 import com.htn.blog.utils.BlogUtils;
@@ -35,6 +38,8 @@ public class UserServiceImpl implements UserService {
     private FileRelationRepository fileRelationRepository;
     @Autowired
     private FileMasterRepository fileMasterRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Override
     public PagedResponseVO<User> getAllUser(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String userName, String usedYn){
@@ -86,6 +91,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User addUser(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
+        Set<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByRoleName(userDTO.getRole()).orElseThrow(
+                () -> new RuntimeException("ROLE not exists!")
+        );
+        roles.add(userRole);
+        user.setRoles(roles);
+
         return userRepository.save(user);
     }
     @Override
@@ -96,6 +108,14 @@ public class UserServiceImpl implements UserService {
         );
         handleRelationFiles(userDTO.getImage(), userId);
         user = user.update(userDTO);
+
+        Set<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByRoleName(userDTO.getRole()).orElseThrow(
+                () -> new RuntimeException("ROLE not exists!")
+        );
+        roles.add(userRole);
+        user.setRoles(roles);
+
         return userRepository.save(user);
     }
 
@@ -105,6 +125,11 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("user not found with id = " + userId)
         );
+
+        user.getRoles().clear();
+        user.getPosts().clear();
+        user = userRepository.save(user);
+
         fileRelationRepository.deleteAllByRelatedIdAndRelatedCode(userId, FileRelatedCode.USER.toString());
         userRepository.delete(user);
     }

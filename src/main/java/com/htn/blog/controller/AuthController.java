@@ -74,7 +74,7 @@ public class AuthController {
                 .userName(resultToken.getUser().getUserName())
                 .email(resultToken.getUser().getEmail())
                 .avatar(resultToken.getUser().getAvatar())
-                .roles(resultToken.getUser().getRoles().stream().map(role -> role.getRoleName()).collect(Collectors.toSet()))
+                .roles(resultToken.getUser().getRoles())
                 .build();
     }
 }

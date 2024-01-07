@@ -78,7 +78,7 @@ public class UserController {
     @Operation(summary = "Add new a user rest api")
     @PostMapping()
     @PreAuthorize(value = "hasRole('ADMIN')")
-    public ResponseEntity<?> addUser(UserDTO userDTO){
+    public ResponseEntity<?> addUser(@RequestBody UserDTO userDTO){
         User user = userService.addUser(userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
