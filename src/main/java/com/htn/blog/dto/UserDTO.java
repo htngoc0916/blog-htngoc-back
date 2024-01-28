@@ -15,6 +15,6 @@ public class UserDTO {
     private String avatar;
     private String usedYn;
     private Long modId;
-    private Long image;
+    private Long imageId;
     private String role;
 }

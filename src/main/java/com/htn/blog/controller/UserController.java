@@ -6,6 +6,7 @@ import com.htn.blog.dto.UserDTO;
 import com.htn.blog.entity.User;
 import com.htn.blog.service.UserService;
 import com.htn.blog.vo.PagedResponseVO;
+import com.htn.blog.vo.UserDetailsVO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -32,7 +31,7 @@ public class UserController {
                                         @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
                                         @RequestParam(value = "usedYn", required = false) String usedYn,
                                         @RequestParam(value = "userName", required = false) String userName){
-        PagedResponseVO<User> users = userService.getAllUser(pageNo, pageSize, sortBy, sortDir, userName, usedYn);
+        PagedResponseVO<UserDetailsVO> users = userService.getAllUser(pageNo, pageSize, sortBy, sortDir, userName, usedYn);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message("Get all user successfully!")
@@ -44,7 +43,7 @@ public class UserController {
     @GetMapping("/{id}")
     @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<?> getUserInfo(@PathVariable("id") Long userId){
-        User user = userService.getUserInfo(userId);
+        UserDetailsVO user = userService.getUserInfo(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message("Get user by id successfully!")
@@ -88,17 +87,19 @@ public class UserController {
         );
     }
     @Operation(summary = "Update user rest api")
-    @PutMapping("/{id}")
+    @PutMapping(value ="/{id}")
     @PreAuthorize(value = "hasRole('ADMIN')")
-    public ResponseEntity<?> updateUser(@PathVariable("id") Long userId, @Valid @RequestBody UserDTO userDTO){
+    public ResponseEntity<?> updateUser(@PathVariable("id") Long userId,
+                                        @Valid @RequestBody UserDTO userDTO) {
         User user = userService.updateUser(userId, userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Get user by id successfully!")
+                        .message("Updated user by id successfully!")
                         .data(user)
                         .build()
         );
     }
+
     @Operation(summary = "Update user rest api")
     @DeleteMapping("/{id}")
     @PreAuthorize(value = "hasRole('ADMIN')")

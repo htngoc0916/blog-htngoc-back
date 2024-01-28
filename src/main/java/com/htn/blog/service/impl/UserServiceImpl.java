@@ -16,6 +16,7 @@ import com.htn.blog.service.UserService;
 import com.htn.blog.utils.BlogUtils;
 import com.htn.blog.utils.FileRelatedCode;
 import com.htn.blog.vo.PagedResponseVO;
+import com.htn.blog.vo.UserDetailsVO;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
     private RoleRepository roleRepository;
 
     @Override
-    public PagedResponseVO<User> getAllUser(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String userName, String usedYn){
+    public PagedResponseVO<UserDetailsVO> getAllUser(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String userName, String usedYn){
         Pageable pageable = BlogUtils.getPageable(sortBy, sortDir, pageNo, pageSize);
         Page<User> resultPage;
 
@@ -56,12 +57,12 @@ public class UserServiceImpl implements UserService {
             resultPage = userRepository.findAll(pageable);
         }
 
-        List<User> userList = resultPage.getContent()
+        List<UserDetailsVO> userList = resultPage.getContent()
                 .stream()
-                .map(_category -> modelMapper.map(_category, User.class))
+                .map(_user -> modelMapper.map(_user, UserDetailsVO.class))
                 .toList();
 
-        return PagedResponseVO.<User>builder()
+        return PagedResponseVO.<UserDetailsVO>builder()
                 .data(userList)
                 .pageNo(resultPage.getNumber() + 1)
                 .pageSize(resultPage.getSize())
@@ -72,10 +73,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserInfo(Long id) {
-        return userRepository.findById(id).orElseThrow(
+    public UserDetailsVO getUserInfo(Long id) {
+        User user = userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("user not found with id" + id)
         );
+
+        UserDetailsVO userDetailsVO = modelMapper.map(user, UserDetailsVO.class);
+        List<FileRelation> fileRelation = fileRelationRepository.findFileRelationByRelatedIdAndRelatedCode(user.getId(), "USER");
+        if(fileRelation.size() > 0){
+            Long imageId = fileRelation.get(0).getFileMaster().getId();
+            userDetailsVO.setImageId(imageId);
+        }
+        return userDetailsVO;
     }
     @Override
     public User getUserByEmail(String email) {
@@ -106,7 +115,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("user not found with id = " + userId)
         );
-        handleRelationFiles(userDTO.getImage(), userId);
+        handleRelationFiles(userDTO.getImageId(), userId);
         user = user.update(userDTO);
 
         Set<Role> roles = new HashSet<>();
@@ -136,7 +145,7 @@ public class UserServiceImpl implements UserService {
 
     private void handleRelationFiles(Long imageId, Long userId) {
         Set<FileRelation> fileRelations = new HashSet<>();
-        if(imageId != null) {
+        if(imageId != null && imageId > 0) {
             FileMaster fileMaster = fileMasterRepository.findById(imageId).orElseThrow(
                     () -> new MyFileNotFoundException("Post image not found with imageId = " + imageId)
             );

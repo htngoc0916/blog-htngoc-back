@@ -9,7 +9,6 @@ import com.htn.blog.repository.FileMasterRepository;
 import com.htn.blog.service.CloudinaryService;
 import com.htn.blog.utils.BlogUtils;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,7 +63,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
                     .fileName(fileName)
                     .fileType(fileType)
                     .fileSize(multipartFile.getSize())
-                    .fileOriginName(multipartFile.getOriginalFilename())
+                    .fileOriginalName(multipartFile.getOriginalFilename())
                     .build());
             log.info("Cloudinary uploaded file: " + result.get("url").toString());
         } catch (Exception ex) {
@@ -92,6 +91,28 @@ public class CloudinaryServiceImpl implements CloudinaryService {
                 throw new FileStorageException("Delete file cloudinary failed!");
             }
             log.info("Cloudinary deleted file: " + fileName);
+        }catch (Exception exception){
+            throw new FileStorageException("Delete file cloudinary failed!");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteCloudinaryById(Long id){
+        try {
+            FileMaster fileMaster = fileMasterRepository.findById(id).orElseThrow(
+                    () -> new MyFileNotFoundException("File not found with id = " + id)
+            );
+            //1702129743169_ac008ea3c5c447e79ccf515e09090742
+            String publicId = fileMaster.getPublicId();
+            //database delete
+            fileMasterRepository.delete(fileMaster);
+            //cloudinary delete
+            Map result = delete(publicId);
+            if(Objects.equals(result.get("result").toString(), "not found")){
+                throw new FileStorageException("Delete file cloudinary failed!");
+            }
+            log.info("Cloudinary deleted file: " + id);
         }catch (Exception exception){
             throw new FileStorageException("Delete file cloudinary failed!");
         }

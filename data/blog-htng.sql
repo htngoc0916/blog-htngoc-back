@@ -176,7 +176,7 @@ CREATE TABLE "code_detail" (
 CREATE TABLE "file_master" (
                                "ID" int NOT NULL AUTO_INCREMENT,
                                "FILE_NAME" varchar(200) DEFAULT NULL,
-                               "FILE_ORIGIN_NAME" varchar(100) DEFAULT NULL,
+                               "FILE_ORIGINAL_NAME" varchar(200) DEFAULT NULL,
                                "FILE_URL" varchar(255) DEFAULT NULL,
                                "FILE_SIZE" int DEFAULT '0',
                                "FILE_TYPE" varchar(10) DEFAULT NULL,
