@@ -1,8 +1,5 @@
 package com.htn.blog.service.impl;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
-import com.htn.blog.common.RoleConstants;
 import com.htn.blog.common.UploadCode;
 import com.htn.blog.dto.UserDTO;
 import com.htn.blog.entity.FileMaster;
@@ -30,9 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -51,7 +45,7 @@ public class UserServiceImpl implements UserService {
     private CloudinaryService cloudinaryService;
 
     @Override
-    public PagedResponseVO<UserDetailsVO> getAllUser(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String userName, String usedYn){
+    public PagedResponseVO<User> getAllUser(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String userName, String usedYn){
         Pageable pageable = BlogUtils.getPageable(sortBy, sortDir, pageNo, pageSize);
         Page<User> resultPage;
 
@@ -65,12 +59,9 @@ public class UserServiceImpl implements UserService {
             resultPage = userRepository.findAll(pageable);
         }
 
-        List<UserDetailsVO> userList = resultPage.getContent()
-                .stream()
-                .map(_user -> modelMapper.map(_user, UserDetailsVO.class))
-                .toList();
+        List<User> userList = resultPage.getContent();
 
-        return PagedResponseVO.<UserDetailsVO>builder()
+        return PagedResponseVO.<User>builder()
                 .data(userList)
                 .pageNo(resultPage.getNumber() + 1)
                 .pageSize(resultPage.getSize())

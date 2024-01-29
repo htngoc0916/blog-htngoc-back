@@ -1,5 +1,6 @@
 package com.htn.blog.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.htn.blog.entity.Role;
 import lombok.AllArgsConstructor;
@@ -23,8 +24,10 @@ public class UserDetailsVO {
 
     private String usedYn;
     private Long regId;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Date regDt;
     private Long modId;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Date modDt;
 
     private Set<Role> roles;

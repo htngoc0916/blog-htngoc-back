@@ -105,12 +105,10 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             FileMaster fileMaster = fileMasterRepository.findById(imageId).orElseThrow(
                     () -> new MyFileNotFoundException("File not found with imageId = " + imageId)
             );
-            //1702129743169_ac008ea3c5c447e79ccf515e09090742
-            String publicId = fileMaster.getPublicId();
             //database delete
             fileMasterRepository.delete(fileMaster);
             //cloudinary delete
-            Map result = delete(publicId);
+            Map result = delete(fileMaster.getPublicId());
             if(Objects.equals(result.get("result").toString(), "not found")){
                 throw new FileStorageException("Delete file cloudinary failed!");
             }
@@ -120,14 +118,12 @@ public class CloudinaryServiceImpl implements CloudinaryService {
         }
     }
 
-
     private Map getUploadOptions(String publicId){
         return ObjectUtils.asMap("folder", cloudinaryFolder,
                                         "public_id", publicId,
                                         "resource_type", "image",
                                         "type", "upload");
     };
-
 
     private File convert(MultipartFile multipartFile) throws IOException {
         File file = new File(Objects.requireNonNull(multipartFile.getOriginalFilename()));

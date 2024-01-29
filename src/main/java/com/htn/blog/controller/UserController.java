@@ -33,7 +33,7 @@ public class UserController {
                                         @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
                                         @RequestParam(value = "usedYn", required = false) String usedYn,
                                         @RequestParam(value = "userName", required = false) String userName){
-        PagedResponseVO<UserDetailsVO> users = userService.getAllUser(pageNo, pageSize, sortBy, sortDir, userName, usedYn);
+        PagedResponseVO<User> users = userService.getAllUser(pageNo, pageSize, sortBy, sortDir, userName, usedYn);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message("Get all user successfully!")
