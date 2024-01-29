@@ -46,7 +46,6 @@ public class CloudinaryServiceImpl implements CloudinaryService {
         FileMaster fileMaster = null;
         File file = null;
         try {
-            validateImage(multipartFile);
             file = convert(multipartFile);
             String fileType = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf("."));
             String publicId = BlogUtils.generateFileName();
@@ -57,14 +56,17 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             Map result = cloudinary.uploader().upload(file, params);
 
             //save database
-            fileMaster = fileMasterRepository.save(FileMaster.builder()
+            fileMaster = FileMaster.builder()
                     .fileUrl(result.get("secure_url").toString())
                     .publicId(result.get("public_id").toString())
                     .fileName(fileName)
                     .fileType(fileType)
                     .fileSize(multipartFile.getSize())
                     .fileOriginalName(multipartFile.getOriginalFilename())
-                    .build());
+                    .build();
+            fileMaster.setRegId(userId);
+            fileMaster.setUsedYn("Y");
+            fileMaster = fileMasterRepository.save(fileMaster);
             log.info("Cloudinary uploaded file: " + result.get("url").toString());
         } catch (Exception ex) {
             throw new RuntimeException("File upload to Cloudinary failed!", ex);
@@ -98,10 +100,10 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
     @Override
     @Transactional
-    public void deleteCloudinaryById(Long id){
+    public void deleteCloudinaryByImageId(Long imageId){
         try {
-            FileMaster fileMaster = fileMasterRepository.findById(id).orElseThrow(
-                    () -> new MyFileNotFoundException("File not found with id = " + id)
+            FileMaster fileMaster = fileMasterRepository.findById(imageId).orElseThrow(
+                    () -> new MyFileNotFoundException("File not found with imageId = " + imageId)
             );
             //1702129743169_ac008ea3c5c447e79ccf515e09090742
             String publicId = fileMaster.getPublicId();
@@ -112,11 +114,12 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             if(Objects.equals(result.get("result").toString(), "not found")){
                 throw new FileStorageException("Delete file cloudinary failed!");
             }
-            log.info("Cloudinary deleted file: " + id);
+            log.info("Cloudinary deleted file: " + imageId);
         }catch (Exception exception){
             throw new FileStorageException("Delete file cloudinary failed!");
         }
     }
+
 
     private Map getUploadOptions(String publicId){
         return ObjectUtils.asMap("folder", cloudinaryFolder,
@@ -125,14 +128,6 @@ public class CloudinaryServiceImpl implements CloudinaryService {
                                         "type", "upload");
     };
 
-    private void validateImage(MultipartFile file) {
-        if (file.getContentType() == null || !file.getContentType().startsWith("image/")) {
-            throw new RuntimeException("Only image files are allowed.");
-        }
-        if (file.getSize() > 5 * 1024 * 1024) {
-            throw new RuntimeException("File size exceeds the limit of 5MB.");
-        }
-    }
 
     private File convert(MultipartFile multipartFile) throws IOException {
         File file = new File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
@@ -149,6 +144,6 @@ public class CloudinaryServiceImpl implements CloudinaryService {
     }
 
     public Map delete(String publicId) throws IOException {
-        return cloudinary.uploader().destroy(publicId, ObjectUtils.asMap("resource_type", "image", "type", "upload"));
+        return cloudinary.uploader().destroy(publicId, getUploadOptions(publicId));
     }
 }

@@ -36,9 +36,9 @@ public class AuthController {
         String loginDevice = getLoginDevice(request.getHeader("User-Agent"));
         Token resultToken = tokenService.addTokenToLogin(token, loginDevice);
         return ResponseEntity.ok(ResponseDTO.builder()
-                                            .message(localizationUtils.translate(MessageKeys.AUTH_LOGIN_SUCCESSFULLY))
-                                            .data(mappingToAuthResponse(resultToken))
-                                            .build());
+                .message(localizationUtils.translate(MessageKeys.AUTH_LOGIN_SUCCESSFULLY))
+                .data(mappingToAuthResponse(resultToken))
+                .build());
     }
 
     private String getLoginDevice(String header) {
@@ -49,9 +49,9 @@ public class AuthController {
     @PostMapping(value = "/register")
     public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO){
         ResponseDTO responseDTO = ResponseDTO.builder()
-                                            .message("register successfully ")
-                                            .data(authService.register(registerDTO))
-                                            .build();
+                .message(localizationUtils.translate(MessageKeys.AUTH_REGISTER_SUCCESSFULLY))
+                .data(authService.register(registerDTO))
+                .build();
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
@@ -59,9 +59,9 @@ public class AuthController {
     public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO){
         Token resultToken = tokenService.refreshToken(refreshTokenDTO.getRefreshToken());
         return ResponseEntity.ok(ResponseDTO.builder()
-                                            .message("Refresh token successfully")
-                                            .data(mappingToAuthResponse(resultToken))
-                                            .build());
+                .message(localizationUtils.translate(MessageKeys.AUTH_REFRESH_TOKEN_SUCCESSFULLY))
+                .data(mappingToAuthResponse(resultToken))
+                .build());
     }
 
     private AuthResponseDTO mappingToAuthResponse(Token resultToken){

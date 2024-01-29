@@ -1,6 +1,7 @@
 package com.htn.blog.utils;
 
 import com.htn.blog.common.BlogConstants;
+import com.htn.blog.entity.FileMaster;
 import com.htn.blog.exception.BlogApiException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

@@ -3,6 +3,7 @@ package com.htn.blog.controller;
 import com.htn.blog.common.BlogConstants;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.dto.UserDTO;
+import com.htn.blog.entity.FileMaster;
 import com.htn.blog.entity.User;
 import com.htn.blog.service.UserService;
 import com.htn.blog.vo.PagedResponseVO;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -107,7 +109,33 @@ public class UserController {
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Get user by id successfully!")
+                        .message("Deleted user by id successfully!")
+                        .data("")
+                        .build()
+        );
+    }
+
+    @Operation(summary = "Upload cloudinary rest api")
+    @PostMapping("/avatar")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> uploadAvatar(@RequestParam(value = "email") String email,
+                                          @RequestParam(value = "file") MultipartFile file){
+        FileMaster fileMaster = userService.uploadAvatar(email, file);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDTO.builder()
+                        .message("Upload file successfully!")
+                        .data(fileMaster)
+                        .build()
+        );
+    }
+    @Operation(summary = "Upload cloudinary rest api")
+    @DeleteMapping("/avatar/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteAvatar(@PathVariable("userId") Long userId){
+        userService.deleteAvatar(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDTO.builder()
+                        .message("Deleted avatar successfully!")
                         .data("")
                         .build()
         );

@@ -30,18 +30,7 @@ public class CloudinaryController {
                         .build()
         );
     }
-    @Operation(summary = "Upload cloudinary rest api")
-    @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteCloudinaryById(@PathVariable("id") Long id){
-        cloudinaryService.deleteCloudinaryById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDTO.builder()
-                        .message("Delete file successfully!")
-                        .data("")
-                        .build()
-        );
-    }
+
     @Operation(summary = "Upload cloudinary rest api")
     @DeleteMapping("/delete/fileName/{fileName:.+}")
     @PreAuthorize("hasRole('ADMIN')")
