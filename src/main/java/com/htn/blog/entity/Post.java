@@ -28,7 +28,8 @@ public class Post extends BaseEntity {
     private String description;
     @Column(name = "THUMBNAIL")
     private String thumbnail;
-    @Column(name = "CONTENT")
+    @Lob
+    @Column(name = "CONTENT", columnDefinition = "TEXT")
     private String content;
     @Column(name = "VIEW_CNT")
     private Long viewCnt;

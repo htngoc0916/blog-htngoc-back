@@ -7,8 +7,6 @@ import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.UserDetailsVO;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 public interface UserService {
     PagedResponseVO<User> getAllUser(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String categoryName, String usedYn);
     UserDetailsVO getUserInfo(Long id);

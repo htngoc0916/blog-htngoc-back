@@ -1,9 +1,9 @@
 package com.htn.blog.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -22,8 +22,10 @@ public class PostVO {
     private Integer viewCnt = 0;
 
     private String usedYn = "Y";
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Date regDt;
     private String regId;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Date modDt;
     private String modId;
     private Long categoryId;

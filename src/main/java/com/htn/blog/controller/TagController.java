@@ -3,7 +3,6 @@ package com.htn.blog.controller;
 import com.htn.blog.common.BlogConstants;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.dto.TagDTO;
-import com.htn.blog.entity.Category;
 import com.htn.blog.entity.Tag;
 import com.htn.blog.service.TagService;
 import com.htn.blog.vo.PagedResponseVO;
@@ -14,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/tags")

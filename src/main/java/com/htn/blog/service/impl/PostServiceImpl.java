@@ -129,11 +129,8 @@ public class PostServiceImpl implements PostService {
     }
     @Override
     public PagedResponseVO<PostVO> getAllPosts(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
-        Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
-        // create pageable instance
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Pageable pageable = BlogUtils.getPageable(sortBy, sortDir, pageNo, pageSize);
         Page<Post> postPage = postRepository.findAll(pageable);
-
         return getPostPaged(postPage);
     }
     @Override
@@ -171,7 +168,8 @@ public class PostServiceImpl implements PostService {
     }
 
     private PagedResponseVO<PostVO> getPostPaged(Page<Post> postPage) {
-        List<PostVO> postList = postPage.getContent().stream()
+        List<PostVO> postList = postPage.getContent()
+                                        .stream()
                                         .map(_post -> modelMapper.map(_post, PostVO.class))
                                         .toList();
 
