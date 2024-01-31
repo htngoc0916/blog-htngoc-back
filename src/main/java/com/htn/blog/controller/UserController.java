@@ -7,9 +7,11 @@ import com.htn.blog.dto.UserDTO;
 import com.htn.blog.entity.FileMaster;
 import com.htn.blog.entity.User;
 import com.htn.blog.service.UserService;
+import com.htn.blog.utils.LocalizationUtils;
 import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.UserDetailsVO;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private LocalizationUtils localizationUtils;
 
     @Operation(summary = "Get all user rest api")
     @GetMapping()
@@ -33,11 +37,12 @@ public class UserController {
                                         @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
                                         @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
                                         @RequestParam(value = "usedYn", required = false) String usedYn,
-                                        @RequestParam(value = "userName", required = false) String userName){
+                                        @RequestParam(value = "userName", required = false) String userName,
+                                        HttpServletRequest request){
         PagedResponseVO<User> users = userService.getAllUser(pageNo, pageSize, sortBy, sortDir, userName, usedYn);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message(MessageKeys.USER_GET_ALL_SUCCESSFULLY)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
                         .data(users)
                         .build()
         );
@@ -49,7 +54,7 @@ public class UserController {
         UserDetailsVO user = userService.getUserInfo(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message(MessageKeys.USER_GET_ALL_SUCCESSFULLY)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_SUCCESSFULLY))
                         .data(user)
                         .build()
         );
@@ -61,7 +66,7 @@ public class UserController {
         User user = userService.getUserByEmail(email);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message(MessageKeys.USER_GET_BY_ID_SUCCESSFULLY)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_SUCCESSFULLY))
                         .data(user)
                         .build()
         );
@@ -72,7 +77,7 @@ public class UserController {
     public ResponseEntity<?> checkEmail(@PathVariable("email") String email){
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message(MessageKeys.USER_EMAIL_CHECK_SUCCESSFULLY)
+                        .message(localizationUtils.translate(MessageKeys.USER_EMAIL_CHECK_SUCCESSFULLY))
                         .data(userService.existsEmail(email))
                         .build()
         );
@@ -84,7 +89,7 @@ public class UserController {
         User user = userService.addUser(userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message(MessageKeys.USER_CREATE_USER_SUCCESSFULLY)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_CREATE_SUCCESSFULLY))
                         .data(user)
                         .build()
         );
@@ -97,7 +102,7 @@ public class UserController {
         User user = userService.updateUser(userId, userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message(MessageKeys.USER_UPDATE_USER_SUCCESSFULLY)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_SAVE_SUCCESSFULLY))
                         .data(user)
                         .build()
         );
@@ -110,7 +115,7 @@ public class UserController {
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message(MessageKeys.USER_DELETE_USER_SUCCESSFULLY)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_DELETE_SUCCESSFULLY))
                         .data("")
                         .build()
         );
@@ -124,7 +129,7 @@ public class UserController {
         FileMaster fileMaster = userService.uploadAvatar(email, file);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message(MessageKeys.USER_UPLOAD_AVATAR_SUCCESSFULLY)
+                        .message(localizationUtils.translate(MessageKeys.USER_UPLOAD_AVATAR_SUCCESSFULLY))
                         .data(fileMaster)
                         .build()
         );
@@ -136,7 +141,7 @@ public class UserController {
         userService.deleteAvatar(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message(MessageKeys.USER_DELETE_AVATAR_SUCCESSFULLY)
+                        .message(localizationUtils.translate(MessageKeys.USER_DELETE_AVATAR_SUCCESSFULLY))
                         .data("")
                         .build()
         );

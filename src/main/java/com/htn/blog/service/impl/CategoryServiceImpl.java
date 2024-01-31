@@ -1,11 +1,13 @@
 package com.htn.blog.service.impl;
 
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.CategoryDTO;
 import com.htn.blog.entity.Category;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.CategoryRepository;
 import com.htn.blog.service.CategoryService;
 import com.htn.blog.utils.BlogUtils;
+import com.htn.blog.utils.LocalizationUtils;
 import com.htn.blog.vo.PagedResponseVO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryRepository categoryRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private LocalizationUtils localizationUtils;
 
     @Override
     public Category addCategory(CategoryDTO categoryDTO) {
@@ -33,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category getCategory(Long categoryId) {
         return categoryRepository.findById(categoryId).orElseThrow(
-                () -> new NotFoundException("Category not found with id = " + categoryId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.CATEGORY_NOT_FOUND + " id = " + categoryId))
         );
     }
 
@@ -71,7 +75,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category updateCategory(CategoryDTO categoryDTO, Long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
-                () -> new NotFoundException("Category not found with id = " + categoryId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.CATEGORY_NOT_FOUND + " id = " + categoryId))
         );
         category = category.update(categoryDTO);
         return categoryRepository.save(category);
@@ -80,7 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
-                () -> new NotFoundException("Category not found with id = " + categoryId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.CATEGORY_NOT_FOUND + " id = " + categoryId))
         );
         categoryRepository.delete(category);
     }

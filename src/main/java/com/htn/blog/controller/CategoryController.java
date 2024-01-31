@@ -1,12 +1,15 @@
 package com.htn.blog.controller;
 
 import com.htn.blog.common.BlogConstants;
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.CategoryDTO;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.entity.Category;
 import com.htn.blog.service.CategoryService;
+import com.htn.blog.utils.LocalizationUtils;
 import com.htn.blog.vo.PagedResponseVO;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private LocalizationUtils localizationUtils;
 
     @Operation(summary = "Get all category rest api")
     @GetMapping()
@@ -27,11 +32,12 @@ public class CategoryController {
                                             @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
                                             @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
                                             @RequestParam(value = "usedYn", required = false) String usedYn,
-                                            @RequestParam(value = "categoryName", required = false) String categoryName){
+                                            @RequestParam(value = "categoryName", required = false) String categoryName,
+                                            HttpServletRequest request){
         PagedResponseVO<Category> categoryList = categoryService.getAllCategories(pageNo, pageSize, sortBy, sortDir, categoryName, usedYn);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Search all category successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
                         .data(categoryList)
                         .build()
         );
@@ -42,7 +48,7 @@ public class CategoryController {
         Category category = categoryService.getCategory(categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Search category successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_SUCCESSFULLY))
                         .data(category)
                         .build()
         );
@@ -54,7 +60,7 @@ public class CategoryController {
         Category category = categoryService.addCategory(categoryDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseDTO.builder()
-                            .message("Created new a category.")
+                            .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_CREATE_SUCCESSFULLY))
                             .data(category)
                             .build()
         );
@@ -64,9 +70,9 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateCategory(@RequestBody CategoryDTO categoryDTO, @PathVariable("id") Long categoryId){
         Category category = categoryService.updateCategory(categoryDTO, categoryId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
+        return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Updated category successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_SAVE_SUCCESSFULLY))
                         .data(category)
                         .build()
         );
@@ -76,9 +82,9 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable("id") Long categoryId){
         categoryService.deleteCategory(categoryId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
+        return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("deleted category successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_DELETE_SUCCESSFULLY))
                         .data("")
                         .build()
         );

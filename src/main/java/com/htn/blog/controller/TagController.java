@@ -1,10 +1,12 @@
 package com.htn.blog.controller;
 
 import com.htn.blog.common.BlogConstants;
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.dto.TagDTO;
 import com.htn.blog.entity.Tag;
 import com.htn.blog.service.TagService;
+import com.htn.blog.utils.LocalizationUtils;
 import com.htn.blog.vo.PagedResponseVO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 public class TagController {
     @Autowired
     private TagService tagService;
+    @Autowired
+    private LocalizationUtils localizationUtils;
 
     @GetMapping
     @Operation(summary = "Get all tags rest api")
@@ -34,7 +38,7 @@ public class TagController {
         PagedResponseVO<Tag> tagList = tagService.getAllTag(pageNo, pageSize, sortBy, sortDir, tagName, usedYn);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Get all post successfully!")
+                        .message(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY)
                         .data(tagList)
                         .build()
         );
@@ -45,7 +49,7 @@ public class TagController {
         Tag tag = tagService.getTagById(tagId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Get post by id successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_SUCCESSFULLY))
                         .data(tag)
                         .build()
         );
@@ -57,7 +61,7 @@ public class TagController {
         Tag tag = tagService.addTag(tagDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Created tags successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_CREATE_SUCCESSFULLY))
                         .data(tag)
                         .build()
         );
@@ -69,7 +73,7 @@ public class TagController {
         Tag tag = tagService.updateTag(tagId, tagDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Updated tag successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_SAVE_SUCCESSFULLY))
                         .data(tag)
                         .build()
         );
@@ -81,7 +85,7 @@ public class TagController {
         tagService.deleteTag(tagId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Deleted tag successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_DELETE_SUCCESSFULLY))
                         .data("")
                         .build()
         );

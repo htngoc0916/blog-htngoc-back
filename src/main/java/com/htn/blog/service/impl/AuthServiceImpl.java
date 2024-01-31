@@ -13,6 +13,7 @@ import com.htn.blog.repository.UserRepository;
 import com.htn.blog.security.custom.CustomUserDetailsServiceImpl;
 import com.htn.blog.security.jwt.JwtTokenProvider;
 import com.htn.blog.service.AuthService;
+import com.htn.blog.utils.LocalizationUtils;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -37,7 +38,8 @@ import java.util.Set;
 public class AuthServiceImpl implements AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
-
+    @Autowired
+    private LocalizationUtils localizationUtils;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -63,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
         }
         catch(BadCredentialsException ex) {
             log.error("Invalid email or password");
-            throw new BlogApiException(MessageKeys.AUTH_LOGIN_INVALID_EMAIL_PASSWORD);
+            throw new BlogApiException(localizationUtils.translate(MessageKeys.AUTH_LOGIN_INVALID_EMAIL_PASSWORD));
         }
     }
 
@@ -72,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
     public User register(RegisterDTO registerDTO) {
         //check for email exists in database
         if(userRepository.existsByEmail(registerDTO.getEmail())){
-            throw new BlogApiException(MessageKeys.USER_EMAIL_EXIST);
+            throw new BlogApiException(localizationUtils.translate(MessageKeys.USER_EMAIL_EXIST));
         }
 
         User user = User.builder()
@@ -84,7 +86,7 @@ public class AuthServiceImpl implements AuthService {
 
         Set<Role> roles = new HashSet<>();
         Role userRole = roleRepository.findByRoleName(RoleConstants.ROLE_USER.toString()).orElseThrow(
-                () -> new RuntimeException(MessageKeys.AUTH_REGISTER_ROLE_USER_NOT_EXISTS)
+                () -> new RuntimeException(localizationUtils.translate(MessageKeys.AUTH_REGISTER_ROLE_USER_NOT_EXISTS))
         );
         roles.add(userRole);
         user.setRoles(roles);

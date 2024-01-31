@@ -1,11 +1,13 @@
 package com.htn.blog.service.impl;
 
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.TagDTO;
 import com.htn.blog.entity.Tag;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.TagRepository;
 import com.htn.blog.service.TagService;
 import com.htn.blog.utils.BlogUtils;
+import com.htn.blog.utils.LocalizationUtils;
 import com.htn.blog.vo.PagedResponseVO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +24,13 @@ public class TagServiceImpl implements TagService {
     private TagRepository tagRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private LocalizationUtils localizationUtils;
 
     @Override
     public Tag getTagById(Long tagId) {
         return tagRepository.findById(tagId).orElseThrow(
-                () -> new NotFoundException("Tag not found with tag id = " + tagId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.TAG_NOT_FOUND + " id = " + tagId))
         );
     }
 
@@ -70,7 +74,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag updateTag(Long tagId, TagDTO tagDTO) {
         Tag tag = tagRepository.findById(tagId).orElseThrow(
-                () -> new NotFoundException("Tag not found with tag id = " + tagId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.TAG_NOT_FOUND + " id = " + tagId))
         );
         tag = tag.update(tagDTO);
 
@@ -80,7 +84,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public void deleteTag(Long tagId) {
         Tag tag = tagRepository.findById(tagId).orElseThrow(
-                () -> new NotFoundException("Tag not found with tag id = " + tagId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.TAG_NOT_FOUND + " id = " + tagId))
         );
         tagRepository.delete(tag);
     }

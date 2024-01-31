@@ -1,9 +1,11 @@
 package com.htn.blog.controller;
 
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.MenuDTO;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.entity.Menu;
 import com.htn.blog.service.MenuService;
+import com.htn.blog.utils.LocalizationUtils;
 import com.htn.blog.vo.MenuVO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -21,13 +23,16 @@ import java.util.List;
 public class MenuController {
     @Autowired
     private MenuService menuService;
+    @Autowired
+    private LocalizationUtils localizationUtils;
+
     @Operation(summary = "Get all menus rest api")
     @GetMapping
     public ResponseEntity<?> getAllMenus(){
         List<MenuVO> menuVO = menuService.getAllMenus();
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Search all menus successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
                         .data(menuVO)
                         .build()
         );
@@ -38,19 +43,19 @@ public class MenuController {
         Menu menu = menuService.getMenu(menuId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Search menu successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_SUCCESSFULLY))
                         .data(menu)
                         .build()
         );
     }
 
-    @Operation(summary = "Get menu by menuId rest api")
+    @Operation(summary = "Get menu by menuCode rest api")
     @GetMapping("/menuCode/{code}")
     public ResponseEntity<?> getMenuByCode(@PathVariable("code") String menuCode){
         List<MenuVO> menu = menuService.getMenuByCode(menuCode);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Search menus successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_SUCCESSFULLY))
                         .data(menu)
                         .build()
         );
@@ -59,11 +64,11 @@ public class MenuController {
     @Operation(summary = "Add new a menu rest api")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> addMenu(@Valid  @RequestBody MenuDTO menuDTO){
+    public ResponseEntity<?> addMenu(@Valid @RequestBody MenuDTO menuDTO){
         Menu menu = menuService.addMenu(menuDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseDTO.builder()
-                        .message("Created a menu successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_CREATE_SUCCESSFULLY))
                         .data(menu)
                         .build()
         );
@@ -75,7 +80,7 @@ public class MenuController {
         Menu menu = menuService.updateMenu(menuId, menuDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Updated menu successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_SAVE_SUCCESSFULLY))
                         .data(menu)
                         .build()
         );
@@ -87,7 +92,7 @@ public class MenuController {
         menuService.deleteMenu(menuId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Deleted a menu successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_DELETE_SUCCESSFULLY))
                         .data("")
                         .build()
         );
