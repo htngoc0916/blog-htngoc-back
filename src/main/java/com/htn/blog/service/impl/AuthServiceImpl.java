@@ -1,5 +1,6 @@
 package com.htn.blog.service.impl;
 
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.common.RoleConstants;
 import com.htn.blog.dto.LoginDTO;
 import com.htn.blog.dto.RegisterDTO;
@@ -53,8 +54,6 @@ public class AuthServiceImpl implements AuthService {
 
         CustomUserDetailsServiceImpl userDetails = (CustomUserDetailsServiceImpl) authentication.getPrincipal();
         return jwtTokenProvider.generateJwtToken(userDetails);
-
-//        return jwtTokenProvider.generateToken(authentication);
     }
 
     private Authentication authenticate(String userEmail, String password) {
@@ -64,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
         }
         catch(BadCredentialsException ex) {
             log.error("Invalid email or password");
-            throw new BlogApiException("Invalid email or password");
+            throw new BlogApiException(MessageKeys.AUTH_LOGIN_INVALID_EMAIL_PASSWORD);
         }
     }
 
@@ -73,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
     public User register(RegisterDTO registerDTO) {
         //check for email exists in database
         if(userRepository.existsByEmail(registerDTO.getEmail())){
-            throw new BlogApiException("Email is already exists!");
+            throw new BlogApiException(MessageKeys.USER_EMAIL_EXIST);
         }
 
         User user = User.builder()
@@ -85,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
 
         Set<Role> roles = new HashSet<>();
         Role userRole = roleRepository.findByRoleName(RoleConstants.ROLE_USER.toString()).orElseThrow(
-                () -> new RuntimeException("ROLE_USER not exists!")
+                () -> new RuntimeException(MessageKeys.AUTH_REGISTER_ROLE_USER_NOT_EXISTS)
         );
         roles.add(userRole);
         user.setRoles(roles);

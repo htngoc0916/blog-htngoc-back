@@ -1,5 +1,6 @@
 package com.htn.blog.service.impl;
 
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.common.UploadCode;
 import com.htn.blog.dto.UserDTO;
 import com.htn.blog.entity.FileMaster;
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetailsVO getUserInfo(Long id) {
         User user = userRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("user not found with id" + id)
+                () -> new NotFoundException(MessageKeys.USER_NOT_FOUND + ": id = " + id)
         );
 
         UserDetailsVO userDetailsVO = modelMapper.map(user, UserDetailsVO.class);
@@ -89,7 +90,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
-                () -> new NotFoundException("user not found with email = " + email)
+                () -> new NotFoundException(MessageKeys.USER_NOT_FOUND_EMAIL + email)
         );
     }
 
@@ -103,7 +104,7 @@ public class UserServiceImpl implements UserService {
         User user = modelMapper.map(userDTO, User.class);
         Set<Role> roles = new HashSet<>();
         Role userRole = roleRepository.findByRoleName(userDTO.getRole()).orElseThrow(
-                () -> new RuntimeException("ROLE not exists!")
+                () -> new RuntimeException(MessageKeys.AUTH_REGISTER_ROLE_USER_NOT_EXISTS)
         );
         roles.add(userRole);
         user.setRoles(roles);
@@ -115,14 +116,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User updateUser(Long userId, UserDTO userDTO) {
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("user not found with id = " + userId)
+                () -> new NotFoundException(MessageKeys.USER_NOT_FOUND + ": id = " + userId)
         );
 //        handleRelationFiles(userDTO.getImageId(), userId);
         user = user.update(userDTO);
 
         Set<Role> roles = new HashSet<>();
         Role userRole = roleRepository.findByRoleName(userDTO.getRole()).orElseThrow(
-                () -> new RuntimeException("ROLE not exists!")
+                () -> new RuntimeException(MessageKeys.AUTH_REGISTER_ROLE_USER_NOT_EXISTS)
         );
         roles.add(userRole);
         user.setRoles(roles);
@@ -167,7 +168,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public FileMaster uploadAvatar(String email, MultipartFile multipartFile) {
         User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new NotFoundException("user not found with email: " + email)
+                () -> new NotFoundException(MessageKeys.USER_NOT_FOUND_EMAIL + email)
         );
         validateImage(multipartFile);
         FileMaster fileMaster = cloudinaryService.uploadCloudinary(user.getId(), multipartFile);
@@ -190,7 +191,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteAvatar(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("user not found with id: " + userId)
+                () -> new NotFoundException(MessageKeys.USER_NOT_FOUND + " id = " + userId)
         );
 
         List<FileRelation> fileRelations = fileRelationRepository.findFileRelationByRelatedIdAndRelatedCode(userId, UploadCode.USER.toString());
@@ -205,10 +206,10 @@ public class UserServiceImpl implements UserService {
 
     private void validateImage(MultipartFile file) {
         if (file.getContentType() == null || !file.getContentType().startsWith("image/")) {
-            throw new RuntimeException("Only image files are allowed.");
+            throw new RuntimeException(MessageKeys.UPLOAD_VALIDATE_ONLY_IMAGE);
         }
         if (file.getSize() > 5 * 1024 * 1024) {
-            throw new RuntimeException("File size exceeds the limit of 5MB.");
+            throw new RuntimeException(MessageKeys.UPLOAD_VALIDATE_FILE_SIZE_EXCEEDS);
         }
     }
 }

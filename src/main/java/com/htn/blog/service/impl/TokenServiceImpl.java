@@ -1,6 +1,7 @@
 package com.htn.blog.service.impl;
 
 import com.htn.blog.common.BlogConstants;
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.entity.Token;
 import com.htn.blog.entity.User;
 import com.htn.blog.exception.NotFoundException;
@@ -48,7 +49,7 @@ public class TokenServiceImpl implements TokenService {
         CustomUserDetailsServiceImpl userDetails = (CustomUserDetailsServiceImpl) authentication.getPrincipal();
 
         User user = userRepository.findByEmail(userDetails.getEmail()).orElseThrow(
-                () -> new NotFoundException("User not found with email =" + userDetails.getEmail())
+                () -> new NotFoundException(MessageKeys.USER_NOT_FOUND_EMAIL + ": " + userDetails.getEmail())
         );
 
         List<Token> tokens = tokenRepository.findByUser(user);
@@ -82,12 +83,12 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public Token refreshToken(String refreshToken) {
         Token token = tokenRepository.findByRefreshToken(refreshToken).orElseThrow(
-                () -> new TokenRefreshException(refreshToken, "Refresh token does not exist!")
+                () -> new TokenRefreshException(refreshToken, MessageKeys.AUTH_REFRESH_TOKEN_DOEST_EXIST)
         );
 
         if(token.getRefreshExpirationDate().compareTo(new Date()) < 0){
             tokenRepository.delete(token);
-            throw new TokenRefreshException(refreshToken, "Refresh token was expired. Please make a new login request");
+            throw new TokenRefreshException(refreshToken, MessageKeys.AUTH_REFRESH_TOKEN_EXPIRED);
         }
 
         String newToken = jwtTokenProvider.generateTokenFromUsername(token.getUser().getEmail());

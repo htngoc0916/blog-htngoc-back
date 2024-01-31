@@ -1,6 +1,7 @@
 package com.htn.blog.controller;
 
 import com.htn.blog.common.BlogConstants;
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.dto.UserDTO;
 import com.htn.blog.entity.FileMaster;
@@ -36,7 +37,7 @@ public class UserController {
         PagedResponseVO<User> users = userService.getAllUser(pageNo, pageSize, sortBy, sortDir, userName, usedYn);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Get all user successfully!")
+                        .message(MessageKeys.USER_GET_ALL_SUCCESSFULLY)
                         .data(users)
                         .build()
         );
@@ -48,7 +49,7 @@ public class UserController {
         UserDetailsVO user = userService.getUserInfo(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Get user by id successfully!")
+                        .message(MessageKeys.USER_GET_ALL_SUCCESSFULLY)
                         .data(user)
                         .build()
         );
@@ -60,7 +61,7 @@ public class UserController {
         User user = userService.getUserByEmail(email);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Get user by id successfully!")
+                        .message(MessageKeys.USER_GET_BY_ID_SUCCESSFULLY)
                         .data(user)
                         .build()
         );
@@ -71,7 +72,7 @@ public class UserController {
     public ResponseEntity<?> checkEmail(@PathVariable("email") String email){
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Get user by id successfully!")
+                        .message(MessageKeys.USER_EMAIL_CHECK_SUCCESSFULLY)
                         .data(userService.existsEmail(email))
                         .build()
         );
@@ -83,7 +84,7 @@ public class UserController {
         User user = userService.addUser(userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Get user by id successfully!")
+                        .message(MessageKeys.USER_CREATE_USER_SUCCESSFULLY)
                         .data(user)
                         .build()
         );
@@ -96,7 +97,7 @@ public class UserController {
         User user = userService.updateUser(userId, userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Updated user by id successfully!")
+                        .message(MessageKeys.USER_UPDATE_USER_SUCCESSFULLY)
                         .data(user)
                         .build()
         );
@@ -109,7 +110,7 @@ public class UserController {
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Deleted user by id successfully!")
+                        .message(MessageKeys.USER_DELETE_USER_SUCCESSFULLY)
                         .data("")
                         .build()
         );
@@ -123,7 +124,7 @@ public class UserController {
         FileMaster fileMaster = userService.uploadAvatar(email, file);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Upload file successfully!")
+                        .message(MessageKeys.USER_UPLOAD_AVATAR_SUCCESSFULLY)
                         .data(fileMaster)
                         .build()
         );
@@ -135,7 +136,7 @@ public class UserController {
         userService.deleteAvatar(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Deleted avatar successfully!")
+                        .message(MessageKeys.USER_DELETE_AVATAR_SUCCESSFULLY)
                         .data("")
                         .build()
         );
