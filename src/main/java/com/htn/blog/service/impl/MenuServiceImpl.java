@@ -1,10 +1,12 @@
 package com.htn.blog.service.impl;
 
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.MenuDTO;
 import com.htn.blog.entity.Menu;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.repository.MenuRepository;
 import com.htn.blog.service.MenuService;
+import com.htn.blog.utils.LocalizationUtils;
 import com.htn.blog.vo.MenuVO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ public class MenuServiceImpl implements MenuService {
     private MenuRepository menuRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private LocalizationUtils localizationUtils;
 
     @Override
     public Menu addMenu(MenuDTO menuDTO) {
@@ -30,7 +34,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public Menu getMenu(Long menuId) {
         return menuRepository.findById(menuId).orElseThrow(
-                () -> new NotFoundException("Menu not found width id = " + menuId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.MENU_NOT_FOUND + " id = " + menuId))
         );
     }
 
@@ -43,7 +47,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public Menu updateMenu(Long menuId, MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuId).orElseThrow(
-                () -> new NotFoundException("Menu not found width id = " + menuId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.MENU_NOT_FOUND + " id = " + menuId))
         );
         menu = menu.update(menuDTO);
         return menuRepository.save(menu);
@@ -52,7 +56,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public void deleteMenu(Long menuId) {
         Menu menu = menuRepository.findById(menuId).orElseThrow(
-                () -> new NotFoundException("Menu not found width id = " + menuId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.MENU_NOT_FOUND + " id = " + menuId))
         );
         menuRepository.delete(menu);
     }
