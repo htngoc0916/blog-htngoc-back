@@ -60,6 +60,7 @@ public class Post extends BaseEntity {
         this.setModId(postDTO.getModId());
         this.setModDt(new Date());
         this.setUsedYn(postDTO.getUsedYn());
+        this.setThumbnail(postDTO.getThumbnail());
         return this;
     }
 }

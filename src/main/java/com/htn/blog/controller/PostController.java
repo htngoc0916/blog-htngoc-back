@@ -94,7 +94,7 @@ public class PostController {
         );
     }
 
-    @GetMapping("/{keywords}")
+    @GetMapping("search/{keywords}")
     public ResponseEntity<?> searchPostByTitle(@PathVariable("keywords") String keywords,
                                                @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
                                                @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
