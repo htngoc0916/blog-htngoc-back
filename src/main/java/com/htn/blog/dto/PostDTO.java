@@ -40,6 +40,9 @@ public class PostDTO {
     @Size(max = 1, message = "Post usedYn only allows 1 character")
     private String usedYn;
 
+    @Schema(description = "Blog post author")
+    private Long userId;
+
     @Schema(description = "Blog post created user")
     private Long regId;
 
