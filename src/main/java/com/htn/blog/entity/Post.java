@@ -28,6 +28,8 @@ public class Post extends BaseEntity {
     private String description;
     @Column(name = "THUMBNAIL")
     private String thumbnail;
+    @Column(name = "THUMBNAIL_ID")
+    private Long thumbnailId;
     @Lob
     @Column(name = "CONTENT", columnDefinition = "TEXT")
     private String content;

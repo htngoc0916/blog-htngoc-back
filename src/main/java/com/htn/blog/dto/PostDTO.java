@@ -3,10 +3,7 @@ package com.htn.blog.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.Set;
@@ -33,7 +30,10 @@ public class PostDTO {
     @Schema(description = "Blog post slug")
     private String slug;
 
-    @Schema(description = "Blog thumbnail")
+    @Schema(description = "Blog post thumbnail id")
+    private Long thumbnailId;
+
+    @Schema(description = "Blog post thumbnail")
     private String thumbnail;
 
     @Schema(description = "Blog post use flag")

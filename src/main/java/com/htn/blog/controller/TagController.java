@@ -38,7 +38,7 @@ public class TagController {
         PagedResponseVO<Tag> tagList = tagService.getAllTag(pageNo, pageSize, sortBy, sortDir, tagName, usedYn);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
                         .data(tagList)
                         .build()
         );
