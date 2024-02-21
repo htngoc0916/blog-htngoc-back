@@ -13,7 +13,8 @@ public class UserDTO {
     private String password;
     private String userName;
     private String avatar;
-    private String usedYn;
+    @Builder.Default
+    private String usedYn = "Y";
     private Long modId;
     private Long imageId;
     private String role;

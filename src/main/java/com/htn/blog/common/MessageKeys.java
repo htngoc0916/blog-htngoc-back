@@ -19,6 +19,9 @@ public class MessageKeys {
     public static final String USER_NOT_FOUND = "user.not-found";
     public static final String USER_NOT_FOUND_EMAIL = "user.not-found-with-email";
     public static final String USER_EMAIL_EXIST = "user.email.exist";
+    public static final String USER_EMAIL_CAN_BE_USED = "user.email.can-be-used";
+    public static final String USER_IS_LOCKED = "user.is-locked";
+
     public static final String USER_EMAIL_CHECK_SUCCESSFULLY = "user.email.check-email-successfully";
     public static final String USER_UPLOAD_AVATAR_SUCCESSFULLY = "user.upload-avatar-successfully";
     public static final String USER_DELETE_AVATAR_SUCCESSFULLY = "user.delete-avatar-successfully";

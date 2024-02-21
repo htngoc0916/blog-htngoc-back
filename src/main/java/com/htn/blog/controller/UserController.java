@@ -75,10 +75,15 @@ public class UserController {
     @Operation(summary = "Check user with email rest api")
     @GetMapping("/checkEmail/{email}")
     public ResponseEntity<?> checkEmail(@PathVariable("email") String email){
+        Boolean result = userService.existsEmail(email);
+        String msg = result
+                ? localizationUtils.translate(MessageKeys.USER_EMAIL_EXIST)
+                : localizationUtils.translate(MessageKeys.USER_EMAIL_CAN_BE_USED);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message(localizationUtils.translate(MessageKeys.USER_EMAIL_CHECK_SUCCESSFULLY))
-                        .data(userService.existsEmail(email))
+                        .message(msg)
+                        .data(result)
                         .build()
         );
     }

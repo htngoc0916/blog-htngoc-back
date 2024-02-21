@@ -54,6 +54,13 @@ public class AuthServiceImpl implements AuthService {
         Authentication authentication = authenticate(loginDTO.getEmail(), loginDTO.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        //check DB usedYn
+        userRepository.findByEmail(loginDTO.getEmail()).ifPresent(user -> {
+            if (!user.getUsedYn().equals("Y")) {
+                throw new BlogApiException(localizationUtils.translate(MessageKeys.USER_IS_LOCKED));
+            }
+        });
+
         CustomUserDetailsServiceImpl userDetails = (CustomUserDetailsServiceImpl) authentication.getPrincipal();
         return jwtTokenProvider.generateJwtToken(userDetails);
     }
@@ -83,6 +90,7 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(registerDTO.getPassword()))
                 .build();
         user.setRegId(registerDTO.getRegId());
+        user.setUsedYn("Y");
 
         Set<Role> roles = new HashSet<>();
         Role userRole = roleRepository.findByRoleName(RoleConstants.ROLE_USER.toString()).orElseThrow(
