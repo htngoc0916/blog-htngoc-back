@@ -31,11 +31,25 @@ public class CloudinaryController {
         );
     }
 
-    @Operation(summary = "Upload cloudinary rest api")
+    @Operation(summary = "Delete cloudinary file with fileName rest api")
     @DeleteMapping("/delete/fileName/{fileName:.+}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteCloudinary(@PathVariable("fileName") String fileName){
         cloudinaryService.deleteCloudinary(fileName);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDTO.builder()
+                        .message("Delete file successfully!")
+                        .data("")
+                        .build()
+        );
+    }
+
+
+    @Operation(summary = "Delete cloudinary file with Id rest api")
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteCloudinaryById(@PathVariable("id") Long id){
+        cloudinaryService.deleteCloudinaryByImageId(id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message("Delete file successfully!")

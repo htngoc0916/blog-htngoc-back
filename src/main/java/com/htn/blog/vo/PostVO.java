@@ -19,6 +19,7 @@ public class PostVO {
     private String content;
     private String slug;
     private String thumbnail;
+    private Long thumbnailId;
     private Integer viewCnt = 0;
 
     private String usedYn = "Y";

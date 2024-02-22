@@ -148,6 +148,7 @@ CREATE TABLE code_detail (
 
 CREATE TABLE file_master (
                              ID INT AUTO_INCREMENT PRIMARY KEY,
+                             PUBLIC_ID VARCHAR(100) NOT NULL,
                              FILE_NAME VARCHAR(200) NOT NULL,
                              FILE_ORIGINAL_NAME VARCHAR(200),
                              FILE_URL VARCHAR(255),

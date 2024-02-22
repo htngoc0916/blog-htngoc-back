@@ -56,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
 
         //check DB usedYn
         userRepository.findByEmail(loginDTO.getEmail()).ifPresent(user -> {
-            if (!user.getUsedYn().equals("Y")) {
+            if (user.getUsedYn() == null || !user.getUsedYn().equals("Y")) {
                 throw new BlogApiException(localizationUtils.translate(MessageKeys.USER_IS_LOCKED));
             }
         });
