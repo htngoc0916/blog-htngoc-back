@@ -1,6 +1,8 @@
 package com.htn.blog.common;
 
 
+import org.springframework.data.domain.Sort;
+
 public class BlogConstants {
     //api code
     public final static String SUCCESS = "SUCCESS";
@@ -19,4 +21,9 @@ public class BlogConstants {
 
     //token
     public final static int MAX_AUTH_TOKEN = 3;
+
+
+
+    public final static int DEFAULT_PAGE_NUMBER_TEST = 1;
+    public final static int DEFAULT_PAGE_SIZE_TEST = 1;
 }

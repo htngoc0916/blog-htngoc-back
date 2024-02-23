@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
         return PagedResponseVO.<User>builder()
                 .data(userList)
-                .pageNo(resultPage.getNumber() + 1)
+                .pageNo(resultPage.getNumber())
                 .pageSize(resultPage.getSize())
                 .totalElements(resultPage.getTotalElements())
                 .totalPage(resultPage.getTotalPages())

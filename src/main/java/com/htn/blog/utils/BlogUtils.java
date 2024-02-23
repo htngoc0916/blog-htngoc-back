@@ -6,6 +6,7 @@ import com.htn.blog.exception.BlogApiException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -38,6 +39,6 @@ public class BlogUtils {
 
     public static Pageable getPageable(String sortBy, String sortDir, Integer pageNo, Integer pageSize){
         Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
-        return PageRequest.of(pageNo - 1, pageSize, sort);
+        return PageRequest.of(pageNo, pageSize, sort);
     }
 }

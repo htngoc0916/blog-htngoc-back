@@ -13,6 +13,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -32,6 +34,25 @@ public class TagServiceImpl implements TagService {
         return tagRepository.findById(tagId).orElseThrow(
                 () -> new NotFoundException(localizationUtils.translate(MessageKeys.TAG_NOT_FOUND + " id = " + tagId))
         );
+    }
+
+    //localhost:8080/api/v1/tags/test?pageNo=1&pageSize=5&sortBy=id,desc&sortBy=tagName,asc
+    @Override
+    public PagedResponseVO<Tag> getAllTagTest(@SortDefault.SortDefaults({
+            @SortDefault(
+                    sort = "id",
+                    direction = Sort.Direction.DESC),
+            @SortDefault(
+                    sort = "tagName",
+                    direction = Sort.Direction.ASC)
+    }) Pageable pageable, String tagName, String usedYn) {
+        Page<Tag> resultPage = tagRepository.findAll(pageable);
+
+        List<Tag> tagList = resultPage.getContent()
+                .stream()
+                .map(_tag -> modelMapper.map(_tag, Tag.class))
+                .toList();
+        return  null;
     }
 
     @Override
@@ -57,7 +78,7 @@ public class TagServiceImpl implements TagService {
 
         return PagedResponseVO.<Tag>builder()
                 .data(tagList)
-                .pageNo(resultPage.getNumber() + 1)
+                .pageNo(resultPage.getNumber())
                 .pageSize(resultPage.getSize())
                 .totalElements(resultPage.getTotalElements())
                 .totalPage(resultPage.getTotalPages())
