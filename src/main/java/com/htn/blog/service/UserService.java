@@ -5,10 +5,11 @@ import com.htn.blog.entity.FileMaster;
 import com.htn.blog.entity.User;
 import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.UserDetailsVO;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
-    PagedResponseVO<User> getAllUser(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String categoryName, String usedYn);
+    PagedResponseVO<User> getAllUser(Pageable pageable, String categoryName, String usedYn);
     UserDetailsVO getUserInfo(Long id);
     User getUserByEmail(String email);
     boolean existsEmail(String email);

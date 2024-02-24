@@ -1,6 +1,5 @@
 package com.htn.blog.controller;
 
-import com.htn.blog.common.BlogConstants;
 import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.CategoryDTO;
 import com.htn.blog.dto.ResponseDTO;
@@ -9,8 +8,11 @@ import com.htn.blog.service.CategoryService;
 import com.htn.blog.utils.LocalizationUtils;
 import com.htn.blog.vo.PagedResponseVO;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,14 +29,11 @@ public class CategoryController {
 
     @Operation(summary = "Get all category rest api")
     @GetMapping()
-    public ResponseEntity<?> getAllCategory(@RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-                                            @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-                                            @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-                                            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
+    public ResponseEntity<?> getAllCategory(@SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+                                            @PageableDefault Pageable pageable,
                                             @RequestParam(value = "usedYn", required = false) String usedYn,
-                                            @RequestParam(value = "categoryName", required = false) String categoryName,
-                                            HttpServletRequest request){
-        PagedResponseVO<Category> categoryList = categoryService.getAllCategories(pageNo, pageSize, sortBy, sortDir, categoryName, usedYn);
+                                            @RequestParam(value = "categoryName", required = false) String categoryName){
+        PagedResponseVO<Category> categoryList = categoryService.getAllCategories(pageable, categoryName, usedYn);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))

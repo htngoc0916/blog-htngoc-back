@@ -1,6 +1,5 @@
 package com.htn.blog.controller;
 
-import com.htn.blog.common.BlogConstants;
 import com.htn.blog.dto.PostDTO;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.service.PostService;
@@ -12,6 +11,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,13 +32,11 @@ public class PostController {
             description = "Get all post reset api is used to fetch all the posts from the database")
     @ApiResponse(responseCode = "200", description = "Http status 200 success")
     @GetMapping
-    public ResponseEntity<?> getAllPosts(
-            @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
-    ){
-        PagedResponseVO<PostVO> pagedResponseVO = postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
+    public ResponseEntity<?> getAllPosts(@SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+                                         @PageableDefault Pageable pageable,
+                                         @RequestParam(value = "usedYn", required = false) String usedYn,
+                                         @RequestParam(value = "postTitle", required = false) String postTitle){
+        PagedResponseVO<PostVO> pagedResponseVO = postService.getAllPosts(pageable, usedYn, postTitle);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message("Get all post successfully!")
@@ -52,8 +53,37 @@ public class PostController {
         PostVO postVO = postService.getPostById(id);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .message("Get all post successfully!")
+                        .message("Get post By Id successfully!")
                         .data(postVO)
+                        .build()
+        );
+    }
+
+    @Operation(summary = "Get post By id rest api",
+            description = "Get post by id rest api is used to get single post from the database")
+    @ApiResponse(responseCode = "200", description = "Http status 200 success")
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<?> getPostBySlug(@PathVariable(name = "slug") String slug){
+        PostVO postVO = postService.getPostBySlug(slug);
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .message("Get post By Slug successfully!")
+                        .data(postVO)
+                        .build()
+        );
+    }
+
+    @Operation(summary = "Get related post by slug")
+    @GetMapping("/related/slug/{slug}")
+    public ResponseEntity<?> getPostsRelatedBySlug(@PathVariable("slug") String slug,
+                                            @SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+                                            @PageableDefault Pageable pageable){
+
+        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsRelatedBySlug(slug, pageable);
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .message("Get post with category Id successfully!")
+                        .data(pagedResponseVO)
                         .build()
         );
     }
@@ -61,12 +91,10 @@ public class PostController {
     @Operation(summary = "Get post By tag id")
     @GetMapping("/tag/{id}")
     public ResponseEntity<?> getPostByTagId(@PathVariable("id") Long tagId,
-            @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
+                                            @SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+                                            @PageableDefault Pageable pageable){
 
-        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByTag(tagId, pageNo, pageSize, sortBy, sortDir);
+        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByTag(tagId, pageable);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
                         .message("Get post with category Id successfully!")
@@ -81,11 +109,9 @@ public class PostController {
     @GetMapping("/category/{id}")
     public ResponseEntity<?> getPostsByCategoryId(
             @PathVariable("id") Long categoryId,
-            @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
-        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByCategory(categoryId, pageNo, pageSize, sortBy, sortDir);
+            @SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+            @PageableDefault Pageable pageable){
+        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByCategory(categoryId, pageable);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
                         .message("Get post with category Id successfully!")
@@ -96,11 +122,9 @@ public class PostController {
 
     @GetMapping("/search/{keywords}")
     public ResponseEntity<?> searchPostByTitle(@PathVariable("keywords") String keywords,
-                                               @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-                                               @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-                                               @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-                                               @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
-        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByTitle(keywords, pageNo, pageSize, sortBy, sortDir);
+                                               @SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+                                               @PageableDefault Pageable pageable){
+        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByTitle(keywords, pageable);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
                         .message("Get posts with title successfully!")

@@ -1,18 +1,18 @@
 package com.htn.blog.utils;
 
 import com.htn.blog.common.BlogConstants;
-import com.htn.blog.entity.FileMaster;
 import com.htn.blog.exception.BlogApiException;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 
 import java.time.Instant;
 import java.util.UUID;
 
 public class BlogUtils {
-    public static void validatePageNumberAndSize(int page, int size) {
+    public static void validatePageable(Pageable pageable) {
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+
         if (page < 0) {
             throw new BlogApiException("Page number cannot be less than zero.");
         }
@@ -31,14 +31,8 @@ public class BlogUtils {
         String uuid = UUID.randomUUID().toString().replace("-", "");
         return String.join("_", timestamp, uuid);
     }
-    public static Sort getSortByDir(String sortBy, String sortDir){
-        return sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
-    }
 
-    public static Pageable getPageable(String sortBy, String sortDir, Integer pageNo, Integer pageSize){
-        Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
-        return PageRequest.of(pageNo, pageSize, sort);
+    public static int resultPageNo(Page<?> page) {
+        return page.getNumber() + 1;
     }
 }

@@ -14,10 +14,9 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -62,6 +61,26 @@ public class PostServiceImpl implements PostService {
         );
         return modelMapper.map(post, PostVO.class);
     }
+
+    @Override
+    public PostVO getPostBySlug(String slug) {
+        Post post = postRepository.findBySlug(slug).orElseThrow(
+                () -> new NotFoundException("Post not found with slug = " + slug)
+        );
+        return modelMapper.map(post, PostVO.class);
+    }
+
+    @Override
+    public PagedResponseVO<PostVO> getPostsRelatedBySlug(String slug, Pageable pageable) {
+        Post post = postRepository.findBySlug(slug).orElseThrow(
+                () -> new NotFoundException("Post not found with slug id = " + slug)
+        );
+
+        Page<Post> postPage = postRepository.findByTagsIn(post.getTags(), pageable);
+
+        return getPostPaged(postPage);
+    }
+
     @Override
     @Transactional
     public PostVO updatePost(PostDTO postDTO, Long id) {
@@ -128,41 +147,45 @@ public class PostServiceImpl implements PostService {
         postRepository.delete(post);
     }
     @Override
-    public PagedResponseVO<PostVO> getAllPosts(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
-        Pageable pageable = BlogUtils.getPageable(sortBy, sortDir, pageNo, pageSize);
-        Page<Post> postPage = postRepository.findAll(pageable);
-        return getPostPaged(postPage);
+    public PagedResponseVO<PostVO> getAllPosts(Pageable pageable, String usedYn, String postTitle) {
+        BlogUtils.validatePageable(pageable);
+
+        Page<Post> resultPage;
+        if(StringUtils.hasText(postTitle) && StringUtils.hasText(usedYn)){
+            resultPage = postRepository.findByTitleContainingAndUsedYn(postTitle, usedYn, pageable);
+        }else if(StringUtils.hasText(postTitle)){
+            resultPage = postRepository.findByTitleContaining(postTitle, pageable);
+        }else if(StringUtils.hasText(usedYn)){
+            resultPage = postRepository.findByUsedYn(usedYn, pageable);
+        }else {
+            resultPage = postRepository.findAll(pageable);
+        }
+
+        return getPostPaged(resultPage);
     }
     @Override
-    public PagedResponseVO<PostVO> getPostsByCategory(Long categoryId, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+    public PagedResponseVO<PostVO> getPostsByCategory(Long categoryId, Pageable pageable) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new NotFoundException("Category not found with category id = " + categoryId)
         );
-        Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         Page<Post> postPage = postRepository.findByCategoryId(categoryId, pageable);
         return getPostPaged(postPage);
     }
 
     @Override
-    public PagedResponseVO<PostVO> getPostsByTitle(String keywords, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
-        Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+    public PagedResponseVO<PostVO> getPostsByTitle(String keywords, Pageable pageable) {
         Page<Post> postPage = postRepository.findByTitleContaining(keywords, pageable);;
         return getPostPaged(postPage);
     }
 
     @Override
-    public PagedResponseVO<PostVO> getPostsByTag(Long tagId, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+    public PagedResponseVO<PostVO> getPostsByTag(Long tagId, Pageable pageable) {
         Tag tag = tagRepository.findById(tagId).orElseThrow(
                 () -> new NotFoundException("Category not found with tag id = " + tagId)
         );
         Set<Tag> tags = new HashSet<>();
         tags.add(tag);
-        Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-
         Page<Post> postPage = postRepository.findByTagsIn(tags, pageable);
         return getPostPaged(postPage);
     }
@@ -175,7 +198,7 @@ public class PostServiceImpl implements PostService {
 
         return PagedResponseVO.<PostVO>builder()
                 .data(postList)
-                .pageNo(postPage.getNumber())
+                .pageNo(BlogUtils.resultPageNo(postPage))
                 .pageSize(postPage.getSize())
                 .totalElements(postPage.getTotalElements())
                 .totalPage(postPage.getTotalPages())

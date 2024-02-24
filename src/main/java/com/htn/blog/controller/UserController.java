@@ -1,6 +1,5 @@
 package com.htn.blog.controller;
 
-import com.htn.blog.common.BlogConstants;
 import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.dto.UserDTO;
@@ -11,9 +10,12 @@ import com.htn.blog.utils.LocalizationUtils;
 import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.UserDetailsVO;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,14 +34,11 @@ public class UserController {
     @Operation(summary = "Get all user rest api")
     @GetMapping()
     @PreAuthorize(value = "hasRole('ADMIN')")
-    public ResponseEntity<?> getAllUser(@RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-                                        @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-                                        @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-                                        @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
+    public ResponseEntity<?> getAllUser(@SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+                                        @PageableDefault Pageable pageable,
                                         @RequestParam(value = "usedYn", required = false) String usedYn,
-                                        @RequestParam(value = "userName", required = false) String userName,
-                                        HttpServletRequest request){
-        PagedResponseVO<User> users = userService.getAllUser(pageNo, pageSize, sortBy, sortDir, userName, usedYn);
+                                        @RequestParam(value = "userName", required = false) String userName){
+        PagedResponseVO<User> users = userService.getAllUser(pageable, userName, usedYn);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))

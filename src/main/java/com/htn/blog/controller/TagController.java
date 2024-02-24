@@ -1,6 +1,5 @@
 package com.htn.blog.controller;
 
-import com.htn.blog.common.BlogConstants;
 import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.dto.TagDTO;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,33 +29,15 @@ public class TagController {
     @Autowired
     private LocalizationUtils localizationUtils;
 
-    @GetMapping("/test")
-    @Operation(summary = "Get all tags rest api")
-    public ResponseEntity<?> getAllTags( @PageableDefault Pageable pageable,
-            @RequestParam(value = "usedYn", required = false) String usedYn,
-            @RequestParam(value = "tagName", required = false) String tagName
-    ){
-        PagedResponseVO<Tag> tagList = tagService.getAllTagTest(pageable, tagName, usedYn);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDTO.builder()
-                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
-                        .data(tagList)
-                        .build()
-        );
-    }
-
-
     @GetMapping
     @Operation(summary = "Get all tags rest api")
     public ResponseEntity<?> getAllTags(
-            @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
+            @SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+            @PageableDefault Pageable pageable,
             @RequestParam(value = "usedYn", required = false) String usedYn,
             @RequestParam(value = "tagName", required = false) String tagName
     ){
-        PagedResponseVO<Tag> tagList = tagService.getAllTag(pageNo, pageSize, sortBy, sortDir, tagName, usedYn);
+        PagedResponseVO<Tag> tagList = tagService.getAllTag(pageable, tagName, usedYn);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
                         .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))

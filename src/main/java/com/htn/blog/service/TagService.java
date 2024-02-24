@@ -8,8 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface TagService {
     Tag getTagById(Long tagId);
-    PagedResponseVO<Tag> getAllTag(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String tagName, String usedYn);
-    PagedResponseVO<Tag> getAllTagTest(Pageable pageable, String tagName, String usedYn);
+    PagedResponseVO<Tag> getAllTag(Pageable pageable, String tagName, String usedYn);
     Tag addTag(TagDTO tagDTO);
     Tag updateTag(Long tagId, TagDTO tagDTO);
     void deleteTag(Long tagId);
