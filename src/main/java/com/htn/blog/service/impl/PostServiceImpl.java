@@ -101,6 +101,15 @@ public class PostServiceImpl implements PostService {
         return modelMapper.map(post, PostVO.class);
     }
 
+    @Override
+    public void updateViewCount(String slug) {
+        Post post = postRepository.findBySlug(slug).orElseThrow(
+                ()-> new NotFoundException("Post slug not found with slug = " + slug)
+        );
+        post.setViewCnt(post.getViewCnt() + 1);
+        postRepository.save(post);
+    }
+
     private Set<Tag> checkTags(PostDTO postDTO) {
         Set<Tag> tags = new HashSet<>();
         if(postDTO.getTags() != null){

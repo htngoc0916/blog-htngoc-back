@@ -11,6 +11,7 @@ public interface PostService {
     PostVO getPostById(Long id);
     PostVO getPostBySlug(String slug);
     PostVO updatePost(PostDTO postDTO, Long id);
+    void updateViewCount(String slug);
     void deletePostById(Long id);
     PagedResponseVO<PostVO> getPostsByCategory(Long categoryId, Pageable pageable);
     PagedResponseVO<PostVO> getPostsRelatedBySlug(String slug, Pageable pageable);
