@@ -159,8 +159,6 @@ public class PostController {
     @Operation(summary = "Update post view count rest api",
             description = "Update view count rest api is used to update view count of Post by post slug in the database")
     @ApiResponse(responseCode = "200", description = "http status 200 success")
-    @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/postView/{slug}")
     public ResponseEntity<?> updateViewCount(@PathVariable(name = "slug") String slug){
         postService.updateViewCount(slug);

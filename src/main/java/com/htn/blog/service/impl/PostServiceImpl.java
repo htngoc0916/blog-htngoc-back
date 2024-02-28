@@ -106,7 +106,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findBySlug(slug).orElseThrow(
                 ()-> new NotFoundException("Post slug not found with slug = " + slug)
         );
-        post.setViewCnt(post.getViewCnt() + 1);
+        post.setViewCnt(post.getViewCnt() + 1L);
         postRepository.save(post);
     }
 
