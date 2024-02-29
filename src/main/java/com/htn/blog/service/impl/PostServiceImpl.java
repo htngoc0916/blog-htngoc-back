@@ -1,13 +1,16 @@
 package com.htn.blog.service.impl;
 
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.PostDTO;
 import com.htn.blog.entity.*;
 import com.htn.blog.exception.MyFileNotFoundException;
 import com.htn.blog.exception.NotFoundException;
+import com.htn.blog.mapper.PostMapper;
 import com.htn.blog.repository.*;
 import com.htn.blog.service.PostService;
 import com.htn.blog.utils.BlogUtils;
 import com.htn.blog.utils.FileRelatedCode;
+import com.htn.blog.utils.LocalizationUtils;
 import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.PostVO;
 import jakarta.transaction.Transactional;
@@ -20,6 +23,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -36,13 +40,17 @@ public class PostServiceImpl implements PostService {
     private TagRepository tagRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private LocalizationUtils localizationUtils;
+    @Autowired
+    private PostMapper postMapper;
 
     @Override
     @Transactional
     public PostVO addPost(PostDTO postDTO) {
         Category category =  categoryRepository.findById(postDTO.getCategoryId()).orElseThrow(
-                () -> new NotFoundException("Category not found with categoryId = " + postDTO.getCategoryId())
-        );
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.CATEGORY_NOT_FOUND) + " id: " + postDTO.getCategoryId())
+                );
 
         Post post = modelMapper.map(postDTO, Post.class);
         post.setCategory(category);
@@ -57,7 +65,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostVO getPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Post not found with id = " + id)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.POST_NOT_FOUND) + " postId: " + id)
         );
         return modelMapper.map(post, PostVO.class);
     }
@@ -71,9 +79,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public boolean checkPostTitle(String title) {
+        return postRepository.existsByTitle(title);
+    }
+
+    @Override
     public PagedResponseVO<PostVO> getPostsRelatedBySlug(String slug, Pageable pageable) {
         Post post = postRepository.findBySlug(slug).orElseThrow(
-                () -> new NotFoundException("Post not found with slug id = " + slug)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.POST_NOT_FOUND) + " slug: " + slug)
         );
 
         Page<Post> postPage = postRepository.findByTagsIn(post.getTags(), pageable);
@@ -83,12 +96,23 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
+    public List<PostVO> getHotPosts() {
+
+        postMapper.updatePostViewCount(100L);
+
+        List<PostVO> resultPosts = postMapper.selectHotPosts();
+
+        return resultPosts;
+    }
+
+    @Override
+    @Transactional
     public PostVO updatePost(PostDTO postDTO, Long id) {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Post not found with id = " + id)
         );
         Category category = categoryRepository.findById(postDTO.getCategoryId()).orElseThrow(
-                () -> new NotFoundException("Category not found with id = " + postDTO.getCategoryId())
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.CATEGORY_NOT_FOUND) +  " categoryId: " + postDTO.getCategoryId())
         );
 
         //handle post images
@@ -104,7 +128,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void updateViewCount(String slug) {
         Post post = postRepository.findBySlug(slug).orElseThrow(
-                ()-> new NotFoundException("Post slug not found with slug = " + slug)
+            () -> new NotFoundException(localizationUtils.translate(MessageKeys.POST_NOT_FOUND) + " slug: " + slug)
         );
         post.setViewCnt(post.getViewCnt() + 1L);
         postRepository.save(post);
@@ -131,7 +155,7 @@ public class PostServiceImpl implements PostService {
         if(imagesId != null) {
             for(Long imageId : imagesId){
                 FileMaster fileMaster = fileMasterRepository.findById(imageId).orElseThrow(
-                        () -> new MyFileNotFoundException("Post image not found with imageId = " + imageId)
+                    () -> new NotFoundException(localizationUtils.translate(MessageKeys.POST_NOT_FOUND) + " imageId: " + imageId)
                 );
                 fileRelations.add(FileRelation.builder()
                         .fileMaster(fileMaster)
@@ -150,7 +174,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public void deletePostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Post not found with id = " + id)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.POST_NOT_FOUND) + " id: " + id)
         );
         fileRelationRepository.deleteAllByRelatedIdAndRelatedCode(post.getId(), FileRelatedCode.POST.toString());
         postRepository.delete(post);
@@ -175,7 +199,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PagedResponseVO<PostVO> getPostsByCategory(Long categoryId, Pageable pageable) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
-                () -> new NotFoundException("Category not found with category id = " + categoryId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.CATEGORY_NOT_FOUND) + " categoryId: " + categoryId)
         );
 
         Page<Post> postPage = postRepository.findByCategoryId(categoryId, pageable);
@@ -191,7 +215,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PagedResponseVO<PostVO> getPostsByTag(Long tagId, Pageable pageable) {
         Tag tag = tagRepository.findById(tagId).orElseThrow(
-                () -> new NotFoundException("Category not found with tag id = " + tagId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.TAG_NOT_FOUND) +  " id: " + tagId)
         );
         Set<Tag> tags = new HashSet<>();
         tags.add(tag);

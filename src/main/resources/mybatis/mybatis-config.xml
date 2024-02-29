@@ -1,0 +1,16 @@
+<!-- src/main/resources/config.xml -->
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <setting name="multipleResultSetsEnabled" value="true"/>
+        <setting name="defaultStatementTimeout" value="10000"/>
+    </settings>
+
+    <typeAliases>
+        <package name="com.htn.blog.mapper"/>
+    </typeAliases>
+
+</configuration>

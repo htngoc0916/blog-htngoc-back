@@ -2,6 +2,7 @@ package com.htn.blog.controller;
 
 import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.PostDTO;
+import com.htn.blog.dto.PostTitleDTO;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.service.PostService;
 import com.htn.blog.utils.LocalizationUtils;
@@ -59,6 +60,19 @@ public class PostController {
         );
     }
 
+    @Operation(summary = "Get hot posts rest api",
+            description = "Get hot posts rest api is used to get hot post from the database")
+    @ApiResponse(responseCode = "200", description = "Http status 200 success")
+    @GetMapping("/hotPost")
+    public ResponseEntity<?> getHotPosts(){
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
+                        .data(postService.getHotPosts())
+                        .build()
+        );
+    }
+
     @Operation(summary = "Get post By id rest api",
             description = "Get post by id rest api is used to get single post from the database")
     @ApiResponse(responseCode = "200", description = "Http status 200 success")
@@ -97,6 +111,24 @@ public class PostController {
                         .build()
         );
     }
+
+    @Operation(summary = "Check post title")
+    @PutMapping("/checkTitle")
+    public ResponseEntity<?> checkPostTitle(@RequestBody PostTitleDTO postTitleDTO){
+        boolean response = postService.checkPostTitle(postTitleDTO.getTitle());
+        String message = response
+                ? localizationUtils.translate(MessageKeys.POST_TITLE_EXIST)
+                : localizationUtils.translate(MessageKeys.POST_TITLE_CAN_BE_USED);
+
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .message(message)
+                        .data(response)
+                        .build()
+        );
+    }
+
+
 
     @Operation(summary = "Get post by category api",
         description = "Get post by category api is used to get all post with category")

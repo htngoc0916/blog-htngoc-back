@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.htn.blog.mapper.PostMapper">
+    <select id="selectHotPosts" resultType="com.htn.blog.vo.PostVO">
+    <![CDATA[
+        SELECT * FROM POSTS;
+    ]]>
+    </select>
+
+    <update id="updatePostViewCount" parameterType="java.lang.Long">
+        <![CDATA[
+        UPDATE  POSTS
+        SET     VIEW_CNT = 100
+        WHERE   ID = 3
+        ]]>
+    </update>
+</mapper>

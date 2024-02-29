@@ -32,4 +32,8 @@ public class MessageKeys {
     public static final String CATEGORY_NOT_FOUND = "category.not-found";
     public static final String TAG_NOT_FOUND = "tag.not-found";
     public static final String MENU_NOT_FOUND = "menu.not-found";
+
+    public static final String POST_NOT_FOUND = "post.not-found";
+    public static final String POST_TITLE_EXIST = "post.title.exist";
+    public static final String POST_TITLE_CAN_BE_USED = "post.title.can-be-used";
 }

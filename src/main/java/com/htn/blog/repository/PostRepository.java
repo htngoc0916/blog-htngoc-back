@@ -19,4 +19,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByTitleContainingAndUsedYn(String postTitle, String usedYn, Pageable pageable);
 
     Optional<Post> findBySlug(String slug);
+    boolean existsByTitle(String title);
 }
