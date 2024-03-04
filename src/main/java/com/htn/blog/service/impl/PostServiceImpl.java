@@ -89,20 +89,16 @@ public class PostServiceImpl implements PostService {
                 () -> new NotFoundException(localizationUtils.translate(MessageKeys.POST_NOT_FOUND) + " slug: " + slug)
         );
 
-        Page<Post> postPage = postRepository.findByTagsIn(post.getTags(), pageable);
+        Set<Tag> postTags = post.getTags();
+        Page<Post> relatedPostsPage = postRepository.findRelatedPosts(post.getId(), postTags, pageable);
 
-        return getPostPaged(postPage);
+        return getPostPaged(relatedPostsPage);
     }
 
+
     @Override
-    @Transactional
     public List<PostVO> getHotPosts() {
-
-        postMapper.updatePostViewCount(100L);
-
-        List<PostVO> resultPosts = postMapper.selectHotPosts();
-
-        return resultPosts;
+        return postMapper.selectHotPosts();
     }
 
     @Override

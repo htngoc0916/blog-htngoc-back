@@ -12,6 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "PostDTO model Information")
+@Builder
 public class PostDTO {
     private Long id;
 
@@ -50,6 +51,10 @@ public class PostDTO {
 
     @Schema(description = "Blog category id")
     private Long categoryId;
+
+    @Schema(description = "Blog post view count")
+    @Builder.Default
+    private Long viewCnt = 0L;
 
     @Schema(description = "Blog category id")
     private Set<String> tags;

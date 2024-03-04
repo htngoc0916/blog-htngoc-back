@@ -63,7 +63,7 @@ public class PostController {
     @Operation(summary = "Get hot posts rest api",
             description = "Get hot posts rest api is used to get hot post from the database")
     @ApiResponse(responseCode = "200", description = "Http status 200 success")
-    @GetMapping("/hotPost")
+    @GetMapping("/hotPosts")
     public ResponseEntity<?> getHotPosts(){
         return ResponseEntity.ok(
                 ResponseDTO.builder()
@@ -127,8 +127,6 @@ public class PostController {
                         .build()
         );
     }
-
-
 
     @Operation(summary = "Get post by category api",
         description = "Get post by category api is used to get all post with category")

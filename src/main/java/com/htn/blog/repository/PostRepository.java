@@ -2,11 +2,14 @@ package com.htn.blog.repository;
 
 import com.htn.blog.entity.Post;
 import com.htn.blog.entity.Tag;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,4 +23,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Optional<Post> findBySlug(String slug);
     boolean existsByTitle(String title);
+
+    @Query("SELECT p FROM Post p JOIN p.tags t WHERE p.id <> :postId AND t IN :postTags")
+    Page<Post> findRelatedPosts(@Param("postId") Long postId, @Param("postTags") Set<Tag> postTags, Pageable pageable);
 }
