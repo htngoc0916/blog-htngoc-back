@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -31,5 +32,6 @@ public class PostVO {
     private String modId;
     private Long categoryId;
     private Set<TagVO> tags;
+    private List<PostMetaVO> postMetas;
     private UserVO user;
 }

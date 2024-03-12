@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -56,8 +57,11 @@ public class PostDTO {
     @Builder.Default
     private Long viewCnt = 0L;
 
-    @Schema(description = "Blog category id")
+    @Schema(description = "Blog tags set")
     private Set<String> tags;
+
+    @Schema(description = "Post meta set")
+    private List<PostMetaDTO> postMetas;
 
     @Schema(description = "Blog images id")
     private Set<Long> images;

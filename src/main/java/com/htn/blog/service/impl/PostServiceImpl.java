@@ -3,7 +3,6 @@ package com.htn.blog.service.impl;
 import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.PostDTO;
 import com.htn.blog.entity.*;
-import com.htn.blog.exception.MyFileNotFoundException;
 import com.htn.blog.exception.NotFoundException;
 import com.htn.blog.mapper.PostMapper;
 import com.htn.blog.repository.*;
@@ -23,7 +22,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -39,6 +37,9 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private TagRepository tagRepository;
     @Autowired
+    private PostMetaRepository postMetaRepository;
+
+    @Autowired
     private ModelMapper modelMapper;
     @Autowired
     private LocalizationUtils localizationUtils;
@@ -53,15 +54,27 @@ public class PostServiceImpl implements PostService {
                 );
 
         Post post = modelMapper.map(postDTO, Post.class);
+        post.getPostMetas().clear();
         post.setCategory(category);
         post.setTags(checkTags(postDTO));
         post = postRepository.save(post);
-        Long postId = post.getId();
 
-        //handle post images
-        handleRelationFiles(postDTO.getImages(), postId);
+        //post meta
+        Post finalPost = post;
+        List<PostMeta> postMetas = postDTO.getPostMetas()
+                .stream()
+                .map(_postDTO -> PostMeta.builder()
+                        .title(_postDTO.getTitle())
+                        .slug(_postDTO.getSlug())
+                        .post(finalPost)
+                        .build())
+                .toList();
+
+        postMetaRepository.saveAll(postMetas);
+        handleRelationFiles(postDTO.getImages(), post.getId());
         return modelMapper.map(post, PostVO.class);
     }
+
     @Override
     public PostVO getPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(

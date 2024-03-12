@@ -60,7 +60,7 @@
                  SELECT      p.*
                  FROM        posts p
                  ORDER BY    p.VIEW_CNT DESC
-                 LIMIT 5
+                 LIMIT 3
              ) AS ranked
          LEFT JOIN   post_tag    pt  ON ranked.id        = pt.post_id
          LEFT JOIN   tags        t   ON pt.tag_id        = t.id

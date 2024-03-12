@@ -184,3 +184,20 @@ CREATE TABLE `tokens` (
                           KEY `FK3q5r8rac0xdi32ings41nu74g` (`USER_ID`),
                           CONSTRAINT `FK3q5r8rac0xdi32ings41nu74g` FOREIGN KEY (`USER_ID`) REFERENCES `users` (`ID`)
 )
+
+
+-- auto-generated definition
+create table post_meta
+(
+    ID      int auto_increment
+        primary key,
+    TITLE   varchar(100) not null,
+    SLUG    varchar(150) not null,
+    REMARK  varchar(100) null,
+    POST_ID int         not null,
+    constraint FK_POST_META_POST
+        foreign key (POST_ID) references posts (ID)
+);
+
+
+
