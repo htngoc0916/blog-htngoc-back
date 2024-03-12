@@ -130,6 +130,19 @@ public class PostServiceImpl implements PostService {
         post = post.update(postDTO);
         post.setCategory(category);
         post.setTags(checkTags(postDTO));
+
+        //delete meta
+        Post finalPost = post;
+        postMetaRepository.deleteByPost_Id(post.getId());
+        List<PostMeta> postMetas = postDTO.getPostMetas().stream()
+                .map((meta)-> PostMeta.builder()
+                        .title(meta.getTitle())
+                        .slug(meta.getSlug())
+                        .post(finalPost)
+                        .build())
+                .toList();
+        post.setPostMetas(postMetas);
+
         post = postRepository.save(post);
         return modelMapper.map(post, PostVO.class);
     }
