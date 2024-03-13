@@ -36,8 +36,6 @@ public class PostServiceImpl implements PostService {
     private FileMasterRepository fileMasterRepository;
     @Autowired
     private TagRepository tagRepository;
-    @Autowired
-    private PostMetaRepository postMetaRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -57,9 +55,10 @@ public class PostServiceImpl implements PostService {
         post.getPostMetas().clear();
         post.setCategory(category);
         post.setTags(checkTags(postDTO));
-        post = postRepository.save(post);
+
 
         //post meta
+        post.getPostMetas().clear();
         Post finalPost = post;
         List<PostMeta> postMetas = postDTO.getPostMetas()
                 .stream()
@@ -69,8 +68,9 @@ public class PostServiceImpl implements PostService {
                         .post(finalPost)
                         .build())
                 .toList();
+        post.getPostMetas().addAll(postMetas);
+        post = postRepository.save(post);
 
-        postMetaRepository.saveAll(postMetas);
         handleRelationFiles(postDTO.getImages(), post.getId());
         return modelMapper.map(post, PostVO.class);
     }
@@ -124,28 +124,29 @@ public class PostServiceImpl implements PostService {
                 () -> new NotFoundException(localizationUtils.translate(MessageKeys.CATEGORY_NOT_FOUND) +  " categoryId: " + postDTO.getCategoryId())
         );
 
-        //handle post images
-        handleRelationFiles(postDTO.getImages(), post.getId());
-
         post = post.update(postDTO);
         post.setCategory(category);
         post.setTags(checkTags(postDTO));
 
-        //delete meta
         Post finalPost = post;
-        postMetaRepository.deleteByPost_Id(post.getId());
+        post.getPostMetas().clear();
         List<PostMeta> postMetas = postDTO.getPostMetas().stream()
-                .map((meta)-> PostMeta.builder()
+                .map(meta -> PostMeta.builder()
                         .title(meta.getTitle())
                         .slug(meta.getSlug())
                         .post(finalPost)
                         .build())
-                .toList();
-        post.setPostMetas(postMetas);
+                        .toList();
 
+        post.getPostMetas().addAll(postMetas);
         post = postRepository.save(post);
+
+        // handle post images
+        handleRelationFiles(postDTO.getImages(), post.getId());
+
         return modelMapper.map(post, PostVO.class);
     }
+
 
     @Override
     public void updateViewCount(String slug) {
