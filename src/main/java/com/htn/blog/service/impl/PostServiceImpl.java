@@ -52,23 +52,27 @@ public class PostServiceImpl implements PostService {
                 );
 
         Post post = modelMapper.map(postDTO, Post.class);
-        post.getPostMetas().clear();
         post.setCategory(category);
         post.setTags(checkTags(postDTO));
 
 
         //post meta
-        post.getPostMetas().clear();
-        Post finalPost = post;
-        List<PostMeta> postMetas = postDTO.getPostMetas()
-                .stream()
-                .map(_postDTO -> PostMeta.builder()
-                        .title(_postDTO.getTitle())
-                        .slug(_postDTO.getSlug())
-                        .post(finalPost)
-                        .build())
-                .toList();
-        post.getPostMetas().addAll(postMetas);
+        if(post.getPostMetas() != null){
+            post.getPostMetas().clear();
+        }
+        if(postDTO.getPostMetas() != null){
+            Post finalPost = post;
+            List<PostMeta> postMetas = postDTO.getPostMetas().stream()
+                    .map(meta -> PostMeta.builder()
+                            .title(meta.getTitle())
+                            .slug(meta.getSlug())
+                            .post(finalPost)
+                            .build())
+                    .toList();
+
+            post.getPostMetas().addAll(postMetas);
+        }
+
         post = postRepository.save(post);
 
         handleRelationFiles(postDTO.getImages(), post.getId());
@@ -128,19 +132,22 @@ public class PostServiceImpl implements PostService {
         post.setCategory(category);
         post.setTags(checkTags(postDTO));
 
-        Post finalPost = post;
-        post.getPostMetas().clear();
-        List<PostMeta> postMetas = postDTO.getPostMetas().stream()
-                .map(meta -> PostMeta.builder()
-                        .title(meta.getTitle())
-                        .slug(meta.getSlug())
-                        .post(finalPost)
-                        .build())
-                        .toList();
+        if(post.getPostMetas() != null){
+            post.getPostMetas().clear();
+        }
+        if(postDTO.getPostMetas() != null){
+            Post finalPost = post;
+            List<PostMeta> postMetas = postDTO.getPostMetas().stream()
+                    .map(meta -> PostMeta.builder()
+                            .title(meta.getTitle())
+                            .slug(meta.getSlug())
+                            .post(finalPost)
+                            .build())
+                    .toList();
 
-        post.getPostMetas().addAll(postMetas);
+            post.getPostMetas().addAll(postMetas);
+        }
         post = postRepository.save(post);
-
         // handle post images
         handleRelationFiles(postDTO.getImages(), post.getId());
 
