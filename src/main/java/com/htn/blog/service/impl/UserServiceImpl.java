@@ -49,10 +49,10 @@ public class UserServiceImpl implements UserService {
     private LocalizationUtils localizationUtils;
 
     @Override
-    public PagedResponseVO<User> getAllUser(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String userName, String usedYn){
-        Pageable pageable = BlogUtils.getPageable(sortBy, sortDir, pageNo, pageSize);
-        Page<User> resultPage;
+    public PagedResponseVO<User> getAllUser(Pageable pageable, String userName, String usedYn){
+        BlogUtils.validatePageable(pageable);
 
+        Page<User> resultPage;
         if (StringUtils.hasText(userName) && StringUtils.hasText(usedYn)) {
             resultPage = userRepository.findByUserNameContainingAndUsedYn(userName, usedYn, pageable);
         } else if (StringUtils.hasText(userName)) {
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
         return PagedResponseVO.<User>builder()
                 .data(userList)
-                .pageNo(resultPage.getNumber() + 1)
+                .pageNo(BlogUtils.resultPageNo(resultPage))
                 .pageSize(resultPage.getSize())
                 .totalElements(resultPage.getTotalElements())
                 .totalPage(resultPage.getTotalPages())

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.htn.blog.dto.PostDTO;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Where;
 
 import java.util.*;
 
@@ -28,6 +27,8 @@ public class Post extends BaseEntity {
     private String description;
     @Column(name = "THUMBNAIL")
     private String thumbnail;
+    @Column(name = "THUMBNAIL_ID")
+    private Long thumbnailId;
     @Lob
     @Column(name = "CONTENT", columnDefinition = "TEXT")
     private String content;
@@ -38,19 +39,23 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments = new HashSet<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostMeta> postMetas = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_ID")
     private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID")
+    private User user;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "post_tag",
             joinColumns = {@JoinColumn(name = "POST_ID")},
             inverseJoinColumns = {@JoinColumn(name = "TAG_ID")})
     private Set<Tag> tags = new HashSet<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
-    private User user;
 
     public Post update(PostDTO postDTO){
         this.setTitle(postDTO.getTitle());
@@ -60,6 +65,8 @@ public class Post extends BaseEntity {
         this.setModId(postDTO.getModId());
         this.setModDt(new Date());
         this.setUsedYn(postDTO.getUsedYn());
+        this.setThumbnail(postDTO.getThumbnail());
+        this.setThumbnailId(postDTO.getThumbnailId());
         return this;
     }
 }

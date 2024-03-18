@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.htn.blog.mapper.PostMapper">
+    <resultMap id="hotPostMap" type="com.htn.blog.vo.PostVO">
+        <id property="id" column="ID"/>
+        <result property="title" column="TITLE"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="content" column="CONTENT"/>
+        <result property="slug" column="SLUG"/>
+        <result property="thumbnail" column="THUMBNAIL"/>
+        <result property="thumbnailId" column="THUMBNAIL_ID"/>
+        <result property="viewCnt" column="VIEW_CNT"/>
+        <result property="usedYn" column="USED_YN"/>
+        <result property="regDt" column="REG_DT"/>
+        <result property="regId" column="REG_ID"/>
+        <result property="modDt" column="MOD_DT"/>
+        <result property="modId" column="MOD_ID"/>
+        <result property="categoryId" column="CATEGORY_ID"/>
+
+        <association property="user" javaType="com.htn.blog.vo.UserVO">
+            <id property="id" column="USER_ID"/>
+            <result property="userName" column="USER_NAME"/>
+            <result property="email" column="EMAIL"/>
+            <result property="avatar" column="AVATAR"/>
+        </association>
+
+        <collection property="tags" ofType="com.htn.blog.vo.TagVO" javaType="java.util.Set">
+            <id property="id" column="TAG_ID"/>
+            <result property="tagName" column="TAG_NAME"/>
+            <result property="color" column="COLOR"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectHotPosts" resultMap="hotPostMap">
+    <![CDATA[
+        SELECT
+            ranked.ID,
+            ranked.TITLE,
+            ranked.SLUG,
+            ranked.DESCRIPTION,
+            ranked.CONTENT,
+            ranked.VIEW_CNT,
+            ranked.CATEGORY_ID,
+            ranked.THUMBNAIL,
+            ranked.THUMBNAIL_ID,
+            ranked.USER_ID,
+            ranked.USED_YN,
+            ranked.REG_DT,
+            ranked.REG_ID,
+            ranked.MOD_DT,
+            ranked.MOD_ID,
+            t.id AS TAG_ID,
+            t.TAG_NAME,
+            t.COLOR,
+            u.ID AS USER_ID,
+            u.USER_NAME,
+            u.EMAIL,
+            u.AVATAR
+        FROM (
+                 SELECT      p.*
+                 FROM        posts p
+                 ORDER BY    p.VIEW_CNT DESC
+                 LIMIT 3
+             ) AS ranked
+         LEFT JOIN   post_tag    pt  ON ranked.id        = pt.post_id
+         LEFT JOIN   tags        t   ON pt.tag_id        = t.id
+         LEFT JOIN   users       u   ON ranked.USER_ID   = u.ID
+        ]]>
+    </select>
+</mapper>

@@ -42,10 +42,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public PagedResponseVO<Category> getAllCategories(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String categoryName, String usedYn) {
-        Pageable pageable = BlogUtils.getPageable(sortBy, sortDir, pageNo, pageSize);
+    public PagedResponseVO<Category> getAllCategories(Pageable pageable, String categoryName, String usedYn) {
+        BlogUtils.validatePageable(pageable);
         Page<Category> resultPage;
-
         if (StringUtils.hasText(categoryName) && StringUtils.hasText(usedYn)) {
             resultPage = categoryRepository.findByCategoryNameContainingAndUsedYn(categoryName, usedYn, pageable);
         } else if (StringUtils.hasText(categoryName)) {
@@ -63,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         return PagedResponseVO.<Category>builder()
                 .data(categoryList)
-                .pageNo(resultPage.getNumber() + 1)
+                .pageNo(BlogUtils.resultPageNo(resultPage))
                 .pageSize(resultPage.getSize())
                 .totalElements(resultPage.getTotalElements())
                 .totalPage(resultPage.getTotalPages())

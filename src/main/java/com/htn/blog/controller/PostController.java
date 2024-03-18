@@ -1,17 +1,21 @@
 package com.htn.blog.controller;
 
-import com.htn.blog.common.BlogConstants;
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.PostDTO;
+import com.htn.blog.dto.PostTitleDTO;
 import com.htn.blog.dto.ResponseDTO;
 import com.htn.blog.service.PostService;
-import com.htn.blog.vo.PagedResponseVO;
-import com.htn.blog.vo.PostVO;
+import com.htn.blog.utils.LocalizationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,22 +28,21 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
     @Autowired
     private PostService postService;
+    @Autowired
+    private LocalizationUtils localizationUtils;
 
     @Operation(summary = "Get all post rest api",
             description = "Get all post reset api is used to fetch all the posts from the database")
     @ApiResponse(responseCode = "200", description = "Http status 200 success")
     @GetMapping
-    public ResponseEntity<?> getAllPosts(
-            @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
-    ){
-        PagedResponseVO<PostVO> pagedResponseVO = postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
+    public ResponseEntity<?> getAllPosts(@SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+                                         @PageableDefault Pageable pageable,
+                                         @RequestParam(value = "usedYn", required = false) String usedYn,
+                                         @RequestParam(value = "postTitle", required = false) String postTitle){
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDTO.builder()
-                        .message("Get all post successfully!")
-                        .data(pagedResponseVO)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
+                        .data(postService.getAllPosts(pageable, usedYn, postTitle))
                         .build()
         );
     }
@@ -49,11 +52,49 @@ public class PostController {
     @ApiResponse(responseCode = "200", description = "Http status 200 success")
     @GetMapping("/{id}")
     public ResponseEntity<?> getPostById(@PathVariable(name = "id") Long id){
-        PostVO postVO = postService.getPostById(id);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .message("Get all post successfully!")
-                        .data(postVO)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
+                        .data(postService.getPostById(id))
+                        .build()
+        );
+    }
+
+    @Operation(summary = "Get hot posts rest api",
+            description = "Get hot posts rest api is used to get hot post from the database")
+    @ApiResponse(responseCode = "200", description = "Http status 200 success")
+    @GetMapping("/hotPosts")
+    public ResponseEntity<?> getHotPosts(){
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
+                        .data(postService.getHotPosts())
+                        .build()
+        );
+    }
+
+    @Operation(summary = "Get post By id rest api",
+            description = "Get post by id rest api is used to get single post from the database")
+    @ApiResponse(responseCode = "200", description = "Http status 200 success")
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<?> getPostBySlug(@PathVariable(name = "slug") String slug){
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
+                        .data(postService.getPostBySlug(slug))
+                        .build()
+        );
+    }
+
+    @Operation(summary = "Get related post by slug")
+    @GetMapping("/related/slug/{slug}")
+    public ResponseEntity<?> getPostsRelatedBySlug(@PathVariable("slug") String slug,
+                                            @SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+                                            @PageableDefault Pageable pageable){
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
+                        .data(postService.getPostsRelatedBySlug(slug, pageable))
                         .build()
         );
     }
@@ -61,16 +102,28 @@ public class PostController {
     @Operation(summary = "Get post By tag id")
     @GetMapping("/tag/{id}")
     public ResponseEntity<?> getPostByTagId(@PathVariable("id") Long tagId,
-            @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
-
-        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByTag(tagId, pageNo, pageSize, sortBy, sortDir);
+                                            @SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+                                            @PageableDefault Pageable pageable){
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .message("Get post with category Id successfully!")
-                        .data(pagedResponseVO)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
+                        .data(postService.getPostsByTag(tagId, pageable))
+                        .build()
+        );
+    }
+
+    @Operation(summary = "Check post title")
+    @PutMapping("/checkTitle")
+    public ResponseEntity<?> checkPostTitle(@RequestBody PostTitleDTO postTitleDTO){
+        boolean response = postService.checkPostTitle(postTitleDTO.getTitle());
+        String message = response
+                ? localizationUtils.translate(MessageKeys.POST_TITLE_EXIST)
+                : localizationUtils.translate(MessageKeys.POST_TITLE_CAN_BE_USED);
+
+        return ResponseEntity.ok(
+                ResponseDTO.builder()
+                        .message(message)
+                        .data(response)
                         .build()
         );
     }
@@ -81,30 +134,24 @@ public class PostController {
     @GetMapping("/category/{id}")
     public ResponseEntity<?> getPostsByCategoryId(
             @PathVariable("id") Long categoryId,
-            @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
-        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByCategory(categoryId, pageNo, pageSize, sortBy, sortDir);
+            @SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+            @PageableDefault Pageable pageable){
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .message("Get post with category Id successfully!")
-                        .data(pagedResponseVO)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
+                        .data(postService.getPostsByCategory(categoryId, pageable))
                         .build()
         );
     }
 
-    @GetMapping("/{keywords}")
+    @GetMapping("/search/{keywords}")
     public ResponseEntity<?> searchPostByTitle(@PathVariable("keywords") String keywords,
-                                               @RequestParam(value = "pageNo", defaultValue = BlogConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-                                               @RequestParam(value = "pageSize", defaultValue = BlogConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-                                               @RequestParam(value = "sortBy", defaultValue = BlogConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-                                               @RequestParam(value = "sortDir", defaultValue = BlogConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
-        PagedResponseVO<PostVO> pagedResponseVO = postService.getPostsByTitle(keywords, pageNo, pageSize, sortBy, sortDir);
+                                               @SortDefault.SortDefaults({ @SortDefault(sort = "id", direction = Sort.Direction.DESC)})
+                                               @PageableDefault Pageable pageable){
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .message("Get posts with title successfully!")
-                        .data(pagedResponseVO)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_GET_ALL_SUCCESSFULLY))
+                        .data(postService.getPostsByTitle(keywords, pageable))
                         .build()
         );
     }
@@ -116,11 +163,10 @@ public class PostController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> addPost(@Valid @RequestBody PostDTO postDTO){
-        PostVO postVO = postService.addPost(postDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseDTO.builder()
-                        .message("Created a post successfully!")
-                        .data(postVO)
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_CREATE_SUCCESSFULLY))
+                        .data(postService.addPost(postDTO))
                         .build()
         );
     }
@@ -132,12 +178,25 @@ public class PostController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePost(@Valid @RequestBody PostDTO postDTO, @PathVariable(name = "id") Long id){
-        PostVO postVO = postService.updatePost(postDTO, id);
+         return ResponseEntity.ok(
+                ResponseDTO.builder()
+                .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_SAVE_SUCCESSFULLY))
+                .data(postService.updatePost(postDTO, id))
+                .build()
+        );
+    }
+
+    @Operation(summary = "Update post view count rest api",
+            description = "Update view count rest api is used to update view count of Post by post slug in the database")
+    @ApiResponse(responseCode = "200", description = "http status 200 success")
+    @PutMapping("/postView/{slug}")
+    public ResponseEntity<?> updateViewCount(@PathVariable(name = "slug") String slug){
+        postService.updateViewCount(slug);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                .message("Get all post successfully!")
-                .data(postVO)
-                .build()
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_SAVE_SUCCESSFULLY))
+                        .data("")
+                        .build()
         );
     }
 
@@ -151,7 +210,7 @@ public class PostController {
         postService.deletePostById(id);
         return ResponseEntity.ok(
                 ResponseDTO.builder()
-                        .message("deleted post successfully!")
+                        .message(localizationUtils.translate(MessageKeys.COMMON_ACTIONS_DELETE_SUCCESSFULLY))
                         .data("")
                         .build()
         );

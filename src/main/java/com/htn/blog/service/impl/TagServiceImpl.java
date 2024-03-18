@@ -35,10 +35,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public PagedResponseVO<Tag> getAllTag(Integer pageNo, Integer pageSize, String  sortBy, String sortDir, String tagName, String usedYn) {
-        Pageable pageable = BlogUtils.getPageable(sortBy, sortDir, pageNo, pageSize);
-        Page<Tag> resultPage;
+    public PagedResponseVO<Tag> getAllTag(Pageable pageable, String tagName, String usedYn) {
+        BlogUtils.validatePageable(pageable);
 
+        Page<Tag> resultPage;
         if (StringUtils.hasText(tagName) && StringUtils.hasText(usedYn)) {
             resultPage = tagRepository.findByTagNameContainingAndUsedYn(tagName, usedYn, pageable);
         } else if (StringUtils.hasText(tagName)) {
@@ -49,7 +49,6 @@ public class TagServiceImpl implements TagService {
             resultPage = tagRepository.findAll(pageable);
         }
 
-
         List<Tag> tagList = resultPage.getContent()
                 .stream()
                 .map(_tag -> modelMapper.map(_tag, Tag.class))
@@ -57,7 +56,7 @@ public class TagServiceImpl implements TagService {
 
         return PagedResponseVO.<Tag>builder()
                 .data(tagList)
-                .pageNo(resultPage.getNumber() + 1)
+                .pageNo(BlogUtils.resultPageNo(resultPage))
                 .pageSize(resultPage.getSize())
                 .totalElements(resultPage.getTotalElements())
                 .totalPage(resultPage.getTotalPages())

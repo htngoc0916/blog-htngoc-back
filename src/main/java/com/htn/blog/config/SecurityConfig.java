@@ -2,14 +2,11 @@ package com.htn.blog.config;
 
 import com.htn.blog.security.jwt.JwtEntryPoint;
 import com.htn.blog.security.jwt.JwtFilter;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -49,22 +45,25 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
         return configuration.getAuthenticationManager();
     }
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                        authorize
+                                .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                                 .requestMatchers("/image/**").permitAll()
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("/api/v1/posts/postView/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/v1/posts/postView/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
-                                .anyRequest().authenticated()
-                ).exceptionHandling( exception -> exception
+                                .anyRequest().authenticated())
+                .exceptionHandling( exception -> exception
                         .authenticationEntryPoint(jwtEntryPoint)
                 ).sessionManagement( session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
-
         http.cors(cors -> cors
                 .configurationSource(request -> {
                     CorsConfiguration configuration = new CorsConfiguration();

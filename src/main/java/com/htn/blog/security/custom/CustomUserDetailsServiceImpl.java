@@ -43,7 +43,7 @@ public class CustomUserDetailsServiceImpl implements UserDetails {
 				user.getId(), 
 				user.getUserName(),
 				user.getEmail(),
-				user.getPassword(), 
+				user.getPassword(),
 				authorities);
 	}
 

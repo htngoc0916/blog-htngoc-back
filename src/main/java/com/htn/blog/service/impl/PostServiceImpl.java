@@ -1,23 +1,24 @@
 package com.htn.blog.service.impl;
 
+import com.htn.blog.common.MessageKeys;
 import com.htn.blog.dto.PostDTO;
 import com.htn.blog.entity.*;
-import com.htn.blog.exception.MyFileNotFoundException;
 import com.htn.blog.exception.NotFoundException;
+import com.htn.blog.mapper.PostMapper;
 import com.htn.blog.repository.*;
 import com.htn.blog.service.PostService;
 import com.htn.blog.utils.BlogUtils;
 import com.htn.blog.utils.FileRelatedCode;
+import com.htn.blog.utils.LocalizationUtils;
 import com.htn.blog.vo.PagedResponseVO;
 import com.htn.blog.vo.PostVO;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -35,33 +36,88 @@ public class PostServiceImpl implements PostService {
     private FileMasterRepository fileMasterRepository;
     @Autowired
     private TagRepository tagRepository;
+
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private LocalizationUtils localizationUtils;
+    @Autowired
+    private PostMapper postMapper;
 
     @Override
     @Transactional
     public PostVO addPost(PostDTO postDTO) {
         Category category =  categoryRepository.findById(postDTO.getCategoryId()).orElseThrow(
-                () -> new NotFoundException("Category not found with categoryId = " + postDTO.getCategoryId())
-        );
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.CATEGORY_NOT_FOUND) + " id: " + postDTO.getCategoryId())
+                );
 
         Post post = modelMapper.map(postDTO, Post.class);
         post.setCategory(category);
         post.setTags(checkTags(postDTO));
-        post = postRepository.save(post);
-        Long postId = post.getId();
 
-        //handle post images
-        handleRelationFiles(postDTO.getImages(), postId);
+
+        //post meta
+        if(post.getPostMetas() != null){
+            post.getPostMetas().clear();
+        }
+        if(postDTO.getPostMetas() != null){
+            Post finalPost = post;
+            List<PostMeta> postMetas = postDTO.getPostMetas().stream()
+                    .map(meta -> PostMeta.builder()
+                            .title(meta.getTitle())
+                            .slug(meta.getSlug())
+                            .post(finalPost)
+                            .build())
+                    .toList();
+
+            post.getPostMetas().addAll(postMetas);
+        }
+
+        post = postRepository.save(post);
+
+        handleRelationFiles(postDTO.getImages(), post.getId());
         return modelMapper.map(post, PostVO.class);
     }
+
     @Override
     public PostVO getPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Post not found with id = " + id)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.POST_NOT_FOUND) + " postId: " + id)
         );
         return modelMapper.map(post, PostVO.class);
     }
+
+    @Override
+    public PostVO getPostBySlug(String slug) {
+        Post post = postRepository.findBySlug(slug).orElseThrow(
+                () -> new NotFoundException("Post not found with slug = " + slug)
+        );
+        return modelMapper.map(post, PostVO.class);
+    }
+
+    @Override
+    public boolean checkPostTitle(String title) {
+        return postRepository.existsByTitle(title);
+    }
+
+    @Override
+    public PagedResponseVO<PostVO> getPostsRelatedBySlug(String slug, Pageable pageable) {
+        Post post = postRepository.findBySlug(slug).orElseThrow(
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.POST_NOT_FOUND) + " slug: " + slug)
+        );
+
+        Set<Tag> postTags = post.getTags();
+        Page<Post> relatedPostsPage = postRepository.findRelatedPosts(post.getId(), postTags, pageable);
+
+        return getPostPaged(relatedPostsPage);
+    }
+
+
+    @Override
+    public List<PostVO> getHotPosts() {
+        return postMapper.selectHotPosts();
+    }
+
     @Override
     @Transactional
     public PostVO updatePost(PostDTO postDTO, Long id) {
@@ -69,17 +125,43 @@ public class PostServiceImpl implements PostService {
                 () -> new NotFoundException("Post not found with id = " + id)
         );
         Category category = categoryRepository.findById(postDTO.getCategoryId()).orElseThrow(
-                () -> new NotFoundException("Category not found with id = " + postDTO.getCategoryId())
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.CATEGORY_NOT_FOUND) +  " categoryId: " + postDTO.getCategoryId())
         );
-
-        //handle post images
-        handleRelationFiles(postDTO.getImages(), post.getId());
 
         post = post.update(postDTO);
         post.setCategory(category);
         post.setTags(checkTags(postDTO));
+
+        if(post.getPostMetas() != null){
+            post.getPostMetas().clear();
+        }
+        if(postDTO.getPostMetas() != null){
+            Post finalPost = post;
+            List<PostMeta> postMetas = postDTO.getPostMetas().stream()
+                    .map(meta -> PostMeta.builder()
+                            .title(meta.getTitle())
+                            .slug(meta.getSlug())
+                            .post(finalPost)
+                            .build())
+                    .toList();
+
+            post.getPostMetas().addAll(postMetas);
+        }
         post = postRepository.save(post);
+        // handle post images
+        handleRelationFiles(postDTO.getImages(), post.getId());
+
         return modelMapper.map(post, PostVO.class);
+    }
+
+
+    @Override
+    public void updateViewCount(String slug) {
+        Post post = postRepository.findBySlug(slug).orElseThrow(
+            () -> new NotFoundException(localizationUtils.translate(MessageKeys.POST_NOT_FOUND) + " slug: " + slug)
+        );
+        post.setViewCnt(post.getViewCnt() + 1L);
+        postRepository.save(post);
     }
 
     private Set<Tag> checkTags(PostDTO postDTO) {
@@ -103,7 +185,7 @@ public class PostServiceImpl implements PostService {
         if(imagesId != null) {
             for(Long imageId : imagesId){
                 FileMaster fileMaster = fileMasterRepository.findById(imageId).orElseThrow(
-                        () -> new MyFileNotFoundException("Post image not found with imageId = " + imageId)
+                    () -> new NotFoundException(localizationUtils.translate(MessageKeys.POST_NOT_FOUND) + " imageId: " + imageId)
                 );
                 fileRelations.add(FileRelation.builder()
                         .fileMaster(fileMaster)
@@ -122,47 +204,51 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public void deletePostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Post not found with id = " + id)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.POST_NOT_FOUND) + " id: " + id)
         );
         fileRelationRepository.deleteAllByRelatedIdAndRelatedCode(post.getId(), FileRelatedCode.POST.toString());
         postRepository.delete(post);
     }
     @Override
-    public PagedResponseVO<PostVO> getAllPosts(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
-        Pageable pageable = BlogUtils.getPageable(sortBy, sortDir, pageNo, pageSize);
-        Page<Post> postPage = postRepository.findAll(pageable);
-        return getPostPaged(postPage);
+    public PagedResponseVO<PostVO> getAllPosts(Pageable pageable, String usedYn, String postTitle) {
+        BlogUtils.validatePageable(pageable);
+
+        Page<Post> resultPage;
+        if(StringUtils.hasText(postTitle) && StringUtils.hasText(usedYn)){
+            resultPage = postRepository.findByTitleContainingAndUsedYn(postTitle, usedYn, pageable);
+        }else if(StringUtils.hasText(postTitle)){
+            resultPage = postRepository.findByTitleContaining(postTitle, pageable);
+        }else if(StringUtils.hasText(usedYn)){
+            resultPage = postRepository.findByUsedYn(usedYn, pageable);
+        }else {
+            resultPage = postRepository.findAll(pageable);
+        }
+
+        return getPostPaged(resultPage);
     }
     @Override
-    public PagedResponseVO<PostVO> getPostsByCategory(Long categoryId, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+    public PagedResponseVO<PostVO> getPostsByCategory(Long categoryId, Pageable pageable) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
-                () -> new NotFoundException("Category not found with category id = " + categoryId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.CATEGORY_NOT_FOUND) + " categoryId: " + categoryId)
         );
-        Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         Page<Post> postPage = postRepository.findByCategoryId(categoryId, pageable);
         return getPostPaged(postPage);
     }
 
     @Override
-    public PagedResponseVO<PostVO> getPostsByTitle(String keywords, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
-        Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+    public PagedResponseVO<PostVO> getPostsByTitle(String keywords, Pageable pageable) {
         Page<Post> postPage = postRepository.findByTitleContaining(keywords, pageable);;
         return getPostPaged(postPage);
     }
 
     @Override
-    public PagedResponseVO<PostVO> getPostsByTag(Long tagId, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+    public PagedResponseVO<PostVO> getPostsByTag(Long tagId, Pageable pageable) {
         Tag tag = tagRepository.findById(tagId).orElseThrow(
-                () -> new NotFoundException("Category not found with tag id = " + tagId)
+                () -> new NotFoundException(localizationUtils.translate(MessageKeys.TAG_NOT_FOUND) +  " id: " + tagId)
         );
         Set<Tag> tags = new HashSet<>();
         tags.add(tag);
-        Sort sort = BlogUtils.getSortByDir(sortBy, sortDir);
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-
         Page<Post> postPage = postRepository.findByTagsIn(tags, pageable);
         return getPostPaged(postPage);
     }
@@ -175,7 +261,7 @@ public class PostServiceImpl implements PostService {
 
         return PagedResponseVO.<PostVO>builder()
                 .data(postList)
-                .pageNo(postPage.getNumber())
+                .pageNo(BlogUtils.resultPageNo(postPage))
                 .pageSize(postPage.getSize())
                 .totalElements(postPage.getTotalElements())
                 .totalPage(postPage.getTotalPages())

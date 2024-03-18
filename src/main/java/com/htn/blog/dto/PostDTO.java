@@ -3,10 +3,7 @@ package com.htn.blog.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.Set;
@@ -16,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "PostDTO model Information")
+@Builder
 public class PostDTO {
     private Long id;
 
@@ -33,12 +31,18 @@ public class PostDTO {
     @Schema(description = "Blog post slug")
     private String slug;
 
-    @Schema(description = "Blog thumbnail")
+    @Schema(description = "Blog post thumbnail id")
+    private Long thumbnailId;
+
+    @Schema(description = "Blog post thumbnail")
     private String thumbnail;
 
     @Schema(description = "Blog post use flag")
     @Size(max = 1, message = "Post usedYn only allows 1 character")
     private String usedYn;
+
+    @Schema(description = "Blog post author")
+    private Long userId;
 
     @Schema(description = "Blog post created user")
     private Long regId;
@@ -49,8 +53,15 @@ public class PostDTO {
     @Schema(description = "Blog category id")
     private Long categoryId;
 
-    @Schema(description = "Blog category id")
+    @Schema(description = "Blog post view count")
+    @Builder.Default
+    private Long viewCnt = 0L;
+
+    @Schema(description = "Blog tags set")
     private Set<String> tags;
+
+    @Schema(description = "Post meta set")
+    private List<PostMetaDTO> postMetas;
 
     @Schema(description = "Blog images id")
     private Set<Long> images;

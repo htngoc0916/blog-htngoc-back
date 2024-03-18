@@ -23,7 +23,7 @@ public class FileMaster extends BaseEntity{
     private String fileUrl;
     @Column(name = "FILE_NAME")
     private String fileName;
-    @Column(name = "FILE_ORIGIN_NAME")
+    @Column(name = "FILE_ORIGINAL_NAME")
     private String fileOriginalName;
     @Column(name = "FILE_TYPE")
     private String fileType;
