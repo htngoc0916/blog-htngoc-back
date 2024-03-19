@@ -36,4 +36,6 @@ public class MessageKeys {
     public static final String POST_NOT_FOUND = "post.not-found";
     public static final String POST_TITLE_EXIST = "post.title.exist";
     public static final String POST_TITLE_CAN_BE_USED = "post.title.can-be-used";
+
+    public static final String CONTACT_SEND_SUCCESSFULLY = "contact.send-email-successfully";
 }

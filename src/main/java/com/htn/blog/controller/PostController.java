@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/posts")
 @Tag(name= "CRUD rest apis for post resource")
-@CrossOrigin(origins = "http://localhost:3100")
 public class PostController {
     @Autowired
     private PostService postService;
@@ -63,7 +62,7 @@ public class PostController {
     @Operation(summary = "Get hot posts rest api",
             description = "Get hot posts rest api is used to get hot post from the database")
     @ApiResponse(responseCode = "200", description = "Http status 200 success")
-    @GetMapping("/hotPosts")
+    @GetMapping("/hot-posts")
     public ResponseEntity<?> getHotPosts(){
         return ResponseEntity.ok(
                 ResponseDTO.builder()
@@ -113,7 +112,7 @@ public class PostController {
     }
 
     @Operation(summary = "Check post title")
-    @PutMapping("/checkTitle")
+    @PutMapping("/check-title")
     public ResponseEntity<?> checkPostTitle(@RequestBody PostTitleDTO postTitleDTO){
         boolean response = postService.checkPostTitle(postTitleDTO.getTitle());
         String message = response
@@ -189,7 +188,7 @@ public class PostController {
     @Operation(summary = "Update post view count rest api",
             description = "Update view count rest api is used to update view count of Post by post slug in the database")
     @ApiResponse(responseCode = "200", description = "http status 200 success")
-    @PutMapping("/postView/{slug}")
+    @PutMapping("/post-view/{slug}")
     public ResponseEntity<?> updateViewCount(@PathVariable(name = "slug") String slug){
         postService.updateViewCount(slug);
         return ResponseEntity.ok(

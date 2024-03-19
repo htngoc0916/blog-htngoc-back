@@ -21,7 +21,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping
-@CrossOrigin(origins = "http://localhost:3100")
 public class FileController {
     @Autowired
     FileMasterService fileMasterService;

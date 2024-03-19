@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/tags")
-@CrossOrigin(origins = "http://localhost:3100")
 public class TagController {
     @Autowired
     private TagService tagService;

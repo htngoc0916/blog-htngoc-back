@@ -200,4 +200,19 @@ create table post_meta
 );
 
 
+create table contacts(
+        ID INT AUTO_INCREMENT PRIMARY KEY,
+        CONTACT_CODE VARCHAR(20) NOT NULL,
+        EMAIL VARCHAR(100) NOT NULL,
+        FULL_NAME VARCHAR(50),
+        CONTENT VARCHAR(500),
+        REPLY_YN VARCHAR (1) DEFAULT  'N',
+        USED_YN VARCHAR(1) DEFAULT 'Y',
+        REG_DT DATETIME DEFAULT CURRENT_TIMESTAMP,
+        REG_ID INT,
+        MOD_DT DATETIME,
+        MOD_ID INT
+)
+
+
 

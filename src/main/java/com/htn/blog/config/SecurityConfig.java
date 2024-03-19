@@ -3,6 +3,7 @@ package com.htn.blog.config;
 import com.htn.blog.security.jwt.JwtEntryPoint;
 import com.htn.blog.security.jwt.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,6 +32,9 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
+    @Value("${blog.cors.url}")
+    private String corsUrl;
+
     public SecurityConfig(UserDetailsService userDetailsService, JwtEntryPoint jwtEntryPoint, JwtFilter jwtFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtEntryPoint = jwtEntryPoint;
@@ -55,9 +59,12 @@ public class SecurityConfig {
                                 .requestMatchers("/image/**").permitAll()
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/swagger-ui/**").permitAll()
-                                .requestMatchers("/api/v1/posts/postView/**").permitAll()
-                                .requestMatchers(HttpMethod.PUT, "/api/v1/posts/postView/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
+                                .requestMatchers("/api/v1/posts/post-view/**").permitAll()
+                                .requestMatchers("/api/v1/contacts/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/v1/posts/post-view/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/v1/contacts/send-idea").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/v1/contacts/send-contact").permitAll()
                                 .anyRequest().authenticated())
                 .exceptionHandling( exception -> exception
                         .authenticationEntryPoint(jwtEntryPoint)
@@ -67,7 +74,7 @@ public class SecurityConfig {
         http.cors(cors -> cors
                 .configurationSource(request -> {
                     CorsConfiguration configuration = new CorsConfiguration();
-                    configuration.setAllowedOrigins(List.of("http://localhost:3100"));
+                    configuration.setAllowedOrigins(List.of(corsUrl));
                     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
                     configuration.setAllowCredentials(true);
                     configuration.setMaxAge(3600L);

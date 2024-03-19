@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/users")
-@CrossOrigin(origins = "http://localhost:3100")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -72,7 +71,7 @@ public class UserController {
     }
 
     @Operation(summary = "Check user with email rest api")
-    @GetMapping("/checkEmail/{email}")
+    @GetMapping("/check-email/{email}")
     public ResponseEntity<?> checkEmail(@PathVariable("email") String email){
         Boolean result = userService.existsEmail(email);
         String msg = result

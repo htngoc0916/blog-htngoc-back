@@ -19,7 +19,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/menus")
-@CrossOrigin(origins = "http://localhost:3100")
 public class MenuController {
     @Autowired
     private MenuService menuService;
@@ -50,7 +49,7 @@ public class MenuController {
     }
 
     @Operation(summary = "Get menu by menuCode rest api")
-    @GetMapping("/menuCode/{code}")
+    @GetMapping("/menu-code/{code}")
     public ResponseEntity<?> getMenuByCode(@PathVariable("code") String menuCode){
         List<MenuVO> menu = menuService.getMenuByCode(menuCode);
         return ResponseEntity.status(HttpStatus.OK).body(
